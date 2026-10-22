@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Please cite this software accordingly."
+title: "code.superduper.solutions"
+authors:
+  - family-names: "Landvall"
+    given-names: "Erik"
+    alias: "superhero"
+repository-code: "https://github.com/superhero/code.superduper.solutions"
+license: "AGPL-3.0-only"

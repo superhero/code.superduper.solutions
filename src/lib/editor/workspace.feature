@@ -1,0 +1,70 @@
+# Copyright (C) 2026 Erik Landvall
+# SPDX-License-Identifier: AGPL-3.0-only
+# See LICENSE and LICENSE-ADDITIONAL-TERMS.
+
+@workspace
+Feature: Durable application workspace metadata
+  Scenario: Commit comparison tabs retain their commit and historical path
+    Then commit comparison tabs survive normalization moves reload and missing working files
+  Scenario: History becomes a third independent right pane with shared sizing
+    Then History migrates into the independent dock and three pane widths preserve the editor
+
+  Scenario: Workspace snapshots retain independent repository positions without contents
+    Then a workspace roundtrip preserves repository tabs selections scroll and focus
+
+  Scenario: History graph choices persist per repository and safely default older snapshots
+    Then history view preferences survive normalization roundtrip and repository mutations
+
+  Scenario: Malformed workspace snapshots recover safe defaults
+    Then invalid workspace versions fields and coordinates recover safely
+
+  Scenario: Literal filenames cannot modify workspace prototypes
+    Then workspace normalization preserves prototype-named files without trusting inherited values
+
+  Scenario: Repository mutations discard stale paths without opening other files
+    Then workspace reconciliation keeps surviving state and never opens an unseen file
+
+  Scenario: Moving a directory carries its tabs and positions without affecting similar paths
+    Then workspace renames remap whole path prefixes and preserve independent state
+
+  Scenario: File diff workspace choice persists independently of repository content
+    Then file diff choices survive workspace normalization and repository reconciliation
+
+  Scenario: Split views retain their own positions and follow file mutations
+    Then split workspace state survives reload rename and reconciliation
+
+  Scenario: Split pane widths survive reload and track changed pane membership
+    Then split pane sizes persist normalize and follow pane insertion deletion and promotion
+
+  Scenario: Multiple split tabs retain independent document positions across migrations and file mutations
+    Then split tab collections migrate persist rename and reconcile independently
+
+  Scenario: Dragging tabs within a viewport uses original insertion boundaries without changing selection
+    Then workspace tab reordering preserves active files sessions and no-op identity
+
+  Scenario: Moving tabs between viewports carries positions without duplicating target tabs
+    Then workspace tab transfers activate targets preserve positions and select source neighbours
+
+  Scenario: Moving the final tab closes empty panes and promotes all primary replacement tabs
+    Then empty tab viewport transfers preserve complete promoted panes and widths
+
+  Scenario: Comparison tabs retain their file identity within each pane
+    Then comparison tab kinds survive transfer rename reload and reconciliation
+
+  Scenario: Staged comparisons preserve their index identity independently of working files
+    Then staged comparison tabs survive moves reload and staged deletions
+
+  Scenario: Explorer width is optional and bounded in persisted workspace layouts
+    Then explorer widths normalize without changing default workspace layouts
+
+  Scenario: Resources is a durable view without storing measurements in workspace metadata
+    Then the resources view and scroll position survive safe workspace normalization
+
+  Scenario: Vault is a durable view without storing guarded values in workspace metadata
+    Then the vault view survives workspace normalization without credential drafts
+
+  Scenario: Git pane width is optional and bounded in persisted workspace layouts
+    Then Git pane widths normalize without changing default workspace layouts
+
+  Scenario: AI and Git panes retain independent visibility and fit their shared dock
+    Then both right panes survive reload and their widths keep room for the editor

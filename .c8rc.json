@@ -1,0 +1,41 @@
+{
+  "all": true,
+  "src": [
+    "src"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/index.ts",
+    "src/dev/**",
+    "src/**/*.d.ts",
+    "src/lib/components/ui/**",
+    "src/lib/utils.ts",
+    "src/lib/startup.ts",
+    "src/lib/editor/configuration.ts",
+    "src/lib/editor/fold-motion.ts",
+    "src/lib/editor/highlighting.ts",
+    "src/lib/editor/match-outlines.ts",
+    "src/lib/repository/browser.ts",
+    "src/lib/repository/client.ts",
+    "src/lib/repository/worker.ts",
+    "src/lib/repository/types.ts",
+    "src/lib/repository/worker-runtime.ts"
+  ],
+  "extension": [
+    ".ts"
+  ],
+  "reporter": [
+    "html",
+    "json",
+    "json-summary",
+    "text-summary"
+  ],
+  "reports-dir": "tmp/test/coverage",
+  "temp-directory": "tmp/test/coverage/v8",
+  "statements": 100,
+  "branches": 100,
+  "functions": 100,
+  "lines": 100
+}

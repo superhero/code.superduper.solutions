@@ -1,0 +1,106 @@
+{
+  "repository": "Shopify/theme-liquid-docs",
+  "revision": "e729cbf736095ecca9ec84a2fff658e155c8e54f",
+  "files": [
+    {
+      "path": "LICENSE.md",
+      "bytes": 1060,
+      "sha256": "721a5c9087d660d12d45b0f3fb116b6e23899a7bd92792949118e0f47401e72e"
+    },
+    {
+      "path": "data/filters.json",
+      "bytes": 231911,
+      "sha256": "2bdd44cbd5805560ed7cc1da5f096e65a0f36792046714ad728e8cd43dab1559"
+    },
+    {
+      "path": "data/objects.json",
+      "bytes": 689420,
+      "sha256": "c92813ebddde1bebfe33f5d349597d8be57fdc3a107fe6dea6f64f13f799c11a"
+    },
+    {
+      "path": "data/tags.json",
+      "bytes": 74167,
+      "sha256": "2d9baeb7d5038719950bc47fe0c943f5f66067e38278fc5e49c1d1deeba27136"
+    },
+    {
+      "path": "data/shopify_system_translations.json",
+      "bytes": 307023,
+      "sha256": "38176132d6ae67b2ffe7c043c54320872109fec251be76bbfb8ed2b3558556da"
+    },
+    {
+      "path": "schemas/manifest_theme.json",
+      "bytes": 843,
+      "sha256": "2d00f4aeae62878f431c7954176f60830f3de8cc180baf27316259c221f02645"
+    },
+    {
+      "path": "schemas/manifest_theme_app_extension.json",
+      "bytes": 225,
+      "sha256": "cac2d518332be9b66cb4e7bf1028805d7795d17ca125398015f97becc8aaa73a"
+    },
+    {
+      "path": "schemas/theme/translations.json",
+      "bytes": 1598,
+      "sha256": "74aca2945ed34769c2bc6eea34806c72b75f99a3d7939f2db3a1c2eef4a958ab"
+    },
+    {
+      "path": "schemas/theme/theme_block.json",
+      "bytes": 4909,
+      "sha256": "ddddbf702d99194b690d0bc0f82f289dbf3905a3059f2ebf17b5b06b2990d48f"
+    },
+    {
+      "path": "schemas/theme/theme_settings.json",
+      "bytes": 3099,
+      "sha256": "ba0789f50be233b5fbe6953cc2bb6ab4fce864aaea7db921981630b70d126d7a"
+    },
+    {
+      "path": "schemas/theme/section.json",
+      "bytes": 9157,
+      "sha256": "de15cc452f3ebe02215c0e3f33296d2a58802163243d9f30c00a099507510f75"
+    },
+    {
+      "path": "schemas/theme/settings.json",
+      "bytes": 493,
+      "sha256": "8cab3c335dfbca6500d6e4ec2dce86accdcd162560402329c862117b88fb4cfd"
+    },
+    {
+      "path": "schemas/theme/setting.json",
+      "bytes": 67561,
+      "sha256": "1e138f77a17c99f38011b6a633d2b8a149e6cb50ea5fe9ed7eca7e24a2974d29"
+    },
+    {
+      "path": "schemas/theme/default_setting_values.json",
+      "bytes": 510,
+      "sha256": "5d9b1101343d472400ce4908badc7ea66f9f7e67842a7e20cd5c88454023149b"
+    },
+    {
+      "path": "schemas/theme/app_block_entry.json",
+      "bytes": 869,
+      "sha256": "4e03c7367cb1c5900bd8fa3f9fb3e20f32e14b4a0e60a4532ee758434d9f440a"
+    },
+    {
+      "path": "schemas/theme/theme_block_entry.json",
+      "bytes": 637,
+      "sha256": "9161897503f5cfa012f5b9a02d45a9d6fa60a8ae1ea8ee0dfb16899dd620f91c"
+    },
+    {
+      "path": "schemas/theme/targetted_block_entry.json",
+      "bytes": 627,
+      "sha256": "0d4839a92e3081390068b0976e6273bf46583537b6399e74dc148992e57b22f7"
+    },
+    {
+      "path": "schemas/theme/preset_blocks.json",
+      "bytes": 2629,
+      "sha256": "b46440433a1b414b9048535dd07cb9a5f7969b657b82e732edb043bce80563d1"
+    },
+    {
+      "path": "schemas/theme/preset.json",
+      "bytes": 2329,
+      "sha256": "559d3e430669063f6a293d080aa2cda3d9e501670764a516aa632241ed296d56"
+    },
+    {
+      "path": "schemas/theme/local_block_entry.json",
+      "bytes": 915,
+      "sha256": "f0d193fb29f31286ea8027fea69c79e46d08c5d14565c1803722618612b03a81"
+    }
+  ]
+}

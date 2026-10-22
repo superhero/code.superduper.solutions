@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="332" height="20" role="img" aria-label="@shopify/theme-language-server-browser: 2.23.1">
+  <!-- Copyright (C) 2026 Erik Landvall; SPDX-License-Identifier: AGPL-3.0-only. See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
+  <title>@shopify/theme-language-server-browser: 2.23.1</title>
+  <clipPath id="round"><rect width="332" height="20" rx="3"/></clipPath>
+  <g clip-path="url(#round)">
+    <rect width="278" height="20" fill="#555"/>
+    <rect x="278" width="54" height="20" fill="#007ec6"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans Mono,monospace" font-size="11">
+    <text x="139" y="14">@shopify/theme-language-server-browser</text>
+    <text x="305" y="14">2.23.1</text>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+/dist/
+/node_modules/
+/tmp/
+/output/
+/.playwright-cli/
+/.agents/
+.env
+.env.*
+!.env.example

@@ -1,0 +1,5491 @@
+[
+  {
+    "family": "ABeeZee",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/abeezee/OFL.txt"
+  },
+  {
+    "family": "AR One Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/aronesans/OFL.txt"
+  },
+  {
+    "family": "Aclonica",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/apache/aclonica/LICENSE.txt"
+  },
+  {
+    "family": "Actor",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/actor/OFL.txt"
+  },
+  {
+    "family": "Akatab",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/akatab/OFL.txt"
+  },
+  {
+    "family": "Akt",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/akt/OFL.txt"
+  },
+  {
+    "family": "Alan Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alansans/OFL.txt"
+  },
+  {
+    "family": "Alata",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alata/OFL.txt"
+  },
+  {
+    "family": "Alatsi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alatsi/OFL.txt"
+  },
+  {
+    "family": "Albert Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/albertsans/OFL.txt"
+  },
+  {
+    "family": "Aldrich",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/aldrich/OFL.txt"
+  },
+  {
+    "family": "Alef",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alef/OFL.txt"
+  },
+  {
+    "family": "Alegreya Sans SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alegreyasanssc/OFL.txt"
+  },
+  {
+    "family": "Alexandria",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/alexandria/OFL.txt"
+  },
+  {
+    "family": "Allerta",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/allerta/OFL.txt"
+  },
+  {
+    "family": "Allerta Stencil",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/allertastencil/OFL.txt"
+  },
+  {
+    "family": "Almarai",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/almarai/OFL.txt"
+  },
+  {
+    "family": "Amaranth",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/amaranth/OFL.txt"
+  },
+  {
+    "family": "Amarna",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/amarna/OFL.txt"
+  },
+  {
+    "family": "Amiko",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/amiko/OFL.txt"
+  },
+  {
+    "family": "Andika",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/andika/OFL.txt"
+  },
+  {
+    "family": "Anek Bangla",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekbangla/OFL.txt"
+  },
+  {
+    "family": "Anek Devanagari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekdevanagari/OFL.txt"
+  },
+  {
+    "family": "Anek Gujarati",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekgujarati/OFL.txt"
+  },
+  {
+    "family": "Anek Gurmukhi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekgurmukhi/OFL.txt"
+  },
+  {
+    "family": "Anek Kannada",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekkannada/OFL.txt"
+  },
+  {
+    "family": "Anek Latin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/aneklatin/OFL.txt"
+  },
+  {
+    "family": "Anek Malayalam",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekmalayalam/OFL.txt"
+  },
+  {
+    "family": "Anek Odia",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anekodia/OFL.txt"
+  },
+  {
+    "family": "Anek Tamil",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anektamil/OFL.txt"
+  },
+  {
+    "family": "Anek Telugu",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anektelugu/OFL.txt"
+  },
+  {
+    "family": "Anonymous Pro",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anonymouspro/OFL.txt"
+  },
+  {
+    "family": "Anta",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anta/OFL.txt"
+  },
+  {
+    "family": "Antic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/antic/OFL.txt"
+  },
+  {
+    "family": "Anuphan",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anuphan/OFL.txt"
+  },
+  {
+    "family": "Archivo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/archivo/OFL.txt"
+  },
+  {
+    "family": "Archivo Black",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/archivoblack/OFL.txt"
+  },
+  {
+    "family": "Arimo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/arimo/OFL.txt"
+  },
+  {
+    "family": "Armata",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/armata/OFL.txt"
+  },
+  {
+    "family": "Arsenal SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/arsenalsc/OFL.txt"
+  },
+  {
+    "family": "Asap",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/asap/OFL.txt"
+  },
+  {
+    "family": "Asap Sharp",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/asapsharp/OFL.txt"
+  },
+  {
+    "family": "Asimovian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/asimovian/OFL.txt"
+  },
+  {
+    "family": "Asta Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/astasans/OFL.txt"
+  },
+  {
+    "family": "Athiti",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/athiti/OFL.txt"
+  },
+  {
+    "family": "Atkinson Hyperlegible",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/atkinsonhyperlegible/OFL.txt"
+  },
+  {
+    "family": "Atkinson Hyperlegible Mono",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/atkinsonhyperlegiblemono/OFL.txt"
+  },
+  {
+    "family": "Atkinson Hyperlegible Next",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/atkinsonhyperlegiblenext/OFL.txt"
+  },
+  {
+    "family": "Azeret Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/azeretmono/OFL.txt"
+  },
+  {
+    "family": "B612",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/b612/OFL.txt"
+  },
+  {
+    "family": "B612 Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/b612mono/OFL.txt"
+  },
+  {
+    "family": "BBH Hegarty",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bbhhegarty/OFL.txt"
+  },
+  {
+    "family": "BIZ UDGothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bizudgothic/OFL.txt"
+  },
+  {
+    "family": "BIZ UDPGothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bizudpgothic/OFL.txt"
+  },
+  {
+    "family": "Bai Jamjuree",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/baijamjuree/OFL.txt"
+  },
+  {
+    "family": "Barlow",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/barlow/OFL.txt"
+  },
+  {
+    "family": "Basic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/basic/OFL.txt"
+  },
+  {
+    "family": "Be Vietnam Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bevietnampro/OFL.txt"
+  },
+  {
+    "family": "Belanosima",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/belanosima/OFL.txt"
+  },
+  {
+    "family": "Biryani",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/biryani/OFL.txt"
+  },
+  {
+    "family": "Black Han Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/blackhansans/OFL.txt"
+  },
+  {
+    "family": "Bpmf Huninn",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bpmfhuninn/OFL.txt"
+  },
+  {
+    "family": "Bpmf Zihi Kai Std",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bpmfzihikaistd/OFL.txt"
+  },
+  {
+    "family": "Braah One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/braahone/OFL.txt"
+  },
+  {
+    "family": "Bricolage Grotesque",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bricolagegrotesque/OFL.txt"
+  },
+  {
+    "family": "Bytesized",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bytesized/OFL.txt"
+  },
+  {
+    "family": "Cabin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cabin/OFL.txt"
+  },
+  {
+    "family": "Cagliostro",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cagliostro/OFL.txt"
+  },
+  {
+    "family": "Cairo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cairo/OFL.txt"
+  },
+  {
+    "family": "Cal Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/calsans/OFL.txt"
+  },
+  {
+    "family": "Cambay",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cambay/OFL.txt"
+  },
+  {
+    "family": "Candal",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/candal/OFL.txt"
+  },
+  {
+    "family": "Cantarell",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cantarell/OFL.txt"
+  },
+  {
+    "family": "Cantora One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cantoraone/OFL.txt"
+  },
+  {
+    "family": "Capriola",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/capriola/OFL.txt"
+  },
+  {
+    "family": "Carme",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/carme/OFL.txt"
+  },
+  {
+    "family": "Carrois Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/carroisgothic/OFL.txt"
+  },
+  {
+    "family": "Carrois Gothic SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/carroisgothicsc/OFL.txt"
+  },
+  {
+    "family": "Cascadia Code",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cascadiacode/OFL.txt"
+  },
+  {
+    "family": "Cascadia Mono",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cascadiamono/OFL.txt"
+  },
+  {
+    "family": "Chakra Petch",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chakrapetch/OFL.txt"
+  },
+  {
+    "family": "Changa",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/changa/OFL.txt"
+  },
+  {
+    "family": "Chiron GoRound TC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chirongoroundtc/OFL.txt"
+  },
+  {
+    "family": "Chiron Hei HK",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chironheihk/OFL.txt"
+  },
+  {
+    "family": "Chivo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chivo/OFL.txt"
+  },
+  {
+    "family": "Chivo Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chivomono/OFL.txt"
+  },
+  {
+    "family": "Chocolate Classical Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chocolateclassicalsans/OFL.txt"
+  },
+  {
+    "family": "Clarity City",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/claritycity/OFL.txt"
+  },
+  {
+    "family": "Comme",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/comme/OFL.txt"
+  },
+  {
+    "family": "Commissioner",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/commissioner/OFL.txt"
+  },
+  {
+    "family": "Convergence",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/convergence/OFL.txt"
+  },
+  {
+    "family": "Cossette Texte",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cossettetexte/OFL.txt"
+  },
+  {
+    "family": "Courier Prime",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/courierprime/OFL.txt"
+  },
+  {
+    "family": "Cousine",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cousine/OFL.txt"
+  },
+  {
+    "family": "Cutive Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cutivemono/OFL.txt"
+  },
+  {
+    "family": "DM Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/dmmono/OFL.txt"
+  },
+  {
+    "family": "DM Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/dmsans/OFL.txt"
+  },
+  {
+    "family": "Datatype",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/datatype/OFL.txt"
+  },
+  {
+    "family": "Days One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/daysone/OFL.txt"
+  },
+  {
+    "family": "Denk One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/denkone/OFL.txt"
+  },
+  {
+    "family": "Didact Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/didactgothic/OFL.txt"
+  },
+  {
+    "family": "Doppio One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/doppioone/OFL.txt"
+  },
+  {
+    "family": "DotGothic16",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/dotgothic16/OFL.txt"
+  },
+  {
+    "family": "Doto",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/doto/OFL.txt"
+  },
+  {
+    "family": "Duru Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/durusans/OFL.txt"
+  },
+  {
+    "family": "El Messiri",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/elmessiri/OFL.txt"
+  },
+  {
+    "family": "Electrolize",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/electrolize/OFL.txt"
+  },
+  {
+    "family": "Elms Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/elmssans/OFL.txt"
+  },
+  {
+    "family": "Encode Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/encodesans/OFL.txt"
+  },
+  {
+    "family": "Encode Sans SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/encodesanssc/OFL.txt"
+  },
+  {
+    "family": "Epilogue",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/epilogue/OFL.txt"
+  },
+  {
+    "family": "Estedad",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/estedad/OFL.txt"
+  },
+  {
+    "family": "Exo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/exo/OFL.txt"
+  },
+  {
+    "family": "Exo 2",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/exo2/OFL.txt"
+  },
+  {
+    "family": "Faculty Glyphic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/facultyglyphic/OFL.txt"
+  },
+  {
+    "family": "Fahkwang",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/fahkwang/OFL.txt"
+  },
+  {
+    "family": "Familjen Grotesk",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/familjengrotesk/OFL.txt"
+  },
+  {
+    "family": "Farro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/farro/OFL.txt"
+  },
+  {
+    "family": "Federo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/federo/OFL.txt"
+  },
+  {
+    "family": "Figtree",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/figtree/OFL.txt"
+  },
+  {
+    "family": "Finlandica Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/finlandicatext/OFL.txt"
+  },
+  {
+    "family": "Fira Code",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/firacode/OFL.txt"
+  },
+  {
+    "family": "Fira Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/firamono/OFL.txt"
+  },
+  {
+    "family": "Fira Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/firasans/OFL.txt"
+  },
+  {
+    "family": "Fragment Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/fragmentmono/OFL.txt"
+  },
+  {
+    "family": "Fredoka",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/fredoka/OFL.txt"
+  },
+  {
+    "family": "Funnel Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/funnelsans/OFL.txt"
+  },
+  {
+    "family": "Fustat",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/fustat/OFL.txt"
+  },
+  {
+    "family": "Gantari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gantari/OFL.txt"
+  },
+  {
+    "family": "Gasoek One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gasoekone/OFL.txt"
+  },
+  {
+    "family": "Gayathri",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gayathri/OFL.txt"
+  },
+  {
+    "family": "Geist",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geist/OFL.txt"
+  },
+  {
+    "family": "Geist Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geistmono/OFL.txt"
+  },
+  {
+    "family": "Geologica",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geologica/OFL.txt"
+  },
+  {
+    "family": "Geom",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geom/OFL.txt"
+  },
+  {
+    "family": "Geomini",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geomini/OFL.txt"
+  },
+  {
+    "family": "Georama",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/georama/OFL.txt"
+  },
+  {
+    "family": "Gidole",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gidole/OFL.txt"
+  },
+  {
+    "family": "Golos Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/golostext/OFL.txt"
+  },
+  {
+    "family": "Google Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/googlesans/OFL.txt"
+  },
+  {
+    "family": "Google Sans Code",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/googlesanscode/OFL.txt"
+  },
+  {
+    "family": "Google Sans Flex",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/googlesansflex/OFL.txt"
+  },
+  {
+    "family": "Gothic A1",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gothica1/OFL.txt"
+  },
+  {
+    "family": "Gotu",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gotu/OFL.txt"
+  },
+  {
+    "family": "Gowun Dodum",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gowundodum/OFL.txt"
+  },
+  {
+    "family": "Gruppo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gruppo/OFL.txt"
+  },
+  {
+    "family": "Gudea",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/gudea/OFL.txt"
+  },
+  {
+    "family": "Hammersmith One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hammersmithone/OFL.txt"
+  },
+  {
+    "family": "Hanken Grotesk",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hankengrotesk/OFL.txt"
+  },
+  {
+    "family": "Hedvig Letters Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hedvigletterssans/OFL.txt"
+  },
+  {
+    "family": "Heebo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/heebo/OFL.txt"
+  },
+  {
+    "family": "Hibur Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hiburmono/OFL.txt"
+  },
+  {
+    "family": "Hind",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hind/OFL.txt"
+  },
+  {
+    "family": "Hind Guntur",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hindguntur/OFL.txt"
+  },
+  {
+    "family": "Hind Madurai",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hindmadurai/OFL.txt"
+  },
+  {
+    "family": "Hind Mysuru",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hindmysuru/OFL.txt"
+  },
+  {
+    "family": "Hind Siliguri",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hindsiliguri/OFL.txt"
+  },
+  {
+    "family": "Hind Vadodara",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hindvadodara/OFL.txt"
+  },
+  {
+    "family": "Host Grotesk",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hostgrotesk/OFL.txt"
+  },
+  {
+    "family": "Hubot Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hubotsans/OFL.txt"
+  },
+  {
+    "family": "Huninn",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/huninn/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexmono/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsans/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans Arabic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsansarabic/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans Devanagari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsansdevanagari/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans Hebrew",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsanshebrew/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans JP",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsansjp/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans KR",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsanskr/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans Thai",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsansthai/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Sans Thai Looped",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexsansthailooped/OFL.txt"
+  },
+  {
+    "family": "Imprima",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/imprima/OFL.txt"
+  },
+  {
+    "family": "Inclusive Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inclusivesans/OFL.txt"
+  },
+  {
+    "family": "Inconsolata",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inconsolata/OFL.txt"
+  },
+  {
+    "family": "Inder",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inder/OFL.txt"
+  },
+  {
+    "family": "Inria Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inriasans/OFL.txt"
+  },
+  {
+    "family": "Instrument Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/instrumentsans/OFL.txt"
+  },
+  {
+    "family": "Intel One Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/intelonemono/OFL.txt"
+  },
+  {
+    "family": "Inter",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inter/OFL.txt"
+  },
+  {
+    "family": "Inter Tight",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/intertight/OFL.txt"
+  },
+  {
+    "family": "Iosevka Charon",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/iosevkacharon/OFL.txt"
+  },
+  {
+    "family": "Iosevka Charon Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/iosevkacharonmono/OFL.txt"
+  },
+  {
+    "family": "Istok Web",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/istokweb/OFL.txt"
+  },
+  {
+    "family": "Italiana",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/italiana/OFL.txt"
+  },
+  {
+    "family": "JetBrains Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/jetbrainsmono/OFL.txt"
+  },
+  {
+    "family": "Josefin Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/josefinsans/OFL.txt"
+  },
+  {
+    "family": "Jost",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/jost/OFL.txt"
+  },
+  {
+    "family": "Jua",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/jua/OFL.txt"
+  },
+  {
+    "family": "Julius Sans One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/juliussansone/OFL.txt"
+  },
+  {
+    "family": "Jura",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/jura/OFL.txt"
+  },
+  {
+    "family": "K2D",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/k2d/OFL.txt"
+  },
+  {
+    "family": "Kanchenjunga",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kanchenjunga/OFL.txt"
+  },
+  {
+    "family": "Kanit",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kanit/OFL.txt"
+  },
+  {
+    "family": "Kantumruy Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kantumruypro/OFL.txt"
+  },
+  {
+    "family": "Karla",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/karla/OFL.txt"
+  },
+  {
+    "family": "Karla Tamil Inclined",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/karlatamilinclined/OFL.txt"
+  },
+  {
+    "family": "Karla Tamil Upright",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/karlatamilupright/OFL.txt"
+  },
+  {
+    "family": "Kdam Thmor Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kdamthmorpro/OFL.txt"
+  },
+  {
+    "family": "Kedebideri",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kedebideri/OFL.txt"
+  },
+  {
+    "family": "Khmer",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/khmer/OFL.txt"
+  },
+  {
+    "family": "Khula",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/khula/OFL.txt"
+  },
+  {
+    "family": "KoHo",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/koho/OFL.txt"
+  },
+  {
+    "family": "Kodchasan",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kodchasan/OFL.txt"
+  },
+  {
+    "family": "Kode Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kodemono/OFL.txt"
+  },
+  {
+    "family": "Kosugi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/apache/kosugi/LICENSE.txt"
+  },
+  {
+    "family": "Kosugi Maru",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/apache/kosugimaru/LICENSE.txt"
+  },
+  {
+    "family": "Kripa",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kripa/OFL.txt"
+  },
+  {
+    "family": "Krub",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/krub/OFL.txt"
+  },
+  {
+    "family": "Kufam",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kufam/OFL.txt"
+  },
+  {
+    "family": "Kulim Park",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kulimpark/OFL.txt"
+  },
+  {
+    "family": "Kumbh Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kumbhsans/OFL.txt"
+  },
+  {
+    "family": "LINE Seed JP",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lineseedjp/OFL.txt"
+  },
+  {
+    "family": "LXGW Marker Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lxgwmarkergothic/OFL.txt"
+  },
+  {
+    "family": "LXGW WenKai Mono TC",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lxgwwenkaimonotc/OFL.txt"
+  },
+  {
+    "family": "Lalezar",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lalezar/OFL.txt"
+  },
+  {
+    "family": "Lato",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lato/OFL.txt"
+  },
+  {
+    "family": "Lekton",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lekton/OFL.txt"
+  },
+  {
+    "family": "Lexend",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lexend/OFL.txt"
+  },
+  {
+    "family": "Lexend Deca",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lexenddeca/OFL.txt"
+  },
+  {
+    "family": "Lexend Exa",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lexendexa/OFL.txt"
+  },
+  {
+    "family": "Libertinus Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/libertinusmono/OFL.txt"
+  },
+  {
+    "family": "Libertinus Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/libertinussans/OFL.txt"
+  },
+  {
+    "family": "Libre Franklin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/librefranklin/OFL.txt"
+  },
+  {
+    "family": "Lilex",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lilex/OFL.txt"
+  },
+  {
+    "family": "Liter",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/liter/OFL.txt"
+  },
+  {
+    "family": "Livvic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/livvic/OFL.txt"
+  },
+  {
+    "family": "Lunasima",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lunasima/OFL.txt"
+  },
+  {
+    "family": "M PLUS 1",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplus1/OFL.txt"
+  },
+  {
+    "family": "M PLUS 1 Code",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplus1code/OFL.txt"
+  },
+  {
+    "family": "M PLUS 1p",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplus1p/OFL.txt"
+  },
+  {
+    "family": "M PLUS 2",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplus2/OFL.txt"
+  },
+  {
+    "family": "M PLUS Code Latin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mpluscodelatin/OFL.txt"
+  },
+  {
+    "family": "M PLUS Rounded 1c",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/roundedmplus1c/OFL.txt"
+  },
+  {
+    "family": "M PLUS U",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplusu/OFL.txt"
+  },
+  {
+    "family": "Mada",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mada/OFL.txt"
+  },
+  {
+    "family": "Madimi One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/madimione/OFL.txt"
+  },
+  {
+    "family": "Mako",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mako/OFL.txt"
+  },
+  {
+    "family": "Mandali",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mandali/OFL.txt"
+  },
+  {
+    "family": "Manjari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/manjari/OFL.txt"
+  },
+  {
+    "family": "Manrope",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/manrope/OFL.txt"
+  },
+  {
+    "family": "Marmelad",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/marmelad/OFL.txt"
+  },
+  {
+    "family": "Martel Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/martelsans/OFL.txt"
+  },
+  {
+    "family": "Matangi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/matangi/OFL.txt"
+  },
+  {
+    "family": "Matemasie",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/matemasie/OFL.txt"
+  },
+  {
+    "family": "Maven Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mavenpro/OFL.txt"
+  },
+  {
+    "family": "Meera Inimai",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/meerainimai/OFL.txt"
+  },
+  {
+    "family": "Menbere",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/menbere/OFL.txt"
+  },
+  {
+    "family": "Merriweather Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/merriweathersans/OFL.txt"
+  },
+  {
+    "family": "Metrophobic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/metrophobic/OFL.txt"
+  },
+  {
+    "family": "Mina",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mina/OFL.txt"
+  },
+  {
+    "family": "Mingzat",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mingzat/OFL.txt"
+  },
+  {
+    "family": "Miranda Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mirandasans/OFL.txt"
+  },
+  {
+    "family": "Miriam Libre",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/miriamlibre/OFL.txt"
+  },
+  {
+    "family": "Mitr",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mitr/OFL.txt"
+  },
+  {
+    "family": "Mochiy Pop One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mochiypopone/OFL.txt"
+  },
+  {
+    "family": "Mochiy Pop P One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mochiypoppone/OFL.txt"
+  },
+  {
+    "family": "Moderustic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/moderustic/OFL.txt"
+  },
+  {
+    "family": "Molengo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/molengo/OFL.txt"
+  },
+  {
+    "family": "Momo Trust Display",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/momotrustdisplay/OFL.txt"
+  },
+  {
+    "family": "Momo Trust Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/momotrustsans/OFL.txt"
+  },
+  {
+    "family": "Mona Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/monasans/OFL.txt"
+  },
+  {
+    "family": "Monda",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/monda/OFL.txt"
+  },
+  {
+    "family": "Montserrat",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/montserrat/OFL.txt"
+  },
+  {
+    "family": "Montserrat Alternates",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/montserratalternates/OFL.txt"
+  },
+  {
+    "family": "Montserrat Underline",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/montserratunderline/OFL.txt"
+  },
+  {
+    "family": "Mooli",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mooli/OFL.txt"
+  },
+  {
+    "family": "Mozilla Headline",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mozillaheadline/OFL.txt"
+  },
+  {
+    "family": "Mozilla Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mozillatext/OFL.txt"
+  },
+  {
+    "family": "Mukta",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mukta/OFL.txt"
+  },
+  {
+    "family": "Mukta Vaani",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/muktavaani/OFL.txt"
+  },
+  {
+    "family": "Mulish",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mulish/OFL.txt"
+  },
+  {
+    "family": "Murecho",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/murecho/OFL.txt"
+  },
+  {
+    "family": "Nanum Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nanumgothic/OFL.txt"
+  },
+  {
+    "family": "Narnoor",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/narnoor/OFL.txt"
+  },
+  {
+    "family": "Nata Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/natasans/OFL.txt"
+  },
+  {
+    "family": "National Park",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nationalpark/OFL.txt"
+  },
+  {
+    "family": "Niramit",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/niramit/OFL.txt"
+  },
+  {
+    "family": "Nobile",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nobile/OFL.txt"
+  },
+  {
+    "family": "Nokora",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nokora/OFL.txt"
+  },
+  {
+    "family": "Noto Emoji",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notoemoji/OFL.txt"
+  },
+  {
+    "family": "Noto Kufi Arabic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notokufiarabic/OFL.txt"
+  },
+  {
+    "family": "Noto Music",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notomusic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosans/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Adlam",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansadlam/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Adlam Unjoined",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansadlamunjoined/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Anatolian Hieroglyphs",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansanatolianhieroglyphs/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Arabic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansarabic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Armenian",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansarmenian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Avestan",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansavestan/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Balinese",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbalinese/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Bamum",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbamum/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Bassa Vah",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbassavah/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Batak",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbatak/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Bengali",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbengali/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Bhaiksuki",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbhaiksuki/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Brahmi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbrahmi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Buginese",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbuginese/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Buhid",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansbuhid/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Canadian Aboriginal",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscanadianaboriginal/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Carian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscarian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Caucasian Albanian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscaucasianalbanian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Chakma",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanschakma/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Cham",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscham/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Cherokee",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscherokee/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Chorasmian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanschorasmian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Coptic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscoptic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Cuneiform",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscuneiform/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Cypriot",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscypriot/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Cypro Minoan",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanscyprominoan/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Deseret",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansdeseret/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Devanagari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansdevanagari/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Display",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansdisplay/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Duployan",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansduployan/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Egyptian Hieroglyphs",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansegyptianhieroglyphs/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Elbasan",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanselbasan/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Elymaic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanselymaic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Ethiopic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansethiopic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Georgian",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgeorgian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Glagolitic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansglagolitic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgothic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Grantha",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgrantha/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Gujarati",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgujarati/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Gunjala Gondi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgunjalagondi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Gurmukhi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansgurmukhi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans HK",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanshk/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Hanifi Rohingya",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanshanifirohingya/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Hanunoo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanshanunoo/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Hatran",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanshatran/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Hebrew",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanshebrew/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Imperial Aramaic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansimperialaramaic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Indic Siyaq Numbers",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansindicsiyaqnumbers/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Inscriptional Pahlavi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansinscriptionalpahlavi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Inscriptional Parthian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansinscriptionalparthian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans JP",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansjp/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Javanese",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansjavanese/OFL.txt"
+  },
+  {
+    "family": "Noto Sans KR",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskr/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Kaithi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskaithi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Kannada",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskannada/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Kawi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskawi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Kayah Li",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskayahli/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Kharoshthi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskharoshthi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Khmer",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskhmer/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Khojki",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskhojki/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Khudawadi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanskhudawadi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lao",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslao/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lao Looped",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslaolooped/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lepcha",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslepcha/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Limbu",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslimbu/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Linear A",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslineara/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Linear B",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslinearb/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lisu",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslisu/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lycian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslycian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Lydian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanslydian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mahajani",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmahajani/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Malayalam",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmalayalam/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mandaic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmandaic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Manichaean",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmanichaean/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Marchen",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmarchen/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Masaram Gondi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmasaramgondi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Math",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmath/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mayan Numerals",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmayannumerals/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Medefaidrin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmedefaidrin/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Meetei Mayek",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmeeteimayek/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mende Kikakui",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmendekikakui/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Meroitic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmeroitic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Miao",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmiao/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Modi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmodi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mongolian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmongolian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mono",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmono/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Mro",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmro/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Multani",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmultani/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Myanmar",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansmyanmar/OFL.txt"
+  },
+  {
+    "family": "Noto Sans NKo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnko/OFL.txt"
+  },
+  {
+    "family": "Noto Sans NKo Unjoined",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnkounjoined/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Nabataean",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnabataean/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Nag Mundari",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnagmundari/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Nandinagari",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnandinagari/OFL.txt"
+  },
+  {
+    "family": "Noto Sans New Tai Lue",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnewtailue/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Newa",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnewa/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Nushu",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansnushu/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Ogham",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansogham/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Ol Chiki",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansolchiki/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Hungarian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldhungarian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Italic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansolditalic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old North Arabian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldnortharabian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Permic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldpermic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Persian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldpersian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Sogdian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldsogdian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old South Arabian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldsoutharabian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Old Turkic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoldturkic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Oriya",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansoriya/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Osage",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansosage/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Osmanya",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansosmanya/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Pahawh Hmong",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanspahawhhmong/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Palmyrene",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanspalmyrene/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Pau Cin Hau",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanspaucinhau/OFL.txt"
+  },
+  {
+    "family": "Noto Sans PhagsPa",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansphagspa/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Phoenician",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansphoenician/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Psalter Pahlavi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanspsalterpahlavi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Rejang",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansrejang/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Runic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansrunic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssc/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Samaritan",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssamaritan/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Saurashtra",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssaurashtra/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sharada",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssharada/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Shavian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansshavian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Siddham",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssiddham/OFL.txt"
+  },
+  {
+    "family": "Noto Sans SignWriting",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssignwriting/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sinhala",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssinhala/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sogdian",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssogdian/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sora Sompeng",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssorasompeng/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Soyombo",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssoyombo/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sundanese",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssundanese/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Sunuwar",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssunuwar/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Syloti Nagri",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssylotinagri/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Symbols",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssymbols/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Symbols 2",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssymbols2/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Syriac",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssyriac/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Syriac Eastern",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssyriaceastern/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Syriac Western",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssyriacwestern/OFL.txt"
+  },
+  {
+    "family": "Noto Sans TC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstc/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tagalog",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstagalog/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tagbanwa",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstagbanwa/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tai Le",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstaile/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tai Tham",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstaitham/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tai Viet",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstaiviet/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Takri",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstakri/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tamil",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstamil/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tamil Supplement",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstamilsupplement/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tangsa",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstangsa/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Telugu",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstelugu/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Thaana",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansthaana/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Thai",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansthai/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Thai Looped",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansthailooped/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tifinagh",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstifinagh/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Tirhuta",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanstirhuta/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Ugaritic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansugaritic/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Vai",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansvai/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Vithkuqi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansvithkuqi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Wancho",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanswancho/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Warang Citi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanswarangciti/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Yi",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosansyi/OFL.txt"
+  },
+  {
+    "family": "Noto Sans Zanabazar Square",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanszanabazarsquare/OFL.txt"
+  },
+  {
+    "family": "Noto Traditional Nushu",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nototraditionalnushu/OFL.txt"
+  },
+  {
+    "family": "Nova Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/novamono/OFL.txt"
+  },
+  {
+    "family": "Numans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/numans/OFL.txt"
+  },
+  {
+    "family": "Nunito",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/lang/data/test/nunito/OFL.txt"
+  },
+  {
+    "family": "Nunito Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nunitosans/OFL.txt"
+  },
+  {
+    "family": "Nuosu SIL",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/nuosusil/OFL.txt"
+  },
+  {
+    "family": "Ojuju",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ojuju/OFL.txt"
+  },
+  {
+    "family": "Onest",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/onest/OFL.txt"
+  },
+  {
+    "family": "Open Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/opensans/OFL.txt"
+  },
+  {
+    "family": "Orbit",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/orbit/OFL.txt"
+  },
+  {
+    "family": "Orbitron",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/orbitron/OFL.txt"
+  },
+  {
+    "family": "Orienta",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/orienta/OFL.txt"
+  },
+  {
+    "family": "Outfit",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/outfit/OFL.txt"
+  },
+  {
+    "family": "Overpass",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/overpass/OFL.txt"
+  },
+  {
+    "family": "Overpass Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/overpassmono/OFL.txt"
+  },
+  {
+    "family": "Oxygen",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/oxygen/OFL.txt"
+  },
+  {
+    "family": "Oxygen Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/oxygenmono/OFL.txt"
+  },
+  {
+    "family": "PT Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ptmono/OFL.txt"
+  },
+  {
+    "family": "PT Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ptsans/OFL.txt"
+  },
+  {
+    "family": "PT Sans Caption",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ptsanscaption/OFL.txt"
+  },
+  {
+    "family": "Palanquin",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/palanquin/OFL.txt"
+  },
+  {
+    "family": "Palanquin Dark",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/palanquindark/OFL.txt"
+  },
+  {
+    "family": "Parkinsans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/parkinsans/OFL.txt"
+  },
+  {
+    "family": "Pathway Extreme",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/pathwayextreme/OFL.txt"
+  },
+  {
+    "family": "Paytone One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/paytoneone/OFL.txt"
+  },
+  {
+    "family": "Phetsarath",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/phetsarath/OFL.txt"
+  },
+  {
+    "family": "Philosopher",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/philosopher/OFL.txt"
+  },
+  {
+    "family": "Play",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/play/OFL.txt"
+  },
+  {
+    "family": "Pliant",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/pliant/OFL.txt"
+  },
+  {
+    "family": "Plus Jakarta Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/plusjakartasans/OFL.txt"
+  },
+  {
+    "family": "Pontano Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/pontanosans/OFL.txt"
+  },
+  {
+    "family": "Poppins",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/poppins/OFL.txt"
+  },
+  {
+    "family": "Preahvihear",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/preahvihear/OFL.txt"
+  },
+  {
+    "family": "Prompt",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/prompt/OFL.txt"
+  },
+  {
+    "family": "Proza Libre",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/prozalibre/OFL.txt"
+  },
+  {
+    "family": "Public Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/publicsans/OFL.txt"
+  },
+  {
+    "family": "Quantico",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/quantico/OFL.txt"
+  },
+  {
+    "family": "Quattrocento Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/quattrocentosans/OFL.txt"
+  },
+  {
+    "family": "Questrial",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/questrial/OFL.txt"
+  },
+  {
+    "family": "Quicksand",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/quicksand/OFL.txt"
+  },
+  {
+    "family": "REM",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/rem/OFL.txt"
+  },
+  {
+    "family": "Radio Canada",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/radiocanada/OFL.txt"
+  },
+  {
+    "family": "Radio Canada Big",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/radiocanadabig/OFL.txt"
+  },
+  {
+    "family": "Raleway",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/raleway/OFL.txt"
+  },
+  {
+    "family": "Ramabhadra",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ramabhadra/OFL.txt"
+  },
+  {
+    "family": "Readex Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/readexpro/OFL.txt"
+  },
+  {
+    "family": "Recursive",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/recursive/OFL.txt"
+  },
+  {
+    "family": "Red Hat Display",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redhatdisplay/OFL.txt"
+  },
+  {
+    "family": "Red Hat Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redhatmono/OFL.txt"
+  },
+  {
+    "family": "Red Hat Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redhattext/OFL.txt"
+  },
+  {
+    "family": "Reddit Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redditmono/OFL.txt"
+  },
+  {
+    "family": "Reddit Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redditsans/OFL.txt"
+  },
+  {
+    "family": "Reem Kufi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/reemkufi/OFL.txt"
+  },
+  {
+    "family": "Rethink Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/rethinksans/OFL.txt"
+  },
+  {
+    "family": "Roboto",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/roboto/OFL.txt"
+  },
+  {
+    "family": "Roboto Flex",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/robotoflex/OFL.txt"
+  },
+  {
+    "family": "Roboto Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/robotomono/OFL.txt"
+  },
+  {
+    "family": "RocknRoll One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/rocknrollone/OFL.txt"
+  },
+  {
+    "family": "Rosario",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/rosario/OFL.txt"
+  },
+  {
+    "family": "Rubik",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/rubik/OFL.txt"
+  },
+  {
+    "family": "Ruda",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ruda/OFL.txt"
+  },
+  {
+    "family": "Ruluko",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ruluko/OFL.txt"
+  },
+  {
+    "family": "Russo One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/russoone/OFL.txt"
+  },
+  {
+    "family": "SN Pro",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/snpro/OFL.txt"
+  },
+  {
+    "family": "SUSE",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/suse/OFL.txt"
+  },
+  {
+    "family": "SUSE Mono",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/susemono/OFL.txt"
+  },
+  {
+    "family": "Saira",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/saira/OFL.txt"
+  },
+  {
+    "family": "Sansation",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sansation/OFL.txt"
+  },
+  {
+    "family": "Sarabun",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sarabun/OFL.txt"
+  },
+  {
+    "family": "Sarala",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sarala/OFL.txt"
+  },
+  {
+    "family": "Sarpanch",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sarpanch/OFL.txt"
+  },
+  {
+    "family": "Savate",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/savate/OFL.txt"
+  },
+  {
+    "family": "Sawarabi Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sawarabigothic/OFL.txt"
+  },
+  {
+    "family": "Scada",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/scada/OFL.txt"
+  },
+  {
+    "family": "Schibsted Grotesk",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/schibstedgrotesk/OFL.txt"
+  },
+  {
+    "family": "Science Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sciencegothic/OFL.txt"
+  },
+  {
+    "family": "Scoutie Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/scoutiesans/OFL.txt"
+  },
+  {
+    "family": "Secular One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/secularone/OFL.txt"
+  },
+  {
+    "family": "Sen",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sen/OFL.txt"
+  },
+  {
+    "family": "Shanti",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/shanti/OFL.txt"
+  },
+  {
+    "family": "Share Tech Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sharetechmono/OFL.txt"
+  },
+  {
+    "family": "Shippori Antique",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/shipporiantique/OFL.txt"
+  },
+  {
+    "family": "Shippori Antique B1",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/shipporiantiqueb1/OFL.txt"
+  },
+  {
+    "family": "Siemreap",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/siemreap/OFL.txt"
+  },
+  {
+    "family": "Signika",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/signika/OFL.txt"
+  },
+  {
+    "family": "Signika Negative",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/signikanegative/OFL.txt"
+  },
+  {
+    "family": "Sintony",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sintony/OFL.txt"
+  },
+  {
+    "family": "Snippet",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/snippet/OFL.txt"
+  },
+  {
+    "family": "Sofia Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sofiasans/OFL.txt"
+  },
+  {
+    "family": "Sometype Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sometypemono/OFL.txt"
+  },
+  {
+    "family": "Sono",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sono/OFL.txt"
+  },
+  {
+    "family": "Sora",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sora/OFL.txt"
+  },
+  {
+    "family": "Sour Gummy",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sourgummy/OFL.txt"
+  },
+  {
+    "family": "Source Code Pro",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sourcecodepro/OFL.txt"
+  },
+  {
+    "family": "Source Sans 3",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sourcesans3/OFL.txt"
+  },
+  {
+    "family": "Space Grotesk",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/spacegrotesk/OFL.txt"
+  },
+  {
+    "family": "Space Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/spacemono/OFL.txt"
+  },
+  {
+    "family": "Special Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/specialgothic/OFL.txt"
+  },
+  {
+    "family": "Spinnaker",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/spinnaker/OFL.txt"
+  },
+  {
+    "family": "Spline Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/splinesans/OFL.txt"
+  },
+  {
+    "family": "Spline Sans Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/splinesansmono/OFL.txt"
+  },
+  {
+    "family": "Stack Sans Headline",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/stacksansheadline/OFL.txt"
+  },
+  {
+    "family": "Stack Sans Notch",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/stacksansnotch/OFL.txt"
+  },
+  {
+    "family": "Stack Sans Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/stacksanstext/OFL.txt"
+  },
+  {
+    "family": "Stick",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/stick/OFL.txt"
+  },
+  {
+    "family": "Strichpunkt Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/strichpunktsans/OFL.txt"
+  },
+  {
+    "family": "Sulphur Point",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sulphurpoint/OFL.txt"
+  },
+  {
+    "family": "Sunflower",
+    "category": "Sans Serif",
+    "styles": [
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sunflower/OFL.txt"
+  },
+  {
+    "family": "Syne",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/syne/OFL.txt"
+  },
+  {
+    "family": "Syne Mono",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/synemono/OFL.txt"
+  },
+  {
+    "family": "TASA Explorer",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tasaexplorer/OFL.txt"
+  },
+  {
+    "family": "TASA Orbiter",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tasaorbiter/OFL.txt"
+  },
+  {
+    "family": "Tauri",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tauri/OFL.txt"
+  },
+  {
+    "family": "Teachers",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/teachers/OFL.txt"
+  },
+  {
+    "family": "Telex",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/telex/OFL.txt"
+  },
+  {
+    "family": "Tenor Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tenorsans/OFL.txt"
+  },
+  {
+    "family": "Text Me One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/textmeone/OFL.txt"
+  },
+  {
+    "family": "TikTok Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tiktoksans/OFL.txt"
+  },
+  {
+    "family": "Tiny5",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tiny5/OFL.txt"
+  },
+  {
+    "family": "Titillium Web",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/titilliumweb/OFL.txt"
+  },
+  {
+    "family": "Tomorrow",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tomorrow/OFL.txt"
+  },
+  {
+    "family": "Trispace",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/trispace/OFL.txt"
+  },
+  {
+    "family": "Tsukimi Rounded",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tsukimirounded/OFL.txt"
+  },
+  {
+    "family": "Tuffy",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/tuffy/OFL.txt"
+  },
+  {
+    "family": "Ubuntu",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntu/LICENCE.txt"
+  },
+  {
+    "family": "Ubuntu Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntumono/LICENCE.txt"
+  },
+  {
+    "family": "Ubuntu Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntusans/LICENCE.txt"
+  },
+  {
+    "family": "Ubuntu Sans Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntusansmono/LICENCE.txt"
+  },
+  {
+    "family": "Urbanist",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/urbanist/OFL.txt"
+  },
+  {
+    "family": "Valley Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/valleysans/OFL.txt"
+  },
+  {
+    "family": "Varela",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/varela/OFL.txt"
+  },
+  {
+    "family": "Varela Round",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/varelaround/OFL.txt"
+  },
+  {
+    "family": "Vazirmatn",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/vazirmatn/OFL.txt"
+  },
+  {
+    "family": "Vend Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/vendsans/OFL.txt"
+  },
+  {
+    "family": "Victor Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/victormono/OFL.txt"
+  },
+  {
+    "family": "Viga",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/viga/OFL.txt"
+  },
+  {
+    "family": "Voces",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/voces/OFL.txt"
+  },
+  {
+    "family": "Wendy One",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/wendyone/OFL.txt"
+  },
+  {
+    "family": "Wix Madefor Display",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/wixmadefordisplay/OFL.txt"
+  },
+  {
+    "family": "Wix Madefor Text",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/wixmadefortext/OFL.txt"
+  },
+  {
+    "family": "Work Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/worksans/OFL.txt"
+  },
+  {
+    "family": "Workbench",
+    "category": "Monospace",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/workbench/OFL.txt"
+  },
+  {
+    "family": "Xanh Mono",
+    "category": "Monospace",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/xanhmono/OFL.txt"
+  },
+  {
+    "family": "Yaldevi",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/yaldevi/OFL.txt"
+  },
+  {
+    "family": "Ysabeau",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ysabeau/OFL.txt"
+  },
+  {
+    "family": "Ysabeau Infant",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ysabeauinfant/OFL.txt"
+  },
+  {
+    "family": "Ysabeau Office",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ysabeauoffice/OFL.txt"
+  },
+  {
+    "family": "Ysabeau SC",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ysabeausc/OFL.txt"
+  },
+  {
+    "family": "Yusei Magic",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/yuseimagic/OFL.txt"
+  },
+  {
+    "family": "ZCOOL KuaiLe",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zcoolkuaile/OFL.txt"
+  },
+  {
+    "family": "ZCOOL XiaoWei",
+    "category": "Sans Serif",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zcoolxiaowei/OFL.txt"
+  },
+  {
+    "family": "Zain",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zain/OFL.txt"
+  },
+  {
+    "family": "Zalando Sans",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zalandosans/OFL.txt"
+  },
+  {
+    "family": "Zalando Sans SemiExpanded",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zalandosanssemiexpanded/OFL.txt"
+  },
+  {
+    "family": "Zen Kaku Gothic Antique",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zenkakugothicantique/OFL.txt"
+  },
+  {
+    "family": "Zen Kaku Gothic New",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zenkakugothicnew/OFL.txt"
+  },
+  {
+    "family": "Zen Maru Gothic",
+    "category": "Sans Serif",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/zenmarugothic/OFL.txt"
+  }
+]

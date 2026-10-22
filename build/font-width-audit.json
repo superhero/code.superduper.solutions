@@ -1,0 +1,7620 @@
+{
+  "referenceFamily": "Montserrat",
+  "fontSize": 20,
+  "samples": [
+    "Repository Settings History Files Folders Branch Import Format Editor",
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
+  ],
+  "reference": [
+    696.6941528320312,
+    296.746337890625,
+    491.8243408203125
+  ],
+  "cutoff": 0.82,
+  "results": [
+    {
+      "family": "ABeeZee",
+      "ratio": 0.9248,
+      "ratios": [
+        0.9386,
+        0.9202,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Abel",
+      "ratio": 0.7512,
+      "ratios": [
+        0.764,
+        0.7378,
+        0.7518
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Aclonica",
+      "ratio": 1.0771,
+      "ratios": [
+        1.0954,
+        1.0746,
+        1.0613
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Acme",
+      "ratio": 0.8027,
+      "ratios": [
+        0.7888,
+        0.7977,
+        0.8215
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Actor",
+      "ratio": 0.8487,
+      "ratios": [
+        0.8498,
+        0.8409,
+        0.8553
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Advent Pro",
+      "ratio": 0.7211,
+      "ratios": [
+        0.722,
+        0.7288,
+        0.7126
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Afacad",
+      "ratio": 0.7843,
+      "ratios": [
+        0.7685,
+        0.7812,
+        0.8031
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Afacad Flux",
+      "ratio": 0.784,
+      "ratios": [
+        0.7685,
+        0.7802,
+        0.8031
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Agdasima",
+      "ratio": 0.6115,
+      "ratios": [
+        0.6354,
+        0.6066,
+        0.5925
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Akatab",
+      "ratio": 0.8569,
+      "ratios": [
+        0.8812,
+        0.8521,
+        0.8374
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Akshar",
+      "ratio": 0.7325,
+      "ratios": [
+        0.7456,
+        0.7633,
+        0.6887
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Akt",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9143,
+        0.8998,
+        0.9654
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alan Sans",
+      "ratio": 0.9275,
+      "ratios": [
+        0.9156,
+        0.9087,
+        0.9582
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alata",
+      "ratio": 0.8831,
+      "ratios": [
+        0.868,
+        0.8801,
+        0.9013
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alatsi",
+      "ratio": 0.8355,
+      "ratios": [
+        0.8402,
+        0.8414,
+        0.8247
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Albert Sans",
+      "ratio": 0.9216,
+      "ratios": [
+        0.9163,
+        0.9015,
+        0.947
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Aldrich",
+      "ratio": 1.0201,
+      "ratios": [
+        1.0446,
+        0.9925,
+        1.023
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alef",
+      "ratio": 0.9001,
+      "ratios": [
+        0.9146,
+        0.8924,
+        0.8934
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alegreya Sans",
+      "ratio": 0.7724,
+      "ratios": [
+        0.762,
+        0.7775,
+        0.7777
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Alegreya Sans SC",
+      "ratio": 0.8329,
+      "ratios": [
+        0.8552,
+        0.8657,
+        0.7777
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alexandria",
+      "ratio": 0.9954,
+      "ratios": [
+        0.9943,
+        0.999,
+        0.9928
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Allerta",
+      "ratio": 0.9951,
+      "ratios": [
+        1.0038,
+        1.0241,
+        0.9575
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Allerta Stencil",
+      "ratio": 0.9951,
+      "ratios": [
+        1.0038,
+        1.0241,
+        0.9575
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Almarai",
+      "ratio": 0.8702,
+      "ratios": [
+        0.857,
+        0.8439,
+        0.9099
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Alumni Sans",
+      "ratio": 0.5717,
+      "ratios": [
+        0.5906,
+        0.5775,
+        0.5469
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Alumni Sans Collegiate One",
+      "ratio": 0.589,
+      "ratios": [
+        0.6028,
+        0.619,
+        0.5453
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Alumni Sans Pinstripe",
+      "ratio": 0.5567,
+      "ratios": [
+        0.57,
+        0.5626,
+        0.5376
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Alumni Sans SC",
+      "ratio": 0.6121,
+      "ratios": [
+        0.6552,
+        0.6343,
+        0.5469
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Amaranth",
+      "ratio": 0.8331,
+      "ratios": [
+        0.8416,
+        0.8446,
+        0.8131
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Amarna",
+      "ratio": 0.888,
+      "ratios": [
+        0.889,
+        0.8684,
+        0.9067
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Amiko",
+      "ratio": 0.9966,
+      "ratios": [
+        0.9944,
+        0.9813,
+        1.0142
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anaheim",
+      "ratio": 0.7646,
+      "ratios": [
+        0.8067,
+        0.7667,
+        0.7204
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Ancizar Sans",
+      "ratio": 0.7891,
+      "ratios": [
+        0.7778,
+        0.7733,
+        0.8162
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Andika",
+      "ratio": 0.9263,
+      "ratios": [
+        0.9341,
+        0.902,
+        0.9429
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Bangla",
+      "ratio": 0.8223,
+      "ratios": [
+        0.83,
+        0.8359,
+        0.8008
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Devanagari",
+      "ratio": 0.8254,
+      "ratios": [
+        0.8379,
+        0.836,
+        0.8022
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Gujarati",
+      "ratio": 0.8244,
+      "ratios": [
+        0.8354,
+        0.8359,
+        0.8018
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Gurmukhi",
+      "ratio": 0.8312,
+      "ratios": [
+        0.8529,
+        0.8359,
+        0.8049
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Kannada",
+      "ratio": 0.8279,
+      "ratios": [
+        0.8443,
+        0.836,
+        0.8034
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Latin",
+      "ratio": 0.8252,
+      "ratios": [
+        0.8374,
+        0.836,
+        0.8021
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Malayalam",
+      "ratio": 0.8277,
+      "ratios": [
+        0.8439,
+        0.836,
+        0.8033
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Odia",
+      "ratio": 0.8255,
+      "ratios": [
+        0.8382,
+        0.8361,
+        0.8021
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Tamil",
+      "ratio": 0.8313,
+      "ratios": [
+        0.8529,
+        0.836,
+        0.8049
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anek Telugu",
+      "ratio": 0.827,
+      "ratios": [
+        0.8422,
+        0.8359,
+        0.8029
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anonymous Pro",
+      "ratio": 0.9531,
+      "ratios": [
+        1.0813,
+        0.9566,
+        0.8214
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anta",
+      "ratio": 0.9369,
+      "ratios": [
+        0.9448,
+        0.9152,
+        0.9508
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Antic",
+      "ratio": 0.8241,
+      "ratios": [
+        0.8231,
+        0.8124,
+        0.8368
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Anton",
+      "ratio": 0.7649,
+      "ratios": [
+        0.7924,
+        0.7978,
+        0.7045
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Anton SC",
+      "ratio": 0.7868,
+      "ratios": [
+        0.825,
+        0.8309,
+        0.7045
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Antonio",
+      "ratio": 0.6946,
+      "ratios": [
+        0.7276,
+        0.7185,
+        0.6375
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Anuphan",
+      "ratio": 0.9013,
+      "ratios": [
+        0.8981,
+        0.8835,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "AR One Sans",
+      "ratio": 0.9472,
+      "ratios": [
+        0.9502,
+        0.9373,
+        0.9542
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Archivo",
+      "ratio": 0.904,
+      "ratios": [
+        0.8835,
+        0.8696,
+        0.959
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Archivo Black",
+      "ratio": 1.0936,
+      "ratios": [
+        1.1057,
+        1.0771,
+        1.098
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Archivo Narrow",
+      "ratio": 0.7405,
+      "ratios": [
+        0.733,
+        0.7065,
+        0.782
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Arimo",
+      "ratio": 0.9,
+      "ratios": [
+        0.8886,
+        0.8578,
+        0.9537
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Armata",
+      "ratio": 1.0111,
+      "ratios": [
+        1.0375,
+        1.0439,
+        0.9519
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Arsenal",
+      "ratio": 0.7889,
+      "ratios": [
+        0.7907,
+        0.7782,
+        0.7978
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Arsenal SC",
+      "ratio": 0.8243,
+      "ratios": [
+        0.8465,
+        0.8287,
+        0.7978
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Arya",
+      "ratio": 0.8143,
+      "ratios": [
+        0.8254,
+        0.8273,
+        0.7903
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Asap",
+      "ratio": 0.8742,
+      "ratios": [
+        0.8717,
+        0.8746,
+        0.8762
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Asap Condensed",
+      "ratio": 0.7195,
+      "ratios": [
+        0.7124,
+        0.7292,
+        0.7169
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Asap Sharp",
+      "ratio": 0.8742,
+      "ratios": [
+        0.8717,
+        0.8746,
+        0.8762
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Asimovian",
+      "ratio": 0.8989,
+      "ratios": [
+        0.9059,
+        0.9036,
+        0.8871
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Assistant",
+      "ratio": 0.8141,
+      "ratios": [
+        0.8227,
+        0.8186,
+        0.8009
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Asta Sans",
+      "ratio": 0.9042,
+      "ratios": [
+        0.8942,
+        0.893,
+        0.9256
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Athiti",
+      "ratio": 0.823,
+      "ratios": [
+        0.837,
+        0.8104,
+        0.8215
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Atkinson Hyperlegible",
+      "ratio": 0.8809,
+      "ratios": [
+        0.8858,
+        0.8464,
+        0.9103
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Atkinson Hyperlegible Mono",
+      "ratio": 1.1034,
+      "ratios": [
+        1.2519,
+        1.1075,
+        0.9509
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Atkinson Hyperlegible Next",
+      "ratio": 0.8815,
+      "ratios": [
+        0.8849,
+        0.8526,
+        0.9069
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Average Sans",
+      "ratio": 0.8199,
+      "ratios": [
+        0.813,
+        0.7912,
+        0.8557
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Azeret Mono",
+      "ratio": 1.1348,
+      "ratios": [
+        1.2875,
+        1.139,
+        0.978
+      ],
+      "excluded": false
+    },
+    {
+      "family": "B612",
+      "ratio": 0.9543,
+      "ratios": [
+        0.9646,
+        0.9385,
+        0.9597
+      ],
+      "excluded": false
+    },
+    {
+      "family": "B612 Mono",
+      "ratio": 1.1348,
+      "ratios": [
+        1.2875,
+        1.139,
+        0.978
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bai Jamjuree",
+      "ratio": 0.9077,
+      "ratios": [
+        0.9187,
+        0.8942,
+        0.9101
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Barlow",
+      "ratio": 0.8546,
+      "ratios": [
+        0.8664,
+        0.8482,
+        0.8491
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Barlow Condensed",
+      "ratio": 0.6589,
+      "ratios": [
+        0.6763,
+        0.6676,
+        0.6329
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Barlow Semi Condensed",
+      "ratio": 0.7569,
+      "ratios": [
+        0.7716,
+        0.758,
+        0.741
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Basic",
+      "ratio": 0.8326,
+      "ratios": [
+        0.857,
+        0.8394,
+        0.8014
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bayon",
+      "ratio": 0.7415,
+      "ratios": [
+        0.7953,
+        0.7774,
+        0.6518
+      ],
+      "excluded": true
+    },
+    {
+      "family": "BBH Bartle",
+      "ratio": 2.1913,
+      "ratios": [
+        2.3403,
+        2.3072,
+        1.9263
+      ],
+      "excluded": true
+    },
+    {
+      "family": "BBH Bogle",
+      "ratio": 0.7271,
+      "ratios": [
+        0.7875,
+        0.7575,
+        0.6362
+      ],
+      "excluded": true
+    },
+    {
+      "family": "BBH Hegarty",
+      "ratio": 1.1303,
+      "ratios": [
+        1.1033,
+        1.1168,
+        1.1706
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Be Vietnam Pro",
+      "ratio": 0.982,
+      "ratios": [
+        0.9706,
+        0.9789,
+        0.9965
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bebas Neue",
+      "ratio": 0.649,
+      "ratios": [
+        0.6836,
+        0.6824,
+        0.5809
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Beiruti",
+      "ratio": 0.6931,
+      "ratios": [
+        0.6866,
+        0.6846,
+        0.7079
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Belanosima",
+      "ratio": 0.8255,
+      "ratios": [
+        0.818,
+        0.8208,
+        0.8377
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Belleza",
+      "ratio": 0.8125,
+      "ratios": [
+        0.7996,
+        0.7801,
+        0.8577
+      ],
+      "excluded": true
+    },
+    {
+      "family": "BenchNine",
+      "ratio": 0.565,
+      "ratios": [
+        0.5691,
+        0.5584,
+        0.5674
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Biryani",
+      "ratio": 0.9828,
+      "ratios": [
+        0.9805,
+        0.9847,
+        0.9831
+      ],
+      "excluded": false
+    },
+    {
+      "family": "BIZ UDGothic",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "BIZ UDPGothic",
+      "ratio": 1.1062,
+      "ratios": [
+        1.1095,
+        1.0871,
+        1.122
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Black Han Sans",
+      "ratio": 1.0688,
+      "ratios": [
+        1.1033,
+        1.1107,
+        0.9924
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Blinker",
+      "ratio": 0.8198,
+      "ratios": [
+        0.8254,
+        0.8301,
+        0.804
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Bpmf Huninn",
+      "ratio": 0.9459,
+      "ratios": [
+        0.9389,
+        0.9208,
+        0.9781
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bpmf Zihi Kai Std",
+      "ratio": 0.9751,
+      "ratios": [
+        0.9803,
+        0.9691,
+        0.9757
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Braah One",
+      "ratio": 0.9425,
+      "ratios": [
+        0.9569,
+        0.9655,
+        0.9051
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bricolage Grotesque",
+      "ratio": 0.9332,
+      "ratios": [
+        0.9441,
+        0.937,
+        0.9186
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Bubbler One",
+      "ratio": 0.7243,
+      "ratios": [
+        0.7417,
+        0.7487,
+        0.6824
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Bytesized",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cabin",
+      "ratio": 0.8492,
+      "ratios": [
+        0.8355,
+        0.8345,
+        0.8776
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cabin Condensed",
+      "ratio": 0.7437,
+      "ratios": [
+        0.7351,
+        0.7325,
+        0.7636
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Cagliostro",
+      "ratio": 0.8807,
+      "ratios": [
+        0.859,
+        0.8466,
+        0.9363
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cairo",
+      "ratio": 0.8425,
+      "ratios": [
+        0.8423,
+        0.8305,
+        0.8547
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cal Sans",
+      "ratio": 0.8807,
+      "ratios": [
+        0.8599,
+        0.9063,
+        0.8758
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cambay",
+      "ratio": 0.8675,
+      "ratios": [
+        0.8796,
+        0.8597,
+        0.8633
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Candal",
+      "ratio": 1.1024,
+      "ratios": [
+        1.145,
+        1.1442,
+        1.0181
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cantarell",
+      "ratio": 0.9511,
+      "ratios": [
+        0.9389,
+        0.9057,
+        1.0087
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cantora One",
+      "ratio": 0.84,
+      "ratios": [
+        0.832,
+        0.8309,
+        0.857
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Capriola",
+      "ratio": 1.0047,
+      "ratios": [
+        1.0181,
+        1.0158,
+        0.9802
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Carlito",
+      "ratio": 0.7988,
+      "ratios": [
+        0.803,
+        0.7943,
+        0.7992
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Carme",
+      "ratio": 0.9192,
+      "ratios": [
+        0.9052,
+        0.9097,
+        0.9426
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Carrois Gothic",
+      "ratio": 0.8384,
+      "ratios": [
+        0.8584,
+        0.84,
+        0.8168
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Carrois Gothic SC",
+      "ratio": 0.9054,
+      "ratios": [
+        0.9628,
+        0.9365,
+        0.8168
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cascadia Code",
+      "ratio": 1.023,
+      "ratios": [
+        1.1606,
+        1.0268,
+        0.8816
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cascadia Mono",
+      "ratio": 1.023,
+      "ratios": [
+        1.1606,
+        1.0268,
+        0.8816
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Catamaran",
+      "ratio": 0.8189,
+      "ratios": [
+        0.8179,
+        0.8079,
+        0.8308
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Chakra Petch",
+      "ratio": 0.899,
+      "ratios": [
+        0.9138,
+        0.8912,
+        0.8919
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Changa",
+      "ratio": 0.8502,
+      "ratios": [
+        0.8691,
+        0.8679,
+        0.8135
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Chathura",
+      "ratio": 0.4281,
+      "ratios": [
+        0.4324,
+        0.4095,
+        0.4423
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Chau Philomene One",
+      "ratio": 0.7737,
+      "ratios": [
+        0.7813,
+        0.7734,
+        0.7664
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Chiron GoRound TC",
+      "ratio": 0.9223,
+      "ratios": [
+        0.9088,
+        0.8994,
+        0.9588
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Chiron Hei HK",
+      "ratio": 0.9113,
+      "ratios": [
+        0.9206,
+        0.9185,
+        0.8947
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Chivo",
+      "ratio": 0.9492,
+      "ratios": [
+        0.9586,
+        0.9407,
+        0.9483
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Chivo Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Chocolate Classical Sans",
+      "ratio": 0.9189,
+      "ratios": [
+        0.928,
+        0.9245,
+        0.9042
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Clarity City",
+      "ratio": 0.9586,
+      "ratios": [
+        0.9563,
+        0.9317,
+        0.9878
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Comme",
+      "ratio": 0.9472,
+      "ratios": [
+        0.9461,
+        0.9252,
+        0.9703
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Commissioner",
+      "ratio": 0.921,
+      "ratios": [
+        0.9065,
+        0.9036,
+        0.9528
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Convergence",
+      "ratio": 0.9501,
+      "ratios": [
+        0.9743,
+        0.9601,
+        0.916
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cossette Texte",
+      "ratio": 0.8769,
+      "ratios": [
+        0.8732,
+        0.87,
+        0.8873
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cossette Titre",
+      "ratio": 0.6574,
+      "ratios": [
+        0.6495,
+        0.6481,
+        0.6745
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Courier Prime",
+      "ratio": 1.0469,
+      "ratios": [
+        1.1877,
+        1.0507,
+        0.9022
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cousine",
+      "ratio": 1.0477,
+      "ratios": [
+        1.1887,
+        1.0516,
+        0.9029
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Cuprum",
+      "ratio": 0.733,
+      "ratios": [
+        0.7626,
+        0.7397,
+        0.6966
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Cutive Mono",
+      "ratio": 1.0571,
+      "ratios": [
+        1.1993,
+        1.061,
+        0.911
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Darker Grotesque",
+      "ratio": 0.7303,
+      "ratios": [
+        0.7213,
+        0.6991,
+        0.7704
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Datatype",
+      "ratio": 0.8504,
+      "ratios": [
+        0.933,
+        0.8762,
+        0.7421
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Days One",
+      "ratio": 1.0987,
+      "ratios": [
+        1.1034,
+        1.0629,
+        1.1298
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Denk One",
+      "ratio": 0.8415,
+      "ratios": [
+        0.868,
+        0.8504,
+        0.806
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Dhurjati",
+      "ratio": 0.7252,
+      "ratios": [
+        0.7189,
+        0.7214,
+        0.7353
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Didact Gothic",
+      "ratio": 0.8291,
+      "ratios": [
+        0.8324,
+        0.8233,
+        0.8316
+      ],
+      "excluded": false
+    },
+    {
+      "family": "DM Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "DM Sans",
+      "ratio": 0.9143,
+      "ratios": [
+        0.9208,
+        0.9103,
+        0.9118
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Do Hyeon",
+      "ratio": 0.8152,
+      "ratios": [
+        0.8467,
+        0.7995,
+        0.7992
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Dongle",
+      "ratio": 0.557,
+      "ratios": [
+        0.5694,
+        0.5591,
+        0.5424
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Doppio One",
+      "ratio": 0.9234,
+      "ratios": [
+        0.9406,
+        0.9327,
+        0.897
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Dorsa",
+      "ratio": 0.314,
+      "ratios": [
+        0.3348,
+        0.3208,
+        0.2865
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Dosis",
+      "ratio": 0.749,
+      "ratios": [
+        0.7448,
+        0.747,
+        0.7552
+      ],
+      "excluded": true
+    },
+    {
+      "family": "DotGothic16",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Doto",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Duru Sans",
+      "ratio": 1.0002,
+      "ratios": [
+        1.0249,
+        1.0062,
+        0.9695
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Economica",
+      "ratio": 0.609,
+      "ratios": [
+        0.6125,
+        0.5992,
+        0.6155
+      ],
+      "excluded": true
+    },
+    {
+      "family": "El Messiri",
+      "ratio": 0.8573,
+      "ratios": [
+        0.8562,
+        0.8375,
+        0.8782
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Electrolize",
+      "ratio": 0.9208,
+      "ratios": [
+        0.9226,
+        0.8833,
+        0.9564
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Elms Sans",
+      "ratio": 0.9374,
+      "ratios": [
+        0.9648,
+        0.9101,
+        0.9372
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Encode Sans",
+      "ratio": 0.8806,
+      "ratios": [
+        0.8791,
+        0.874,
+        0.8886
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Encode Sans Condensed",
+      "ratio": 0.7608,
+      "ratios": [
+        0.7569,
+        0.7519,
+        0.7737
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Encode Sans Expanded",
+      "ratio": 1.0,
+      "ratios": [
+        1.0011,
+        0.9958,
+        1.0032
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Encode Sans SC",
+      "ratio": 0.9554,
+      "ratios": [
+        0.9949,
+        0.9828,
+        0.8886
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Encode Sans Semi Condensed",
+      "ratio": 0.8215,
+      "ratios": [
+        0.8184,
+        0.8141,
+        0.8319
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Encode Sans Semi Expanded",
+      "ratio": 0.9393,
+      "ratios": [
+        0.9393,
+        0.9336,
+        0.9451
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Epilogue",
+      "ratio": 0.9333,
+      "ratios": [
+        0.9671,
+        0.9619,
+        0.871
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Epunda Sans",
+      "ratio": 0.7953,
+      "ratios": [
+        0.8005,
+        0.7892,
+        0.7962
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Estedad",
+      "ratio": 0.8917,
+      "ratios": [
+        0.8902,
+        0.8868,
+        0.898
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Exo",
+      "ratio": 0.9139,
+      "ratios": [
+        0.924,
+        0.912,
+        0.9057
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Exo 2",
+      "ratio": 0.898,
+      "ratios": [
+        0.908,
+        0.909,
+        0.8769
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Faculty Glyphic",
+      "ratio": 0.9577,
+      "ratios": [
+        0.9242,
+        0.9434,
+        1.0055
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fahkwang",
+      "ratio": 1.0278,
+      "ratios": [
+        1.0138,
+        0.9922,
+        1.0775
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Familjen Grotesk",
+      "ratio": 0.8433,
+      "ratios": [
+        0.828,
+        0.8402,
+        0.8618
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Farro",
+      "ratio": 0.9482,
+      "ratios": [
+        0.9749,
+        0.9732,
+        0.8966
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Federo",
+      "ratio": 0.8339,
+      "ratios": [
+        0.8121,
+        0.7885,
+        0.901
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Figtree",
+      "ratio": 0.9047,
+      "ratios": [
+        0.8947,
+        0.8883,
+        0.9312
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Finlandica Headline",
+      "ratio": 0.8131,
+      "ratios": [
+        0.8312,
+        0.8001,
+        0.8081
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Finlandica Text",
+      "ratio": 0.9563,
+      "ratios": [
+        0.9493,
+        0.9384,
+        0.9811
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fira Code",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fira Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fira Sans",
+      "ratio": 0.8714,
+      "ratios": [
+        0.9003,
+        0.8876,
+        0.8261
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fira Sans Condensed",
+      "ratio": 0.7857,
+      "ratios": [
+        0.8099,
+        0.8006,
+        0.7467
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Fira Sans Extra Condensed",
+      "ratio": 0.723,
+      "ratios": [
+        0.7451,
+        0.7376,
+        0.6862
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Fjalla One",
+      "ratio": 0.7472,
+      "ratios": [
+        0.7671,
+        0.761,
+        0.7137
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Fragment Mono",
+      "ratio": 1.079,
+      "ratios": [
+        1.2241,
+        1.0829,
+        0.9298
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Francois One",
+      "ratio": 0.8102,
+      "ratios": [
+        0.8329,
+        0.8131,
+        0.7845
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Fredoka",
+      "ratio": 0.8987,
+      "ratios": [
+        0.8935,
+        0.8798,
+        0.9228
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fresca",
+      "ratio": 0.7735,
+      "ratios": [
+        0.7895,
+        0.8144,
+        0.7164
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Funnel Sans",
+      "ratio": 0.8931,
+      "ratios": [
+        0.8971,
+        0.8817,
+        0.9004
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Fustat",
+      "ratio": 0.8865,
+      "ratios": [
+        0.8829,
+        0.8811,
+        0.8954
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gafata",
+      "ratio": 0.8,
+      "ratios": [
+        0.7979,
+        0.8067,
+        0.7954
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Galdeano",
+      "ratio": 0.7906,
+      "ratios": [
+        0.7876,
+        0.7787,
+        0.8055
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Gantari",
+      "ratio": 0.9233,
+      "ratios": [
+        0.9143,
+        0.9101,
+        0.9456
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gasoek One",
+      "ratio": 1.0997,
+      "ratios": [
+        1.1063,
+        1.116,
+        1.0767
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gayathri",
+      "ratio": 0.8772,
+      "ratios": [
+        0.875,
+        0.8726,
+        0.8841
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Geist",
+      "ratio": 0.9123,
+      "ratios": [
+        0.9072,
+        0.9025,
+        0.9273
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Geist Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gemunu Libre",
+      "ratio": 0.7136,
+      "ratios": [
+        0.7055,
+        0.704,
+        0.7314
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Genos",
+      "ratio": 0.7737,
+      "ratios": [
+        0.8013,
+        0.7536,
+        0.7662
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Geo",
+      "ratio": 0.7709,
+      "ratios": [
+        0.8074,
+        0.7967,
+        0.7085
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Geologica",
+      "ratio": 0.9606,
+      "ratios": [
+        0.9637,
+        0.9538,
+        0.9644
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Geom",
+      "ratio": 0.9105,
+      "ratios": [
+        0.9015,
+        0.8923,
+        0.9377
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Geomini",
+      "ratio": 0.977,
+      "ratios": [
+        0.9869,
+        0.986,
+        0.958
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Georama",
+      "ratio": 0.8713,
+      "ratios": [
+        0.873,
+        0.8515,
+        0.8893
+      ],
+      "excluded": false
+    },
+    {
+      "family": "GFS Neohellenic",
+      "ratio": 0.7637,
+      "ratios": [
+        0.7552,
+        0.6939,
+        0.842
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Gidole",
+      "ratio": 0.83,
+      "ratios": [
+        0.8494,
+        0.8289,
+        0.8119
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gidugu",
+      "ratio": 0.5769,
+      "ratios": [
+        0.5718,
+        0.5689,
+        0.5901
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Glory",
+      "ratio": 0.7567,
+      "ratios": [
+        0.7671,
+        0.7431,
+        0.76
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Golos Text",
+      "ratio": 0.96,
+      "ratios": [
+        0.965,
+        0.9571,
+        0.9578
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Google Sans",
+      "ratio": 0.8931,
+      "ratios": [
+        0.8858,
+        0.8871,
+        0.9063
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Google Sans Code",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Google Sans Flex",
+      "ratio": 0.898,
+      "ratios": [
+        0.8909,
+        0.8966,
+        0.9064
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gothic A1",
+      "ratio": 0.8983,
+      "ratios": [
+        0.9055,
+        0.881,
+        0.9083
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gotu",
+      "ratio": 0.983,
+      "ratios": [
+        0.9939,
+        0.9738,
+        0.9813
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gowun Dodum",
+      "ratio": 0.8511,
+      "ratios": [
+        0.8513,
+        0.8135,
+        0.8885
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gruppo",
+      "ratio": 0.9152,
+      "ratios": [
+        0.9277,
+        0.9003,
+        0.9175
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gudea",
+      "ratio": 0.8383,
+      "ratios": [
+        0.849,
+        0.8266,
+        0.8392
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Gurajada",
+      "ratio": 0.5593,
+      "ratios": [
+        0.553,
+        0.5629,
+        0.562
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Hammersmith One",
+      "ratio": 0.9048,
+      "ratios": [
+        0.9287,
+        0.9049,
+        0.8809
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hanken Grotesk",
+      "ratio": 0.894,
+      "ratios": [
+        0.8946,
+        0.8779,
+        0.9096
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Harmattan",
+      "ratio": 0.6954,
+      "ratios": [
+        0.7038,
+        0.6747,
+        0.7078
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Hedvig Letters Sans",
+      "ratio": 0.9073,
+      "ratios": [
+        0.9027,
+        0.9068,
+        0.9124
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Heebo",
+      "ratio": 0.8903,
+      "ratios": [
+        0.8857,
+        0.8759,
+        0.9092
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hibur Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind",
+      "ratio": 0.846,
+      "ratios": [
+        0.8481,
+        0.8516,
+        0.8381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind Guntur",
+      "ratio": 0.846,
+      "ratios": [
+        0.8481,
+        0.8516,
+        0.8381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind Madurai",
+      "ratio": 0.846,
+      "ratios": [
+        0.8481,
+        0.8516,
+        0.8381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind Mysuru",
+      "ratio": 0.846,
+      "ratios": [
+        0.8481,
+        0.8516,
+        0.8381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind Siliguri",
+      "ratio": 0.8443,
+      "ratios": [
+        0.844,
+        0.8516,
+        0.8374
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hind Vadodara",
+      "ratio": 0.846,
+      "ratios": [
+        0.8481,
+        0.8516,
+        0.8381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Homenaje",
+      "ratio": 0.636,
+      "ratios": [
+        0.6245,
+        0.6195,
+        0.664
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Host Grotesk",
+      "ratio": 0.921,
+      "ratios": [
+        0.9087,
+        0.9057,
+        0.9486
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Hubballi",
+      "ratio": 0.8107,
+      "ratios": [
+        0.818,
+        0.7939,
+        0.8203
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Hubot Sans",
+      "ratio": 0.9439,
+      "ratios": [
+        0.9112,
+        0.9256,
+        0.9949
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Huninn",
+      "ratio": 0.9428,
+      "ratios": [
+        0.9341,
+        0.9184,
+        0.9758
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans Condensed",
+      "ratio": 0.8141,
+      "ratios": [
+        0.8113,
+        0.7992,
+        0.8318
+      ],
+      "excluded": true
+    },
+    {
+      "family": "IBM Plex Sans Devanagari",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans Hebrew",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans JP",
+      "ratio": 0.9448,
+      "ratios": [
+        0.9414,
+        0.9262,
+        0.9668
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans KR",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans Thai",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "IBM Plex Sans Thai Looped",
+      "ratio": 0.9014,
+      "ratios": [
+        0.8981,
+        0.8836,
+        0.9224
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Imprima",
+      "ratio": 0.8428,
+      "ratios": [
+        0.8534,
+        0.8517,
+        0.8233
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inclusive Sans",
+      "ratio": 0.9303,
+      "ratios": [
+        0.9438,
+        0.9295,
+        0.9177
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inconsolata",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inder",
+      "ratio": 0.9253,
+      "ratios": [
+        0.9521,
+        0.9155,
+        0.9085
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inria Sans",
+      "ratio": 0.848,
+      "ratios": [
+        0.8619,
+        0.8522,
+        0.8299
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Instrument Sans",
+      "ratio": 0.9283,
+      "ratios": [
+        0.9096,
+        0.9159,
+        0.9595
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Intel One Mono",
+      "ratio": 1.072,
+      "ratios": [
+        1.2162,
+        1.0759,
+        0.9238
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inter",
+      "ratio": 0.9497,
+      "ratios": [
+        0.9389,
+        0.9379,
+        0.9723
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Inter Tight",
+      "ratio": 0.8635,
+      "ratios": [
+        0.848,
+        0.8502,
+        0.8922
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Iosevka Charon",
+      "ratio": 0.8484,
+      "ratios": [
+        0.9162,
+        0.8818,
+        0.7473
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Iosevka Charon Mono",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Istok Web",
+      "ratio": 0.8882,
+      "ratios": [
+        0.902,
+        0.8489,
+        0.9136
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Italiana",
+      "ratio": 0.8205,
+      "ratios": [
+        0.8404,
+        0.8171,
+        0.8041
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Jaldi",
+      "ratio": 0.7603,
+      "ratios": [
+        0.7604,
+        0.7593,
+        0.7613
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Jaro",
+      "ratio": 0.7954,
+      "ratios": [
+        0.7952,
+        0.828,
+        0.7631
+      ],
+      "excluded": true
+    },
+    {
+      "family": "JetBrains Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Jockey One",
+      "ratio": 0.7139,
+      "ratios": [
+        0.7226,
+        0.7441,
+        0.6751
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Josefin Sans",
+      "ratio": 0.909,
+      "ratios": [
+        0.904,
+        0.87,
+        0.953
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Jost",
+      "ratio": 0.8483,
+      "ratios": [
+        0.8359,
+        0.8237,
+        0.8853
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Jua",
+      "ratio": 0.8708,
+      "ratios": [
+        0.8938,
+        0.8307,
+        0.888
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Julius Sans One",
+      "ratio": 1.0476,
+      "ratios": [
+        1.1052,
+        1.0805,
+        0.9572
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Jura",
+      "ratio": 0.9132,
+      "ratios": [
+        0.9309,
+        0.9252,
+        0.8834
+      ],
+      "excluded": false
+    },
+    {
+      "family": "K2D",
+      "ratio": 0.906,
+      "ratios": [
+        0.8929,
+        0.8784,
+        0.9466
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kanchenjunga",
+      "ratio": 0.9259,
+      "ratios": [
+        0.9337,
+        0.901,
+        0.9429
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kanit",
+      "ratio": 0.8829,
+      "ratios": [
+        0.8882,
+        0.8905,
+        0.8699
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kantumruy Pro",
+      "ratio": 0.9227,
+      "ratios": [
+        0.9417,
+        0.9147,
+        0.9117
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Karla",
+      "ratio": 0.8949,
+      "ratios": [
+        0.9081,
+        0.9103,
+        0.8664
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Karla Tamil Inclined",
+      "ratio": 0.8424,
+      "ratios": [
+        0.8112,
+        0.8049,
+        0.9111
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Karla Tamil Upright",
+      "ratio": 0.8509,
+      "ratios": [
+        0.816,
+        0.8049,
+        0.9319
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kdam Thmor Pro",
+      "ratio": 0.9169,
+      "ratios": [
+        0.9056,
+        0.9043,
+        0.9409
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kedebideri",
+      "ratio": 0.847,
+      "ratios": [
+        0.8648,
+        0.8447,
+        0.8315
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Khand",
+      "ratio": 0.6673,
+      "ratios": [
+        0.6931,
+        0.691,
+        0.6179
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Khmer",
+      "ratio": 0.8554,
+      "ratios": [
+        0.8219,
+        0.8049,
+        0.9394
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Khula",
+      "ratio": 0.8567,
+      "ratios": [
+        0.8687,
+        0.8542,
+        0.8472
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kodchasan",
+      "ratio": 0.997,
+      "ratios": [
+        0.9911,
+        0.987,
+        1.0129
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kode Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "KoHo",
+      "ratio": 0.8701,
+      "ratios": [
+        0.8643,
+        0.8338,
+        0.9122
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kosugi",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kosugi Maru",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kripa",
+      "ratio": 0.9522,
+      "ratios": [
+        0.9477,
+        0.9462,
+        0.9627
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Krona One",
+      "ratio": 1.2957,
+      "ratios": [
+        1.3143,
+        1.2891,
+        1.2836
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Krub",
+      "ratio": 0.9115,
+      "ratios": [
+        0.9276,
+        0.9206,
+        0.8863
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kufam",
+      "ratio": 0.9586,
+      "ratios": [
+        0.9663,
+        0.9585,
+        0.9511
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kulim Park",
+      "ratio": 0.8522,
+      "ratios": [
+        0.8604,
+        0.8342,
+        0.8622
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Kumbh Sans",
+      "ratio": 0.9347,
+      "ratios": [
+        0.9211,
+        0.9307,
+        0.9523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lalezar",
+      "ratio": 0.8324,
+      "ratios": [
+        0.8295,
+        0.8547,
+        0.8129
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lato",
+      "ratio": 0.8976,
+      "ratios": [
+        0.8769,
+        0.8678,
+        0.948
+      ],
+      "excluded": false
+    },
+    {
+      "family": "League Gothic",
+      "ratio": 0.5169,
+      "ratios": [
+        0.5221,
+        0.5131,
+        0.5154
+      ],
+      "excluded": true
+    },
+    {
+      "family": "League Spartan",
+      "ratio": 0.814,
+      "ratios": [
+        0.8085,
+        0.8036,
+        0.8298
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Lekton",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lexend",
+      "ratio": 0.9723,
+      "ratios": [
+        0.9764,
+        0.9621,
+        0.9784
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lexend Deca",
+      "ratio": 0.9723,
+      "ratios": [
+        0.9764,
+        0.9621,
+        0.9784
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lexend Exa",
+      "ratio": 1.1953,
+      "ratios": [
+        1.2365,
+        1.2074,
+        1.1421
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lexend Giga",
+      "ratio": 1.2846,
+      "ratios": [
+        1.3406,
+        1.3057,
+        1.2075
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Lexend Mega",
+      "ratio": 1.3293,
+      "ratios": [
+        1.3929,
+        1.355,
+        1.2402
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Lexend Peta",
+      "ratio": 1.3738,
+      "ratios": [
+        1.4448,
+        1.4038,
+        1.2729
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Lexend Tera",
+      "ratio": 1.4184,
+      "ratios": [
+        1.4966,
+        1.4529,
+        1.3057
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Lexend Zetta",
+      "ratio": 1.53,
+      "ratios": [
+        1.6268,
+        1.5756,
+        1.3875
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Libertinus Mono",
+      "ratio": 1.1174,
+      "ratios": [
+        1.2677,
+        1.1215,
+        0.9629
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Libertinus Sans",
+      "ratio": 0.8391,
+      "ratios": [
+        0.8338,
+        0.8201,
+        0.8635
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Libre Franklin",
+      "ratio": 0.9457,
+      "ratios": [
+        0.9268,
+        0.9233,
+        0.9869
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lilex",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "LINE Seed JP",
+      "ratio": 1.0168,
+      "ratios": [
+        1.0078,
+        0.9895,
+        1.053
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Liter",
+      "ratio": 0.8894,
+      "ratios": [
+        0.8707,
+        0.8719,
+        0.9257
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Livvic",
+      "ratio": 0.8941,
+      "ratios": [
+        0.8841,
+        0.8824,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Lunasima",
+      "ratio": 0.9573,
+      "ratios": [
+        0.9636,
+        0.9636,
+        0.9447
+      ],
+      "excluded": false
+    },
+    {
+      "family": "LXGW Marker Gothic",
+      "ratio": 0.9184,
+      "ratios": [
+        0.9525,
+        0.9477,
+        0.8551
+      ],
+      "excluded": false
+    },
+    {
+      "family": "LXGW WenKai Mono TC",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS 1",
+      "ratio": 0.9748,
+      "ratios": [
+        0.9709,
+        0.9492,
+        1.0043
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS 1 Code",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS 1p",
+      "ratio": 0.9585,
+      "ratios": [
+        0.9681,
+        0.9444,
+        0.9631
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS 2",
+      "ratio": 0.9775,
+      "ratios": [
+        0.9749,
+        0.952,
+        1.0055
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS Code Latin",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS Rounded 1c",
+      "ratio": 0.9324,
+      "ratios": [
+        0.9482,
+        0.9216,
+        0.9275
+      ],
+      "excluded": false
+    },
+    {
+      "family": "M PLUS U",
+      "ratio": 1.0487,
+      "ratios": [
+        1.0579,
+        1.0346,
+        1.0535
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mada",
+      "ratio": 0.8217,
+      "ratios": [
+        0.8298,
+        0.8263,
+        0.8089
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Madimi One",
+      "ratio": 0.8673,
+      "ratios": [
+        0.8769,
+        0.8748,
+        0.8503
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Magra",
+      "ratio": 0.8045,
+      "ratios": [
+        0.8228,
+        0.8129,
+        0.7778
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Major Mono Display",
+      "ratio": 1.292,
+      "ratios": [
+        1.4658,
+        1.2967,
+        1.1134
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mako",
+      "ratio": 0.8548,
+      "ratios": [
+        0.8595,
+        0.8482,
+        0.8568
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mallanna",
+      "ratio": 0.8144,
+      "ratios": [
+        0.806,
+        0.7882,
+        0.849
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mandali",
+      "ratio": 0.9087,
+      "ratios": [
+        0.902,
+        0.8781,
+        0.9459
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Manjari",
+      "ratio": 0.8953,
+      "ratios": [
+        0.9053,
+        0.8775,
+        0.9032
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Manrope",
+      "ratio": 0.9056,
+      "ratios": [
+        0.903,
+        0.9133,
+        0.9006
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Marmelad",
+      "ratio": 0.909,
+      "ratios": [
+        0.9357,
+        0.8882,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Martel Sans",
+      "ratio": 0.9467,
+      "ratios": [
+        0.9545,
+        0.946,
+        0.9395
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Martian Mono",
+      "ratio": 1.2221,
+      "ratios": [
+        1.3865,
+        1.2266,
+        1.0532
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Marvel",
+      "ratio": 0.6666,
+      "ratios": [
+        0.686,
+        0.6622,
+        0.6516
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Matangi",
+      "ratio": 0.91,
+      "ratios": [
+        0.9229,
+        0.9182,
+        0.889
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Matemasie",
+      "ratio": 1.092,
+      "ratios": [
+        1.0808,
+        1.0852,
+        1.1099
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Maven Pro",
+      "ratio": 0.9031,
+      "ratios": [
+        0.904,
+        0.8979,
+        0.9074
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Meera Inimai",
+      "ratio": 0.8616,
+      "ratios": [
+        0.8663,
+        0.8624,
+        0.8561
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Menbere",
+      "ratio": 0.959,
+      "ratios": [
+        0.9592,
+        0.9541,
+        0.9637
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Merriweather Sans",
+      "ratio": 0.9495,
+      "ratios": [
+        0.9392,
+        0.9568,
+        0.9526
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Metrophobic",
+      "ratio": 0.9286,
+      "ratios": [
+        0.9265,
+        0.9006,
+        0.9588
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Michroma",
+      "ratio": 1.3364,
+      "ratios": [
+        1.2767,
+        1.2597,
+        1.4728
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mina",
+      "ratio": 0.903,
+      "ratios": [
+        0.9231,
+        0.8902,
+        0.8958
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mingzat",
+      "ratio": 0.9725,
+      "ratios": [
+        1.0,
+        0.9327,
+        0.9848
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Miranda Sans",
+      "ratio": 0.9306,
+      "ratios": [
+        0.9176,
+        0.9162,
+        0.9579
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Miriam Libre",
+      "ratio": 0.9278,
+      "ratios": [
+        0.9638,
+        0.9572,
+        0.8626
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mitr",
+      "ratio": 0.9633,
+      "ratios": [
+        0.9873,
+        0.9559,
+        0.9467
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mochiy Pop One",
+      "ratio": 1.1742,
+      "ratios": [
+        1.1593,
+        1.1543,
+        1.209
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mochiy Pop P One",
+      "ratio": 1.1742,
+      "ratios": [
+        1.1593,
+        1.1543,
+        1.209
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Moderustic",
+      "ratio": 0.938,
+      "ratios": [
+        0.9234,
+        0.9424,
+        0.9483
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mohave",
+      "ratio": 0.7229,
+      "ratios": [
+        0.7446,
+        0.732,
+        0.6922
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Molengo",
+      "ratio": 0.8286,
+      "ratios": [
+        0.8352,
+        0.8222,
+        0.8285
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Momo Trust Display",
+      "ratio": 1.0182,
+      "ratios": [
+        1.009,
+        1.0235,
+        1.0219
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Momo Trust Sans",
+      "ratio": 0.9567,
+      "ratios": [
+        0.9422,
+        0.9351,
+        0.9928
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mona Sans",
+      "ratio": 0.9444,
+      "ratios": [
+        0.9302,
+        0.9265,
+        0.9766
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Monda",
+      "ratio": 0.9606,
+      "ratios": [
+        0.9566,
+        0.9349,
+        0.9901
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Monomaniac One",
+      "ratio": 0.7653,
+      "ratios": [
+        0.7752,
+        0.7323,
+        0.7884
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Montserrat",
+      "ratio": 1.0,
+      "ratios": [
+        0.9999,
+        1.0,
+        1.0
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Montserrat Alternates",
+      "ratio": 1.0226,
+      "ratios": [
+        1.0115,
+        1.0285,
+        1.0277
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Montserrat Underline",
+      "ratio": 0.9999,
+      "ratios": [
+        0.9994,
+        0.9999,
+        1.0005
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mooli",
+      "ratio": 0.9635,
+      "ratios": [
+        0.9647,
+        0.9529,
+        0.9728
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Moulpali",
+      "ratio": 0.7672,
+      "ratios": [
+        0.7968,
+        0.7866,
+        0.7181
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mouse Memoirs",
+      "ratio": 0.5528,
+      "ratios": [
+        0.5791,
+        0.5682,
+        0.5109
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mozilla Headline",
+      "ratio": 0.9422,
+      "ratios": [
+        0.9442,
+        0.9438,
+        0.9388
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mozilla Text",
+      "ratio": 0.9766,
+      "ratios": [
+        0.9874,
+        0.9773,
+        0.965
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mukta",
+      "ratio": 0.8217,
+      "ratios": [
+        0.8359,
+        0.8236,
+        0.8055
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mukta Mahee",
+      "ratio": 0.8176,
+      "ratios": [
+        0.8359,
+        0.8236,
+        0.7933
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mukta Malar",
+      "ratio": 0.8138,
+      "ratios": [
+        0.8492,
+        0.8236,
+        0.7687
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Mukta Vaani",
+      "ratio": 0.8218,
+      "ratios": [
+        0.8359,
+        0.8236,
+        0.8059
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Mulish",
+      "ratio": 0.9298,
+      "ratios": [
+        0.9174,
+        0.9134,
+        0.9587
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Murecho",
+      "ratio": 0.8574,
+      "ratios": [
+        0.8586,
+        0.863,
+        0.8505
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nanum Gothic",
+      "ratio": 0.9208,
+      "ratios": [
+        0.9057,
+        0.9107,
+        0.946
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Narnoor",
+      "ratio": 0.8253,
+      "ratios": [
+        0.8627,
+        0.8136,
+        0.7997
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nata Sans",
+      "ratio": 0.9337,
+      "ratios": [
+        0.947,
+        0.9373,
+        0.917
+      ],
+      "excluded": false
+    },
+    {
+      "family": "National Park",
+      "ratio": 0.8695,
+      "ratios": [
+        0.876,
+        0.8607,
+        0.8719
+      ],
+      "excluded": false
+    },
+    {
+      "family": "New Amsterdam",
+      "ratio": 0.6576,
+      "ratios": [
+        0.705,
+        0.6875,
+        0.5805
+      ],
+      "excluded": true
+    },
+    {
+      "family": "News Cycle",
+      "ratio": 0.7784,
+      "ratios": [
+        0.769,
+        0.7493,
+        0.8169
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Niramit",
+      "ratio": 0.8741,
+      "ratios": [
+        0.8757,
+        0.8665,
+        0.88
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nobile",
+      "ratio": 0.9516,
+      "ratios": [
+        0.9558,
+        0.9555,
+        0.9436
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nokora",
+      "ratio": 0.925,
+      "ratios": [
+        0.9332,
+        0.9291,
+        0.9128
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Notable",
+      "ratio": 1.3991,
+      "ratios": [
+        1.5096,
+        1.4887,
+        1.1988
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Noto Emoji",
+      "ratio": 1.0438,
+      "ratios": [
+        1.0538,
+        0.8049,
+        1.2728
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Kufi Arabic",
+      "ratio": 0.9335,
+      "ratios": [
+        0.9544,
+        0.9289,
+        0.9172
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Music",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Adlam",
+      "ratio": 0.9254,
+      "ratios": [
+        0.9337,
+        0.9289,
+        0.9136
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Adlam Unjoined",
+      "ratio": 0.9254,
+      "ratios": [
+        0.9337,
+        0.9289,
+        0.9136
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Anatolian Hieroglyphs",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Arabic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Armenian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Avestan",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Balinese",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Bamum",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Bassa Vah",
+      "ratio": 0.9339,
+      "ratios": [
+        0.9554,
+        0.9289,
+        0.9173
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Batak",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Bengali",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Bhaiksuki",
+      "ratio": 0.9229,
+      "ratios": [
+        0.9274,
+        0.9289,
+        0.9124
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Brahmi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Buginese",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Buhid",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Canadian Aboriginal",
+      "ratio": 0.9293,
+      "ratios": [
+        0.9436,
+        0.9289,
+        0.9153
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Carian",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Caucasian Albanian",
+      "ratio": 0.9299,
+      "ratios": [
+        0.9452,
+        0.9289,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Chakma",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Cham",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Cherokee",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Chorasmian",
+      "ratio": 0.9299,
+      "ratios": [
+        0.9452,
+        0.9289,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Coptic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Cuneiform",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Cypriot",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Cypro Minoan",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Deseret",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Devanagari",
+      "ratio": 0.9234,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.9054
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Display",
+      "ratio": 0.8746,
+      "ratios": [
+        0.8845,
+        0.878,
+        0.8613
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Duployan",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Egyptian Hieroglyphs",
+      "ratio": 0.9248,
+      "ratios": [
+        0.9323,
+        0.9289,
+        0.9133
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Elbasan",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Elymaic",
+      "ratio": 0.9389,
+      "ratios": [
+        0.9681,
+        0.9289,
+        0.9197
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Ethiopic",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Georgian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Glagolitic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Gothic",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Grantha",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Gujarati",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Gunjala Gondi",
+      "ratio": 0.9272,
+      "ratios": [
+        0.9383,
+        0.9289,
+        0.9144
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Gurmukhi",
+      "ratio": 0.9234,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.9054
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Hanifi Rohingya",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Hanunoo",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Hatran",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Hebrew",
+      "ratio": 0.9205,
+      "ratios": [
+        0.9318,
+        0.9185,
+        0.9111
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans HK",
+      "ratio": 0.9168,
+      "ratios": [
+        0.9259,
+        0.9213,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Imperial Aramaic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Indic Siyaq Numbers",
+      "ratio": 0.9147,
+      "ratios": [
+        0.9066,
+        0.9289,
+        0.9088
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Inscriptional Pahlavi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Inscriptional Parthian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Javanese",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans JP",
+      "ratio": 0.9168,
+      "ratios": [
+        0.9259,
+        0.9213,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Kaithi",
+      "ratio": 0.9271,
+      "ratios": [
+        0.9381,
+        0.9289,
+        0.9143
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Kannada",
+      "ratio": 0.9288,
+      "ratios": [
+        0.9424,
+        0.9289,
+        0.9151
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Kawi",
+      "ratio": 0.9209,
+      "ratios": [
+        0.9222,
+        0.9289,
+        0.9115
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Kayah Li",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Kharoshthi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Khmer",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Khojki",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Khudawadi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans KR",
+      "ratio": 0.9168,
+      "ratios": [
+        0.9259,
+        0.9213,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lao",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lao Looped",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lepcha",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Limbu",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Linear A",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Linear B",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lisu",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lycian",
+      "ratio": 0.8485,
+      "ratios": [
+        0.822,
+        0.8049,
+        0.9188
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Lydian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mahajani",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Malayalam",
+      "ratio": 0.9307,
+      "ratios": [
+        0.9472,
+        0.9289,
+        0.916
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mandaic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Manichaean",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Marchen",
+      "ratio": 0.9227,
+      "ratios": [
+        0.9268,
+        0.9289,
+        0.9124
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Masaram Gondi",
+      "ratio": 0.9371,
+      "ratios": [
+        0.9635,
+        0.9289,
+        0.9189
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Math",
+      "ratio": 0.9292,
+      "ratios": [
+        0.9359,
+        0.9338,
+        0.918
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mayan Numerals",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Medefaidrin",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Meetei Mayek",
+      "ratio": 0.9281,
+      "ratios": [
+        0.9406,
+        0.9289,
+        0.9148
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mende Kikakui",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Meroitic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Miao",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Modi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mongolian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Mro",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Multani",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Myanmar",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Nabataean",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Nag Mundari",
+      "ratio": 0.9222,
+      "ratios": [
+        0.9222,
+        0.9289,
+        0.9157
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Nandinagari",
+      "ratio": 0.9299,
+      "ratios": [
+        0.9452,
+        0.9289,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans New Tai Lue",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Newa",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans NKo",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans NKo Unjoined",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Nushu",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Ogham",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Ol Chiki",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Hungarian",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Italic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old North Arabian",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Permic",
+      "ratio": 0.925,
+      "ratios": [
+        0.9329,
+        0.9289,
+        0.9133
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Persian",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Sogdian",
+      "ratio": 0.9164,
+      "ratios": [
+        0.9107,
+        0.9289,
+        0.9095
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old South Arabian",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Old Turkic",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Oriya",
+      "ratio": 0.9246,
+      "ratios": [
+        0.9355,
+        0.9289,
+        0.9094
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Osage",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Osmanya",
+      "ratio": 0.9294,
+      "ratios": [
+        0.9441,
+        0.9289,
+        0.9153
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Pahawh Hmong",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Palmyrene",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Pau Cin Hau",
+      "ratio": 0.9282,
+      "ratios": [
+        0.9408,
+        0.9289,
+        0.9148
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans PhagsPa",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Phoenician",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Psalter Pahlavi",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Rejang",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Runic",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Samaritan",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Saurashtra",
+      "ratio": 0.9288,
+      "ratios": [
+        0.9425,
+        0.9289,
+        0.915
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans SC",
+      "ratio": 0.9168,
+      "ratios": [
+        0.9259,
+        0.9213,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sharada",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9374,
+        0.9289,
+        0.9132
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Shavian",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Siddham",
+      "ratio": 0.9209,
+      "ratios": [
+        0.9222,
+        0.9289,
+        0.9115
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans SignWriting",
+      "ratio": 0.993,
+      "ratios": [
+        1.1059,
+        0.9289,
+        0.9441
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sinhala",
+      "ratio": 0.9479,
+      "ratios": [
+        0.9911,
+        0.9289,
+        0.9237
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sogdian",
+      "ratio": 0.9164,
+      "ratios": [
+        0.9107,
+        0.9289,
+        0.9095
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sora Sompeng",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Soyombo",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sundanese",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Sunuwar",
+      "ratio": 0.9389,
+      "ratios": [
+        0.9681,
+        0.9289,
+        0.9197
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Syloti Nagri",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Symbols",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Symbols 2",
+      "ratio": 0.9981,
+      "ratios": [
+        0.936,
+        0.9289,
+        1.1295
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Syriac",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Syriac Eastern",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Syriac Western",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tagalog",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tagbanwa",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tai Le",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tai Tham",
+      "ratio": 0.9383,
+      "ratios": [
+        0.9666,
+        0.9289,
+        0.9193
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tai Viet",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Takri",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tamil",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tamil Supplement",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tangsa",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans TC",
+      "ratio": 0.9168,
+      "ratios": [
+        0.9259,
+        0.9213,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Telugu",
+      "ratio": 0.9284,
+      "ratios": [
+        0.9413,
+        0.9289,
+        0.9149
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Thaana",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Thai",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Thai Looped",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tifinagh",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Tirhuta",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Ugaritic",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Vai",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Vithkuqi",
+      "ratio": 0.9265,
+      "ratios": [
+        0.9366,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Wancho",
+      "ratio": 0.9389,
+      "ratios": [
+        0.9681,
+        0.9289,
+        0.9197
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Warang Citi",
+      "ratio": 0.9301,
+      "ratios": [
+        0.9458,
+        0.9289,
+        0.9156
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Yi",
+      "ratio": 0.925,
+      "ratios": [
+        0.9329,
+        0.9289,
+        0.9133
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Sans Zanabazar Square",
+      "ratio": 0.9263,
+      "ratios": [
+        0.936,
+        0.9289,
+        0.914
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Noto Traditional Nushu",
+      "ratio": 0.9571,
+      "ratios": [
+        1.0146,
+        0.9289,
+        0.9278
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nova Mono",
+      "ratio": 0.9804,
+      "ratios": [
+        1.1123,
+        0.984,
+        0.8449
+      ],
+      "excluded": false
+    },
+    {
+      "family": "NTR",
+      "ratio": 0.7731,
+      "ratios": [
+        0.7671,
+        0.7543,
+        0.7979
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Numans",
+      "ratio": 1.0379,
+      "ratios": [
+        1.0615,
+        1.0453,
+        1.007
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nunito",
+      "ratio": 0.912,
+      "ratios": [
+        0.8983,
+        0.8866,
+        0.951
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nunito Sans",
+      "ratio": 0.9116,
+      "ratios": [
+        0.8973,
+        0.8866,
+        0.9509
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Nuosu SIL",
+      "ratio": 0.8819,
+      "ratios": [
+        0.853,
+        0.8382,
+        0.9546
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ojuju",
+      "ratio": 0.8552,
+      "ratios": [
+        0.8541,
+        0.8562,
+        0.8554
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Onest",
+      "ratio": 0.9364,
+      "ratios": [
+        0.9361,
+        0.9246,
+        0.9487
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Open Sans",
+      "ratio": 0.9162,
+      "ratios": [
+        0.9257,
+        0.9154,
+        0.9074
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Orbit",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Orbitron",
+      "ratio": 1.1303,
+      "ratios": [
+        1.1024,
+        1.1077,
+        1.1808
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Orienta",
+      "ratio": 0.9202,
+      "ratios": [
+        0.9471,
+        0.9456,
+        0.868
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Oswald",
+      "ratio": 0.7128,
+      "ratios": [
+        0.7215,
+        0.7004,
+        0.7165
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Outfit",
+      "ratio": 0.8885,
+      "ratios": [
+        0.8789,
+        0.8702,
+        0.9164
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Overpass",
+      "ratio": 0.8982,
+      "ratios": [
+        0.8949,
+        0.883,
+        0.9169
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Overpass Mono",
+      "ratio": 1.0755,
+      "ratios": [
+        1.2202,
+        1.0794,
+        0.9268
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Oxygen",
+      "ratio": 0.8918,
+      "ratios": [
+        0.8953,
+        0.8833,
+        0.8969
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Oxygen Mono",
+      "ratio": 1.0477,
+      "ratios": [
+        1.1887,
+        1.0516,
+        0.9029
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Padauk",
+      "ratio": 0.8184,
+      "ratios": [
+        0.831,
+        0.7909,
+        0.8332
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Palanquin",
+      "ratio": 0.8557,
+      "ratios": [
+        0.8499,
+        0.8505,
+        0.8668
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Palanquin Dark",
+      "ratio": 0.8969,
+      "ratios": [
+        0.8947,
+        0.8974,
+        0.8985
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Parkinsans",
+      "ratio": 0.9706,
+      "ratios": [
+        0.9819,
+        0.9974,
+        0.9325
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Pathway Extreme",
+      "ratio": 0.9636,
+      "ratios": [
+        0.9729,
+        0.9924,
+        0.9253
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Pathway Gothic One",
+      "ratio": 0.5971,
+      "ratios": [
+        0.6092,
+        0.6149,
+        0.5672
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Pattaya",
+      "ratio": 0.7998,
+      "ratios": [
+        0.7816,
+        0.7767,
+        0.8409
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Pavanam",
+      "ratio": 0.7959,
+      "ratios": [
+        0.7767,
+        0.7741,
+        0.8368
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Paytone One",
+      "ratio": 0.9901,
+      "ratios": [
+        1.0027,
+        1.0369,
+        0.9306
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Phetsarath",
+      "ratio": 0.8595,
+      "ratios": [
+        0.834,
+        0.8049,
+        0.9396
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Philosopher",
+      "ratio": 0.8578,
+      "ratios": [
+        0.8569,
+        0.8383,
+        0.8782
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Play",
+      "ratio": 0.8944,
+      "ratios": [
+        0.8967,
+        0.8834,
+        0.903
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Pliant",
+      "ratio": 0.9158,
+      "ratios": [
+        0.8952,
+        0.925,
+        0.9273
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Plus Jakarta Sans",
+      "ratio": 0.9436,
+      "ratios": [
+        0.9331,
+        0.9448,
+        0.953
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Pontano Sans",
+      "ratio": 0.864,
+      "ratios": [
+        0.8435,
+        0.84,
+        0.9086
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Poppins",
+      "ratio": 0.9585,
+      "ratios": [
+        0.9704,
+        0.9836,
+        0.9216
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Port Lligat Sans",
+      "ratio": 0.792,
+      "ratios": [
+        0.7943,
+        0.7819,
+        0.7999
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Pragati Narrow",
+      "ratio": 0.6782,
+      "ratios": [
+        0.6697,
+        0.646,
+        0.7189
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Preahvihear",
+      "ratio": 1.0121,
+      "ratios": [
+        1.0452,
+        0.9911,
+        1.0002
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Prompt",
+      "ratio": 0.9496,
+      "ratios": [
+        0.9642,
+        0.9463,
+        0.9384
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Proza Libre",
+      "ratio": 0.9706,
+      "ratios": [
+        0.967,
+        0.9618,
+        0.9829
+      ],
+      "excluded": false
+    },
+    {
+      "family": "PT Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "PT Sans",
+      "ratio": 0.8483,
+      "ratios": [
+        0.8539,
+        0.8399,
+        0.8511
+      ],
+      "excluded": false
+    },
+    {
+      "family": "PT Sans Caption",
+      "ratio": 0.9659,
+      "ratios": [
+        0.9857,
+        0.9773,
+        0.9346
+      ],
+      "excluded": false
+    },
+    {
+      "family": "PT Sans Narrow",
+      "ratio": 0.6842,
+      "ratios": [
+        0.6869,
+        0.6766,
+        0.6889
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Public Sans",
+      "ratio": 0.9368,
+      "ratios": [
+        0.9297,
+        0.9244,
+        0.9564
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Puritan",
+      "ratio": 0.8126,
+      "ratios": [
+        0.8321,
+        0.8192,
+        0.7867
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Qahiri",
+      "ratio": 0.5342,
+      "ratios": [
+        0.5842,
+        0.5486,
+        0.4698
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Quantico",
+      "ratio": 0.9347,
+      "ratios": [
+        0.9377,
+        0.9164,
+        0.9501
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Quattrocento Sans",
+      "ratio": 0.8603,
+      "ratios": [
+        0.8518,
+        0.8583,
+        0.8709
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Questrial",
+      "ratio": 0.8933,
+      "ratios": [
+        0.8812,
+        0.8789,
+        0.92
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Quicksand",
+      "ratio": 0.9167,
+      "ratios": [
+        0.9215,
+        0.9151,
+        0.9135
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Radio Canada",
+      "ratio": 0.9325,
+      "ratios": [
+        0.9326,
+        0.9119,
+        0.953
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Radio Canada Big",
+      "ratio": 0.8947,
+      "ratios": [
+        0.8881,
+        0.8854,
+        0.9106
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rajdhani",
+      "ratio": 0.7799,
+      "ratios": [
+        0.8043,
+        0.7768,
+        0.7585
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Raleway",
+      "ratio": 0.926,
+      "ratios": [
+        0.9176,
+        0.92,
+        0.9404
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ramabhadra",
+      "ratio": 0.955,
+      "ratios": [
+        0.9592,
+        0.9424,
+        0.9634
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rambla",
+      "ratio": 0.8039,
+      "ratios": [
+        0.8161,
+        0.812,
+        0.7834
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Rationale",
+      "ratio": 0.6889,
+      "ratios": [
+        0.7107,
+        0.7142,
+        0.6417
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Readex Pro",
+      "ratio": 0.9682,
+      "ratios": [
+        0.9707,
+        0.9554,
+        0.9784
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Recursive",
+      "ratio": 0.9676,
+      "ratios": [
+        1.0096,
+        0.9806,
+        0.9125
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Red Hat Display",
+      "ratio": 0.8968,
+      "ratios": [
+        0.8771,
+        0.8682,
+        0.9452
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Red Hat Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Red Hat Text",
+      "ratio": 0.9036,
+      "ratios": [
+        0.8892,
+        0.8682,
+        0.9533
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Reddit Mono",
+      "ratio": 0.9821,
+      "ratios": [
+        1.1142,
+        0.9857,
+        0.8463
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Reddit Sans",
+      "ratio": 0.8894,
+      "ratios": [
+        0.8781,
+        0.8802,
+        0.91
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Reddit Sans Condensed",
+      "ratio": 0.786,
+      "ratios": [
+        0.7834,
+        0.7799,
+        0.7945
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Reem Kufi",
+      "ratio": 0.9002,
+      "ratios": [
+        0.8703,
+        0.8802,
+        0.9501
+      ],
+      "excluded": false
+    },
+    {
+      "family": "REM",
+      "ratio": 0.9566,
+      "ratios": [
+        0.9516,
+        0.931,
+        0.9871
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rethink Sans",
+      "ratio": 0.9174,
+      "ratios": [
+        0.9206,
+        0.9082,
+        0.9234
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Roboto",
+      "ratio": 0.8894,
+      "ratios": [
+        0.885,
+        0.874,
+        0.9091
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Roboto Condensed",
+      "ratio": 0.7843,
+      "ratios": [
+        0.7856,
+        0.7723,
+        0.7952
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Roboto Flex",
+      "ratio": 0.8831,
+      "ratios": [
+        0.8781,
+        0.866,
+        0.9053
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Roboto Mono",
+      "ratio": 1.0477,
+      "ratios": [
+        1.1887,
+        1.0516,
+        0.9029
+      ],
+      "excluded": false
+    },
+    {
+      "family": "RocknRoll One",
+      "ratio": 1.0258,
+      "ratios": [
+        1.0343,
+        0.9949,
+        1.0482
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ropa Sans",
+      "ratio": 0.7475,
+      "ratios": [
+        0.7546,
+        0.7532,
+        0.7345
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Rosario",
+      "ratio": 0.8337,
+      "ratios": [
+        0.8367,
+        0.8223,
+        0.842
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rubik",
+      "ratio": 0.9283,
+      "ratios": [
+        0.9312,
+        0.9289,
+        0.9247
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rubik Mono One",
+      "ratio": 1.484,
+      "ratios": [
+        1.6837,
+        1.4895,
+        1.2789
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Ruda",
+      "ratio": 0.8795,
+      "ratios": [
+        0.912,
+        0.9027,
+        0.8238
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ruluko",
+      "ratio": 0.8247,
+      "ratios": [
+        0.8261,
+        0.8165,
+        0.8314
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Rum Raisin",
+      "ratio": 0.6856,
+      "ratios": [
+        0.7075,
+        0.6912,
+        0.658
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Russo One",
+      "ratio": 1.0057,
+      "ratios": [
+        1.0329,
+        1.0059,
+        0.9782
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Saira",
+      "ratio": 0.9283,
+      "ratios": [
+        0.9201,
+        0.9203,
+        0.9446
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Saira Condensed",
+      "ratio": 0.6926,
+      "ratios": [
+        0.6988,
+        0.7007,
+        0.6781
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Saira Extra Condensed",
+      "ratio": 0.5826,
+      "ratios": [
+        0.5925,
+        0.5989,
+        0.5563
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Saira Semi Condensed",
+      "ratio": 0.8153,
+      "ratios": [
+        0.8128,
+        0.8156,
+        0.8176
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sankofa Display",
+      "ratio": 0.763,
+      "ratios": [
+        0.7856,
+        0.7868,
+        0.7166
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sansation",
+      "ratio": 0.9176,
+      "ratios": [
+        0.9052,
+        0.9009,
+        0.9467
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sansita",
+      "ratio": 0.7857,
+      "ratios": [
+        0.7929,
+        0.805,
+        0.7593
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sarabun",
+      "ratio": 0.8579,
+      "ratios": [
+        0.8645,
+        0.8424,
+        0.8668
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sarala",
+      "ratio": 0.8993,
+      "ratios": [
+        0.9048,
+        0.898,
+        0.895
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sarpanch",
+      "ratio": 0.9774,
+      "ratios": [
+        0.9846,
+        0.9929,
+        0.9549
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Savate",
+      "ratio": 0.9083,
+      "ratios": [
+        0.9066,
+        0.8845,
+        0.9339
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sawarabi Gothic",
+      "ratio": 0.9155,
+      "ratios": [
+        0.9132,
+        0.8901,
+        0.9434
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Scada",
+      "ratio": 0.8388,
+      "ratios": [
+        0.8703,
+        0.8404,
+        0.8058
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Schibsted Grotesk",
+      "ratio": 0.9267,
+      "ratios": [
+        0.9222,
+        0.9199,
+        0.9381
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Science Gothic",
+      "ratio": 1.137,
+      "ratios": [
+        1.1438,
+        1.0861,
+        1.1811
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Scoutie Sans",
+      "ratio": 0.9111,
+      "ratios": [
+        0.9054,
+        0.9067,
+        0.9212
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Secular One",
+      "ratio": 0.9286,
+      "ratios": [
+        0.9428,
+        0.9601,
+        0.883
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sen",
+      "ratio": 0.9389,
+      "ratios": [
+        0.9587,
+        0.9281,
+        0.9299
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Seymour One",
+      "ratio": 1.4777,
+      "ratios": [
+        1.4702,
+        1.4677,
+        1.4951
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Shanti",
+      "ratio": 0.8753,
+      "ratios": [
+        0.8776,
+        0.8757,
+        0.8725
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Share",
+      "ratio": 0.7675,
+      "ratios": [
+        0.799,
+        0.7842,
+        0.7193
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Share Tech",
+      "ratio": 0.7606,
+      "ratios": [
+        0.7886,
+        0.7752,
+        0.7179
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Share Tech Mono",
+      "ratio": 0.9428,
+      "ratios": [
+        1.0696,
+        0.9463,
+        0.8125
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Shippori Antique",
+      "ratio": 0.9895,
+      "ratios": [
+        0.9793,
+        0.9525,
+        1.0368
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Shippori Antique B1",
+      "ratio": 0.9895,
+      "ratios": [
+        0.9793,
+        0.9525,
+        1.0368
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Siemreap",
+      "ratio": 0.855,
+      "ratios": [
+        0.8261,
+        0.8049,
+        0.934
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Signika",
+      "ratio": 0.8487,
+      "ratios": [
+        0.8505,
+        0.8392,
+        0.8566
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Signika Negative",
+      "ratio": 0.8465,
+      "ratios": [
+        0.8483,
+        0.8367,
+        0.8546
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sintony",
+      "ratio": 0.9508,
+      "ratios": [
+        0.9634,
+        0.9604,
+        0.9285
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sirivennela",
+      "ratio": 0.6868,
+      "ratios": [
+        0.6689,
+        0.659,
+        0.7326
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Six Caps",
+      "ratio": 0.3779,
+      "ratios": [
+        0.4051,
+        0.3923,
+        0.3362
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sixtyfour",
+      "ratio": 1.7459,
+      "ratios": [
+        1.9808,
+        1.7523,
+        1.5046
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Smooch Sans",
+      "ratio": 0.5875,
+      "ratios": [
+        0.6121,
+        0.6106,
+        0.5399
+      ],
+      "excluded": true
+    },
+    {
+      "family": "SN Pro",
+      "ratio": 0.8957,
+      "ratios": [
+        0.8872,
+        0.8762,
+        0.9237
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Snippet",
+      "ratio": 0.8854,
+      "ratios": [
+        0.8943,
+        0.8635,
+        0.8985
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sofia Sans",
+      "ratio": 0.849,
+      "ratios": [
+        0.8552,
+        0.8517,
+        0.8401
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sofia Sans Condensed",
+      "ratio": 0.6567,
+      "ratios": [
+        0.664,
+        0.6604,
+        0.6457
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sofia Sans Extra Condensed",
+      "ratio": 0.5348,
+      "ratios": [
+        0.5422,
+        0.5397,
+        0.5225
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sofia Sans Semi Condensed",
+      "ratio": 0.8076,
+      "ratios": [
+        0.8143,
+        0.8094,
+        0.7991
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sometype Mono",
+      "ratio": 1.0126,
+      "ratios": [
+        1.1489,
+        1.0164,
+        0.8727
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sono",
+      "ratio": 1.0807,
+      "ratios": [
+        1.2261,
+        1.0847,
+        0.9313
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sora",
+      "ratio": 1.0134,
+      "ratios": [
+        1.0115,
+        1.011,
+        1.0178
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sour Gummy",
+      "ratio": 0.8783,
+      "ratios": [
+        0.9061,
+        0.9157,
+        0.813
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Source Code Pro",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Source Sans 3",
+      "ratio": 0.8217,
+      "ratios": [
+        0.8298,
+        0.8264,
+        0.8089
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Space Grotesk",
+      "ratio": 0.9464,
+      "ratios": [
+        0.9594,
+        0.9692,
+        0.9106
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Space Mono",
+      "ratio": 1.0685,
+      "ratios": [
+        1.2122,
+        1.0724,
+        0.9208
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Special Gothic",
+      "ratio": 0.8536,
+      "ratios": [
+        0.8424,
+        0.8289,
+        0.8894
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Special Gothic Condensed One",
+      "ratio": 0.6466,
+      "ratios": [
+        0.653,
+        0.6594,
+        0.6275
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Special Gothic Expanded One",
+      "ratio": 1.1983,
+      "ratios": [
+        1.1811,
+        1.19,
+        1.2238
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Spinnaker",
+      "ratio": 0.9824,
+      "ratios": [
+        0.9701,
+        0.9414,
+        1.0359
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Spline Sans",
+      "ratio": 0.9012,
+      "ratios": [
+        0.8967,
+        0.9111,
+        0.8958
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Spline Sans Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stack Sans Headline",
+      "ratio": 0.9175,
+      "ratios": [
+        0.9164,
+        0.9248,
+        0.9113
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stack Sans Notch",
+      "ratio": 0.9202,
+      "ratios": [
+        0.9221,
+        0.9272,
+        0.9112
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stack Sans Text",
+      "ratio": 0.9698,
+      "ratios": [
+        0.9762,
+        0.9765,
+        0.9568
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stick",
+      "ratio": 0.9457,
+      "ratios": [
+        0.9286,
+        0.875,
+        1.0336
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stick No Bills",
+      "ratio": 0.7269,
+      "ratios": [
+        0.7309,
+        0.7266,
+        0.7232
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Strait",
+      "ratio": 0.7957,
+      "ratios": [
+        0.8135,
+        0.8067,
+        0.7669
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Strichpunkt Sans",
+      "ratio": 0.9194,
+      "ratios": [
+        0.9099,
+        0.8961,
+        0.9522
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Stylish",
+      "ratio": 0.7846,
+      "ratios": [
+        0.7915,
+        0.7735,
+        0.7889
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Sulphur Point",
+      "ratio": 0.8361,
+      "ratios": [
+        0.8782,
+        0.8464,
+        0.7836
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Sunflower",
+      "ratio": 0.8643,
+      "ratios": [
+        0.8691,
+        0.8611,
+        0.8628
+      ],
+      "excluded": false
+    },
+    {
+      "family": "SUSE",
+      "ratio": 0.8885,
+      "ratios": [
+        0.873,
+        0.8649,
+        0.9276
+      ],
+      "excluded": false
+    },
+    {
+      "family": "SUSE Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Syncopate",
+      "ratio": 1.3706,
+      "ratios": [
+        1.4384,
+        1.4891,
+        1.1842
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Syne",
+      "ratio": 0.8789,
+      "ratios": [
+        0.8699,
+        0.8789,
+        0.8878
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Syne Mono",
+      "ratio": 0.9602,
+      "ratios": [
+        1.0894,
+        0.9638,
+        0.8275
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tac One",
+      "ratio": 0.7088,
+      "ratios": [
+        0.6949,
+        0.7472,
+        0.6843
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Tajawal",
+      "ratio": 0.8195,
+      "ratios": [
+        0.8416,
+        0.8191,
+        0.7977
+      ],
+      "excluded": true
+    },
+    {
+      "family": "TASA Explorer",
+      "ratio": 0.9091,
+      "ratios": [
+        0.906,
+        0.919,
+        0.9025
+      ],
+      "excluded": false
+    },
+    {
+      "family": "TASA Orbiter",
+      "ratio": 0.9267,
+      "ratios": [
+        0.9223,
+        0.9148,
+        0.943
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tauri",
+      "ratio": 0.9204,
+      "ratios": [
+        0.9366,
+        0.9232,
+        0.9014
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Teachers",
+      "ratio": 0.8359,
+      "ratios": [
+        0.8347,
+        0.8186,
+        0.8544
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Teko",
+      "ratio": 0.5692,
+      "ratios": [
+        0.5786,
+        0.581,
+        0.548
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Telex",
+      "ratio": 0.9177,
+      "ratios": [
+        0.9202,
+        0.9151,
+        0.9179
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tenali Ramakrishna",
+      "ratio": 0.6622,
+      "ratios": [
+        0.6717,
+        0.6777,
+        0.6372
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Tenor Sans",
+      "ratio": 0.9658,
+      "ratios": [
+        0.9759,
+        0.9223,
+        0.9993
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Text Me One",
+      "ratio": 0.8203,
+      "ratios": [
+        0.8639,
+        0.7996,
+        0.7976
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Thasadith",
+      "ratio": 0.7957,
+      "ratios": [
+        0.7788,
+        0.7834,
+        0.8249
+      ],
+      "excluded": true
+    },
+    {
+      "family": "TikTok Sans",
+      "ratio": 0.9359,
+      "ratios": [
+        0.9257,
+        0.9243,
+        0.9577
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tiny5",
+      "ratio": 0.8454,
+      "ratios": [
+        0.8684,
+        0.834,
+        0.8336
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Titillium Web",
+      "ratio": 0.8417,
+      "ratios": [
+        0.8417,
+        0.8288,
+        0.8546
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tomorrow",
+      "ratio": 0.9564,
+      "ratios": [
+        0.9532,
+        0.9607,
+        0.9552
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Trispace",
+      "ratio": 1.1123,
+      "ratios": [
+        1.2308,
+        1.124,
+        0.9821
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Truculenta",
+      "ratio": 0.7056,
+      "ratios": [
+        0.7377,
+        0.6942,
+        0.685
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Tsukimi Rounded",
+      "ratio": 0.9874,
+      "ratios": [
+        0.9814,
+        0.9616,
+        1.0192
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Tuffy",
+      "ratio": 0.8359,
+      "ratios": [
+        0.8363,
+        0.807,
+        0.8642
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ubuntu",
+      "ratio": 0.9072,
+      "ratios": [
+        0.9061,
+        0.8996,
+        0.9159
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ubuntu Condensed",
+      "ratio": 0.7267,
+      "ratios": [
+        0.7373,
+        0.7247,
+        0.7183
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Ubuntu Mono",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ubuntu Sans",
+      "ratio": 0.8966,
+      "ratios": [
+        0.8944,
+        0.8888,
+        0.9064
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ubuntu Sans Mono",
+      "ratio": 0.9777,
+      "ratios": [
+        1.1092,
+        0.9813,
+        0.8426
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Unbounded",
+      "ratio": 1.2079,
+      "ratios": [
+        1.196,
+        1.2008,
+        1.2271
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Urbanist",
+      "ratio": 0.8664,
+      "ratios": [
+        0.852,
+        0.8761,
+        0.8709
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Valley Sans",
+      "ratio": 0.9739,
+      "ratios": [
+        0.9592,
+        0.9614,
+        1.001
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Varela",
+      "ratio": 0.966,
+      "ratios": [
+        0.9556,
+        0.9446,
+        0.9976
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Varela Round",
+      "ratio": 0.9626,
+      "ratios": [
+        0.9474,
+        0.9428,
+        0.9978
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Varta",
+      "ratio": 0.8197,
+      "ratios": [
+        0.8276,
+        0.8276,
+        0.804
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Vazirmatn",
+      "ratio": 0.8912,
+      "ratios": [
+        0.8897,
+        0.874,
+        0.9099
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Vend Sans",
+      "ratio": 0.8793,
+      "ratios": [
+        0.8776,
+        0.8926,
+        0.8677
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Victor Mono",
+      "ratio": 1.0475,
+      "ratios": [
+        1.1885,
+        1.0514,
+        0.9028
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Viga",
+      "ratio": 0.8966,
+      "ratios": [
+        0.906,
+        0.8925,
+        0.8913
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Voces",
+      "ratio": 0.9114,
+      "ratios": [
+        0.9285,
+        0.9196,
+        0.886
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Voltaire",
+      "ratio": 0.6888,
+      "ratios": [
+        0.7017,
+        0.6963,
+        0.6683
+      ],
+      "excluded": true
+    },
+    {
+      "family": "VT323",
+      "ratio": 0.6984,
+      "ratios": [
+        0.7923,
+        0.7009,
+        0.6018
+      ],
+      "excluded": true
+    },
+    {
+      "family": "WDXL Lubrifont JP N",
+      "ratio": 0.7016,
+      "ratios": [
+        0.7074,
+        0.6857,
+        0.7118
+      ],
+      "excluded": true
+    },
+    {
+      "family": "WDXL Lubrifont SC",
+      "ratio": 0.7016,
+      "ratios": [
+        0.7074,
+        0.6857,
+        0.7118
+      ],
+      "excluded": true
+    },
+    {
+      "family": "WDXL Lubrifont TC",
+      "ratio": 0.7016,
+      "ratios": [
+        0.7074,
+        0.6857,
+        0.7118
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Wendy One",
+      "ratio": 0.96,
+      "ratios": [
+        0.9604,
+        0.9682,
+        0.9512
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Winky Rough",
+      "ratio": 0.8186,
+      "ratios": [
+        0.8358,
+        0.8193,
+        0.8007
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Winky Sans",
+      "ratio": 0.8076,
+      "ratios": [
+        0.8282,
+        0.8161,
+        0.7785
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Wire One",
+      "ratio": 0.4351,
+      "ratios": [
+        0.449,
+        0.4455,
+        0.4108
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Wix Madefor Display",
+      "ratio": 0.9472,
+      "ratios": [
+        0.928,
+        0.9265,
+        0.9872
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Wix Madefor Text",
+      "ratio": 0.9438,
+      "ratios": [
+        0.9304,
+        0.9211,
+        0.9798
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Work Sans",
+      "ratio": 0.963,
+      "ratios": [
+        0.9838,
+        0.9574,
+        0.9478
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Workbench",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Xanh Mono",
+      "ratio": 0.873,
+      "ratios": [
+        0.9904,
+        0.8762,
+        0.7523
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Yaldevi",
+      "ratio": 0.8453,
+      "ratios": [
+        0.8557,
+        0.8604,
+        0.8198
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Yanone Kaffeesatz",
+      "ratio": 0.6005,
+      "ratios": [
+        0.6001,
+        0.6159,
+        0.5855
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Yantramanav",
+      "ratio": 0.8152,
+      "ratios": [
+        0.8196,
+        0.8,
+        0.8261
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Ysabeau",
+      "ratio": 0.845,
+      "ratios": [
+        0.8452,
+        0.8107,
+        0.8791
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ysabeau Infant",
+      "ratio": 0.863,
+      "ratios": [
+        0.8558,
+        0.8246,
+        0.9087
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ysabeau Office",
+      "ratio": 0.8552,
+      "ratios": [
+        0.8452,
+        0.8107,
+        0.9098
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Ysabeau SC",
+      "ratio": 0.9162,
+      "ratios": [
+        0.9461,
+        0.9059,
+        0.8965
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Yusei Magic",
+      "ratio": 0.8916,
+      "ratios": [
+        0.9357,
+        0.8996,
+        0.8396
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zain",
+      "ratio": 0.8605,
+      "ratios": [
+        0.8536,
+        0.8496,
+        0.8783
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zalando Sans",
+      "ratio": 0.936,
+      "ratios": [
+        0.9282,
+        0.9132,
+        0.9667
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zalando Sans Expanded",
+      "ratio": 1.1376,
+      "ratios": [
+        1.108,
+        1.0966,
+        1.2082
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Zalando Sans SemiExpanded",
+      "ratio": 1.0164,
+      "ratios": [
+        0.9999,
+        0.9864,
+        1.063
+      ],
+      "excluded": false
+    },
+    {
+      "family": "ZCOOL KuaiLe",
+      "ratio": 0.9755,
+      "ratios": [
+        0.9915,
+        0.9347,
+        1.0002
+      ],
+      "excluded": false
+    },
+    {
+      "family": "ZCOOL QingKe HuangYou",
+      "ratio": 0.7011,
+      "ratios": [
+        0.7078,
+        0.686,
+        0.7094
+      ],
+      "excluded": true
+    },
+    {
+      "family": "ZCOOL XiaoWei",
+      "ratio": 0.8578,
+      "ratios": [
+        0.8569,
+        0.8383,
+        0.8782
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zen Kaku Gothic Antique",
+      "ratio": 0.8649,
+      "ratios": [
+        0.8836,
+        0.8481,
+        0.863
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zen Kaku Gothic New",
+      "ratio": 0.8649,
+      "ratios": [
+        0.8836,
+        0.8481,
+        0.863
+      ],
+      "excluded": false
+    },
+    {
+      "family": "Zen Kurenaido",
+      "ratio": 0.8014,
+      "ratios": [
+        0.816,
+        0.753,
+        0.8353
+      ],
+      "excluded": true
+    },
+    {
+      "family": "Zen Maru Gothic",
+      "ratio": 0.8649,
+      "ratios": [
+        0.8836,
+        0.8481,
+        0.863
+      ],
+      "excluded": false
+    }
+  ],
+  "measuredAt": "2026-10-17",
+  "rule": "Exclude mean width ratios below 0.82 or above 1.2, and explicitly Condensed, Narrow, Compressed, Compact, Expanded, Extended, Wide or Stretched families.",
+  "maximumRatio": 1.2
+}

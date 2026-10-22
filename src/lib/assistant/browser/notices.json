@@ -1,0 +1,17 @@
+[
+  {
+    "family": "bonsai",
+    "source": "https://huggingface.co/prism-ml/Ternary-Bonsai-2-2B-gguf/resolve/683f7be2629342a50987627b40881e54761a2430/LICENSE",
+    "file": "bonsai-LICENSE",
+    "bytes": 10174,
+    "sha256": "69849221bfb90053de2134ef5e6d540287b4b98062326492f1f96f5da685524b"
+  },
+  {
+    "family": "ornith",
+    "source": "https://huggingface.co/ornith-ai/Ornith-1.5-9B-GGUF/resolve/abdd624b12ebf020b767fff532ff44fe552b28c3/README.md",
+    "file": "ornith-NOTICE.md",
+    "bytes": 26796,
+    "sha256": "73fea91dc1a115240c564071eb05738832837bb5e51eb043b817739b8c86f2ca",
+    "scope": "Pinned publisher model card declares MIT; its linked parent LICENSE is unavailable. Runtime MIT notice is packaged separately."
+  }
+]

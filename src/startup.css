@@ -1,0 +1,18 @@
+/* Copyright (C) 2026 Erik Landvall
+SPDX-License-Identifier: AGPL-3.0-only
+See LICENSE and LICENSE-ADDITIONAL-TERMS. */
+
+/* Opacity retains layout for font, editor and scroll restoration. */
+#app[aria-busy="true"] { opacity: 0; }
+
+#startup-status {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 2147483647;
+  overflow: clip;
+  background: var(--color-background, #eee9df);
+  color: var(--color-foreground, #1b2632);
+}
+

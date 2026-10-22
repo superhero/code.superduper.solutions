@@ -1,0 +1,138 @@
+/* Copyright (C) 2026 Erik Landvall
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See LICENSE and LICENSE-ADDITIONAL-TERMS. */
+
+/* Keep the inset fill independent of text and inline geometry. */
+.cm-editor span.cm-function-parameter {
+  --cm-token-background: color-mix(in srgb, var(--syntax-methodParameterBackground, var(--color-surface)) 80%, transparent);
+}
+
+.cm-editor .cm-content span.cm-function-parameter {
+  font-weight: 700;
+  position: relative;
+  isolation: isolate;
+  background-color: transparent;
+  background-image: none;
+  border-radius: 6px;
+}
+
+.cm-editor span.cm-scope-parent {
+  color: var(--syntax-parentText);
+  --cm-token-background: var(--syntax-parent);
+}
+
+.cm-editor span.cm-scope-global {
+  color: var(--syntax-globalText);
+  --cm-token-background: var(--syntax-global);
+}
+
+.cm-editor .cm-content span.cm-scope-parent,
+.cm-editor .cm-content span.cm-scope-global,
+.cm-editor .cm-content span.cm-scope-imported,
+.cm-editor .cm-content span.cm-method-parameter,
+.cm-editor .cm-content span.cm-function-parameter {
+  position: relative;
+  isolation: isolate;
+  border-radius: 6px;
+}
+
+.cm-editor .cm-content span.cm-scope-parent::before,
+.cm-editor .cm-content span.cm-scope-global::before,
+.cm-editor .cm-content span.cm-scope-imported::before,
+.cm-editor .cm-content span.cm-method-parameter::before,
+.cm-editor .cm-content span.cm-function-parameter::before {
+  content: "";
+  position: absolute;
+  inset: 2px 0;
+  z-index: -1;
+  border-radius: 6px;
+  background-color: var(--cm-token-background);
+  box-shadow: -2px 0 0 0 var(--cm-token-background), 2px 0 0 0 var(--cm-token-background);
+  pointer-events: none;
+}
+
+/* Selection stays above the opaque fill, including marks on the same span. */
+.cm-editor .cm-content .cm-scope-selection,
+.cm-editor .cm-content span.cm-scope-parent.cm-scope-selection,
+.cm-editor .cm-content span.cm-scope-parent.cm-scope-selection::before,
+.cm-editor .cm-content span.cm-scope-global.cm-scope-selection,
+.cm-editor .cm-content span.cm-scope-global.cm-scope-selection::before,
+.cm-editor .cm-content span.cm-scope-imported.cm-scope-selection,
+.cm-editor .cm-content span.cm-scope-imported.cm-scope-selection::before,
+.cm-editor .cm-content span.cm-method-parameter.cm-scope-selection,
+.cm-editor .cm-content span.cm-method-parameter.cm-scope-selection::before,
+.cm-editor .cm-content span.cm-function-parameter.cm-scope-selection,
+.cm-editor .cm-content span.cm-function-parameter.cm-scope-selection::before {
+  background-image: linear-gradient(var(--color-editor-selection-background), var(--color-editor-selection-background));
+  background-size: 100% 100%;
+  border-radius: 6px;
+}
+
+/* Clear overlays retained by development updates from the old argument pills. */
+.cm-editor .cm-content .cm-parameter-selection,
+.cm-editor .cm-content span.cm-function-parameter.cm-parameter-selection {
+  background-color: transparent;
+  background-image: none;
+  border-radius: 0;
+}
+
+/* Method arguments use the shared scope-pill format with their own fill. */
+.cm-editor span.cm-method-parameter {
+  --cm-token-background: color-mix(in srgb, var(--syntax-methodParameterBackground, var(--color-surface)) 80%, transparent);
+}
+
+/* A crisp outline around argument glyphs, without changing their fill. */
+.cm-editor .cm-content span.cm-function-parameter,
+.cm-editor .cm-content span.cm-method-parameter {
+  text-shadow:
+    -1px -1px 0 var(--color-background), 0 -1px 0 var(--color-background), 1px -1px 0 var(--color-background),
+    -1px 0 0 var(--color-background), 1px 0 0 var(--color-background),
+    -1px 1px 0 var(--color-background), 0 1px 0 var(--color-background), 1px 1px 0 var(--color-background);
+}
+
+/* Selected glyphs must not cast an outline over their selection fill. */
+.cm-editor .cm-content span.cm-scope-selection,
+.cm-editor .cm-content .cm-scope-selection span.cm-function-parameter,
+.cm-editor .cm-content .cm-scope-selection span.cm-method-parameter {
+  text-shadow: none;
+}
+.cm-editor .cm-content span.cm-function-parameter::selection,
+.cm-editor .cm-content span.cm-method-parameter::selection {
+  text-shadow: none;
+}
+
+/* Keep closing parentheses at the normal text weight. */
+.cm-editor .cm-content span.cm-call-close {
+  font-weight: 400;
+  text-shadow: none;
+}
+.cm-editor .cm-content span.cm-call-close:is(.cm-matchingBracket, .cm-nonmatchingBracket, .cm-scope-selection),
+.cm-editor .cm-content span.cm-call-close:has(:is(.cm-matchingBracket, .cm-nonmatchingBracket, .cm-scope-selection)),
+.cm-editor .cm-content :is(.cm-matchingBracket, .cm-nonmatchingBracket, .cm-scope-selection) span.cm-call-close,
+.cm-editor .cm-content span.cm-call-close :is(.cm-matchingBracket, .cm-nonmatchingBracket, .cm-scope-selection) {
+  font-weight: 400;
+  text-shadow: none;
+}
+
+/* Function-call name pills use the same rounding on both sides. */
+.cm-editor .cm-content span.cm-call-name,
+.cm-editor .cm-content span.cm-call-name::before,
+.cm-editor .cm-content span.cm-call-name.cm-scope-selection::before {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/* Parentheses do not cast text shadows. */
+.cm-editor .cm-content span.cm-call-open,
+.cm-editor .cm-content span.cm-call-close {
+  text-shadow: none;
+}
+
+/* Imports use the same color for their body and side extensions. */
+.cm-editor span.cm-scope-imported {
+  color: var(--syntax-imported);
+  --cm-token-background: var(--syntax-importedBackground);
+}
+.cm-editor .cm-content span.cm-scope-imported::before {
+  box-shadow: -2px 0 0 0 var(--cm-token-background), 2px 0 0 0 var(--cm-token-background);
+}

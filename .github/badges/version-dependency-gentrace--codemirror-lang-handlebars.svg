@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="20" role="img" aria-label="@gentrace/codemirror-lang-handlebars: 0.1.0-beta.4">
+  <!-- Copyright (C) 2026 Erik Landvall; SPDX-License-Identifier: AGPL-3.0-only. See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
+  <title>@gentrace/codemirror-lang-handlebars: 0.1.0-beta.4</title>
+  <clipPath id="round"><rect width="360" height="20" rx="3"/></clipPath>
+  <g clip-path="url(#round)">
+    <rect width="264" height="20" fill="#555"/>
+    <rect x="264" width="96" height="20" fill="#007ec6"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans Mono,monospace" font-size="11">
+    <text x="132" y="14">@gentrace/codemirror-lang-handlebars</text>
+    <text x="312" y="14">0.1.0-beta.4</text>
+  </g>
+</svg>

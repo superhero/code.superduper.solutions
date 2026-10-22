@@ -1,0 +1,376 @@
+# Copyright (C) 2026 Erik Landvall
+# SPDX-License-Identifier: AGPL-3.0-only
+# See LICENSE and LICENSE-ADDITIONAL-TERMS.
+name: ci-develop
+run-name: "#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+concurrency:
+  group: develop-ci-${{ github.event.pull_request.number }}
+  # Keep post-merge publication running when a PR is edited.
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  workflow-checks:
+    name: Automation Checks
+    if: "!startsWith(github.head_ref, 'docs/')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Lint standalone scripts
+        run: shellcheck .github/scripts/*.sh
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Use the declared npm version
+        run: |
+          npm_version="$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).engines.npm')"
+          [[ "$npm_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo '::error::package.json must declare an exact npm version in engines.npm.' >&2
+            exit 1
+          }
+          if [[ "$(npm --version)" != "$npm_version" ]]; then
+            npm install --global "npm@$npm_version" --no-audit --no-fund
+          fi
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Check dependency version badges
+        run: npm --loglevel=error run badges:dependencies -- --check
+
+      - name: Test automation
+        id: automation
+        run: npm --loglevel=error run test:automation
+
+      - name: Upload automation report
+        if: success() || (failure() && steps.automation.outcome == 'failure')
+        uses: actions/upload-artifact@v7
+        with:
+          name: automation-test-report
+          path: tmp/test/cucumber-automation.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 7
+
+  validate-pr:
+    name: Validate Gitflow
+    if: "!startsWith(github.head_ref, 'docs/')"
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/scripts/validate-pr.sh "$REPOSITORY" "$HEAD_BRANCH" "$BASE_BRANCH" "$HEAD_SHA"
+
+  prepare-changelog:
+    name: Prepare Staging Changelog
+    if: >-
+      vars.CODE_AUTOMATION_ENABLED == 'true'
+      && (!startsWith(github.head_ref, 'docs/'))
+    needs: [workflow-checks, validate-pr]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      updated: ${{ steps.prepare.outputs.updated }}
+    env:
+      PREPARE_STAGING: >-
+        ${{ github.event.pull_request.head.repo.full_name == github.repository
+            && !github.event.pull_request.draft
+            && (startsWith(github.head_ref, 'feature/') || startsWith(github.head_ref, 'bugfix/')) }}
+    steps:
+      - name: Checkout trusted base automation
+        if: env.PREPARE_STAGING == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select validated changelog automation and fetch pinned objects
+        if: env.PREPARE_STAGING == 'true'
+        id: automation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TESTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ && "$TESTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          authorization="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w 0)"
+          echo "::add-mask::$authorization"
+          GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0="http.${GITHUB_SERVER_URL}/.extraheader" \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $authorization" \
+            git fetch --no-tags origin "$HEAD_SHA" "$TESTED_SHA"
+          scripts="$GITHUB_WORKSPACE/.github/scripts"
+          if [[ ! -f "$scripts/prepare-changelog.sh" || ! -f "$scripts/prepare-changelog.mjs" || ! -f "$scripts/changelog.mjs" ]]; then
+            # First rollout: these exact proposed-merge files have already
+            # passed workflow-checks, under the existing same-repository trust model.
+            scripts="$(mktemp -d "$RUNNER_TEMP/changelog-automation.XXXXXX")"
+            for file in prepare-changelog.sh prepare-changelog.mjs changelog.mjs; do
+              git show "$TESTED_SHA:.github/scripts/$file" > "$scripts/$file"
+            done
+          fi
+          echo "scripts=$scripts" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub App token
+        if: env.PREPARE_STAGING == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: read
+
+      - name: Prepare source changelog before application tests
+        if: env.PREPARE_STAGING == 'true'
+        id: prepare
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          SCRIPTS: ${{ steps.automation.outputs.scripts }}
+        run: bash "$SCRIPTS/prepare-changelog.sh" "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$BASE_BRANCH" "$BASE_SHA" "$HEAD_BRANCH"
+
+  application:
+    name: Test and Build
+    if: >-
+      !startsWith(github.head_ref, 'docs/')
+      && !cancelled()
+      && needs.workflow-checks.result == 'success'
+      && needs.validate-pr.result == 'success'
+      && (needs.prepare-changelog.result == 'success' || needs.prepare-changelog.result == 'skipped')
+      && needs.prepare-changelog.outputs.updated != 'true'
+    needs: [workflow-checks, validate-pr, prepare-changelog]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout proposed merge
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Use the declared npm version
+        run: |
+          npm_version="$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).engines.npm')"
+          [[ "$npm_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo '::error::package.json must declare an exact npm version in engines.npm.' >&2
+            exit 1
+          }
+          if [[ "$(npm --version)" != "$npm_version" ]]; then
+            npm install --global "npm@$npm_version" --no-audit --no-fund
+          fi
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type check
+        run: npm --loglevel=error run typecheck
+
+      - name: Source tests
+        run: npm --loglevel=error run test:source
+
+      - name: Build
+        run: npm --loglevel=error run build
+
+      - name: Acceptance tests
+        id: acceptance
+        run: npm --loglevel=error run test:acceptance
+
+      - name: Browser tests against the built bundle
+        id: browser
+        timeout-minutes: 30
+        run: npm --loglevel=error run test:browser
+
+      - name: Upload browser results and diagnostics
+        if: ${{ !cancelled() && (steps.browser.outcome == 'success' || steps.browser.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-test-report
+          path: |
+            tmp/test/cucumber-browser.json
+            tmp/test/browser
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 7
+
+      - name: Upload tested bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: bundle
+          path: dist
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 7
+
+      - name: Upload failed acceptance report
+        if: failure() && steps.acceptance.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-report
+          path: tmp/test/cucumber-test.json
+          if-no-files-found: ignore
+          overwrite: true
+          retention-days: 7
+
+  auto-merge:
+    name: Auto Merge
+    outputs:
+      merge_sha: ${{ steps.merge.outputs.merge_sha }}
+    concurrency:
+      group: merge-${{ github.base_ref }}
+      cancel-in-progress: false
+    needs: [workflow-checks, validate-pr, application]
+    if: >-
+      vars.CODE_AUTOMATION_ENABLED == 'true'
+      && (!startsWith(github.head_ref, 'docs/') && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Checkout validated merge
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Merge validated pull request
+        id: merge
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: bash .github/scripts/auto-merge.sh "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$BASE_BRANCH" "$BASE_SHA" "$HEAD_BRANCH"
+
+  preview:
+    name: Deploy Preview
+    needs: auto-merge
+    if: >-
+      vars.CODE_AUTOMATION_ENABLED == 'true'
+      && (!startsWith(github.head_ref, 'docs/') && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft)
+    concurrency:
+      group: pages-${{ github.base_ref }}
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PAGES_BRANCH: ${{ github.base_ref }}
+      DEPLOY_SHA: ${{ needs.auto-merge.outputs.merge_sha }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+    steps:
+      - name: Checkout tested automation
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify merged content matches tested bundle
+        env:
+          TESTED_SHA: ${{ github.sha }}
+        run: bash .github/scripts/validate-release-tree.sh "$TESTED_SHA" "$DEPLOY_SHA"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+
+      - name: Download tested bundle
+        run: |
+          gh run download "$GITHUB_RUN_ID" --repo "$REPOSITORY" --name bundle --dir dist || {
+            echo "::error::Cannot download tested bundle from $REPOSITORY run $GITHUB_RUN_ID (branch=$PAGES_BRANCH, commit=$DEPLOY_SHA, destination=dist)." >&2
+            exit 1
+          }
+
+      - name: Check preview content and destination
+        id: prepare
+        run: bash .github/scripts/prepare-pages-deployment.sh "$REPOSITORY" "$PAGES_BRANCH" "$DEPLOY_SHA" dist
+
+      - name: Create GitHub App token
+        if: steps.prepare.outputs.skipped == 'false'
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-deployments: write
+
+      - name: Deploy changed preview
+        if: steps.prepare.outputs.deploy == 'true'
+        id: cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=code-superduper-solutions --branch="${{ env.PAGES_BRANCH }}" --commit-hash=${{ env.DEPLOY_SHA }} --commit-dirty=false --commit-message=bundle-sha256:${{ steps.prepare.outputs.bundle_hash }}
+
+      - name: Verify and record preview deployment
+        if: >-
+          (success() || (failure() && steps.cloudflare.outcome == 'failure'))
+          && steps.prepare.outputs.skipped == 'false'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BUNDLE_HASH: ${{ steps.prepare.outputs.bundle_hash }}
+          DEPLOYMENT_ID: ${{ steps.cloudflare.outputs.pages-deployment-id || steps.prepare.outputs.deployment_id }}
+          DEPLOYMENT_OUTCOME: ${{ steps.cloudflare.outcome == 'failure' && 'failure' || 'success' }}
+        run: bash .github/scripts/record-pages-deployment.sh "$REPOSITORY" "$PAGES_BRANCH" "$DEPLOY_SHA" "$BUNDLE_HASH" "$DEPLOYMENT_ID" "$DEPLOYMENT_OUTCOME"

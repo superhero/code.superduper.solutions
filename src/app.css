@@ -1,0 +1,285 @@
+/* Copyright (C) 2026 Erik Landvall
+SPDX-License-Identifier: AGPL-3.0-only
+See LICENSE and LICENSE-ADDITIONAL-TERMS. */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./palette.css";
+@import "./startup.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: Geomini;
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("./assets/fonts/Geomini-variable.ttf") format("truetype");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-Italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-BoldItalic.woff2") format("woff2");
+}
+@font-face {
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: Rationale;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/rationale-regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./assets/fonts/material-symbols-rounded.woff2") format("woff2");
+}
+@font-face {
+  font-family: Devicon;
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./assets/fonts/devicon.woff") format("woff");
+}
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  user-select: none;
+}
+
+/* Palette order never changes. Mode only reverses these six active slots.
+   All component roles below are defined once and follow that same reversal. */
+:root {
+  color-scheme: light;
+  --tone-1: var(--palette-1);
+  --tone-2: var(--palette-2);
+  --tone-3: var(--palette-3);
+  --tone-4: var(--palette-4);
+  --tone-5: var(--palette-5);
+  --tone-6: var(--palette-6);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --tone-1: var(--palette-6);
+  --tone-2: var(--palette-5);
+  --tone-3: var(--palette-4);
+  --tone-4: var(--palette-3);
+  --tone-5: var(--palette-2);
+  --tone-6: var(--palette-1);
+}
+
+@theme {
+  --default-transition-timing-function: ease-in;
+  --color-background: var(--tone-1);
+  --color-surface: var(--tone-2);
+  --color-foreground: var(--tone-6);
+  --color-hover-foreground: var(--color-toolbar-background);
+  --color-hover-background: color-mix(in srgb, var(--color-background) 50%, transparent);
+  --color-focus-background: var(--tone-5);
+  --color-focus-foreground: var(--tone-1);
+  --color-tree-guide: color-mix(in srgb, var(--tone-4) 50%, transparent);
+  --color-drop-foreground: var(--tone-3);
+  --color-drop-background: color-mix(in srgb, var(--color-drop-foreground) 50%, transparent);
+  --color-toolbar-background: var(--tone-4);
+  --color-toolbar-foreground: var(--tone-1);
+  --color-menu-background: var(--tone-5);
+  --color-menu-foreground: var(--tone-2);
+  --color-menu-hover-background: var(--tone-6);
+  --color-menu-hover-foreground: var(--tone-1);
+  --color-accent: var(--tone-6);
+  --color-emphasis: var(--tone-4);
+  --color-primary: var(--tone-6);
+  --color-primary-foreground: var(--tone-1);
+  --color-primary-hover-foreground: var(--color-hover-foreground);
+  --color-secondary: var(--tone-1);
+  --color-secondary-foreground: var(--color-foreground);
+  --color-muted: var(--tone-1);
+  --color-muted-foreground: var(--tone-6);
+  --color-disabled: var(--tone-6);
+  --color-disabled-foreground: var(--tone-1);
+  --color-destructive: var(--tone-6);
+  --color-invalid-ring: color-mix(in srgb, var(--color-destructive) 30%, transparent);
+  --color-border: var(--tone-5);
+  --color-git-added: var(--palette-8);
+  --color-git-modified: #d6b542;
+  --color-git-removed: #d85b55;
+  --color-scrollbar-thumb: var(--tone-5);
+  --color-input: var(--color-border);
+  --color-ring: var(--tone-6);
+  /* Replace the UI library's fixed black shadows with palette-based effects. */
+  --shadow-xs: 0 1px 2px 0 color-mix(in srgb, var(--color-foreground) 5%, transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--color-foreground) 10%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--color-foreground) 10%, transparent);
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+}
+
+
+@font-face {
+  font-family: Montserrat;
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-latin-italic.woff2") format("woff2");
+}
+
+:root {
+  --color-badge-background: var(--tone-6);
+  --color-badge-foreground: var(--tone-1);
+  --color-secondary-hover: var(--color-foreground);
+  --color-secondary-hover-foreground: var(--color-background);
+  --color-selection-background: var(--tone-6);
+  --color-selection-foreground: var(--tone-1);
+  --color-editor-selection-background: color-mix(in srgb, var(--color-foreground) 20%, transparent);
+  --color-error-background: var(--tone-1);
+  --color-error-foreground: var(--tone-6);
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+html, body, #app { width: 100%; min-height: 100%; margin: 0; }
+html, body { background: var(--color-background); color: var(--color-foreground); }
+html[data-error-overlay-open] { overflow: hidden !important; scrollbar-gutter: auto !important; padding-inline-end: var(--error-scrollbar-gutter, 0px); }
+body { font-family: var(--font-interface, Geomini), ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; line-height: 1.5; }
+#app, main { min-height: 100dvh; }
+html[data-interface-size="small"] { font-size: 14px; }
+html[data-interface-size="medium"] { font-size: 16px; }
+html[data-interface-size="large"] { font-size: 18px; }
+html[data-interface-font="montserrat"] { --font-interface: Montserrat; }
+html[data-interface-font="system"] { --font-interface: system-ui; }
+html[data-interface-font="serif"] { --font-interface: ui-serif, Georgia, serif; }
+html[data-interface-font="monospace"] { --font-interface: ui-monospace, monospace; }
+html[data-interface-font="rationale"] { --font-interface: Rationale; }
+button, input, select, textarea { font: inherit; }
+button, summary, select { cursor: pointer; }
+/* Pending Git work disables controls without repainting their palette colors. */
+button:disabled, [data-slot="button"][aria-disabled="true"] { cursor: not-allowed; opacity: 1; box-shadow: none; }
+button, a, textarea { -webkit-tap-highlight-color: transparent; }
+:is(.editor-toolbar, .git-context) :is(button, [data-slot="button"]) {
+  --control-hover-foreground: var(--color-toolbar-foreground);
+}
+@media (hover: hover) {
+  :is(button, a[href], summary, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *) {
+    color: var(--control-hover-foreground, var(--color-hover-foreground));
+  }
+  :is(button, a[href], summary, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *):not(:where([data-hover="foreground"], [data-hover="foreground"] *)) {
+    background-color: var(--color-hover-background);
+  }
+}
+/* Interface focus uses filled palette colors. CodeMirror owns its own frames,
+   cursors and match outlines; these rules also reach portalled app controls. */
+:where(body *):where(:not(.cm-editor, .cm-editor *)) { outline: none; }
+:where(button, input, select, textarea, fieldset, [data-slot="button"]):where(:not(.cm-editor, .cm-editor *)) {
+  border: 0;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+}
+:where(button, a[href], summary, input:not([type="checkbox"]), select, textarea, [role="button"], .file-name-text):where(:not(.cm-editor, .cm-editor *)):focus-visible {
+  background-color: var(--color-focus-background);
+  color: var(--color-focus-foreground);
+}
+.cm-editor :where(button, a[href], summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ring); outline-offset: 3px;
+}
+::selection { background: var(--color-selection-background); color: var(--color-selection-foreground); }
+* { scrollbar-width: thin; scrollbar-color: var(--color-scrollbar-thumb) transparent; }
+@supports selector(::-webkit-scrollbar) {
+  /* Native scrollbar colors override pseudo-element styling in Chromium. */
+  * { scrollbar-width: auto; scrollbar-color: auto; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-scrollbar-thumb); border-radius: 4px; }
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+}
+.button-content { display: inline-flex; align-items: center; justify-content: inherit; gap: inherit; min-width: 0; }
+.app-tooltip { z-index: 100; max-width: min(280px, calc(100vw - 16px)); padding: 6px 10px; border-radius: 4px; background: var(--color-badge-background); color: var(--color-badge-foreground); font-size: 0.6875rem; font-weight: 700; overflow-wrap: anywhere; }
+input::placeholder, textarea::placeholder { color: var(--color-foreground); opacity: 0.5; font-style: italic; }
+.tooltip-arrow { color: var(--color-badge-background); }
+[role="alert"] { margin: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* Apply to existing editor views too when live styles change. Each adjacent
+   highlight contributes its own one-pixel inset edge. */
+.cm-editor .cm-content .cm-line.cm-activeLine,
+.cm-editor .cm-gutters .cm-gutterElement.cm-activeLineGutter {
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--color-surface) 20%, var(--color-background)),
+    inset 0 -1px 0 0 color-mix(in srgb, var(--color-surface) 20%, var(--color-background));
+}
+
+/* Search controls share a row without CodeMirror's native input margins. */
+.cm-editor .cm-panel.cm-search .cm-search-input-group input.cm-textfield {
+  margin: 0;
+}
+.cm-editor .cm-panel.cm-search button[name="toggle-replace"] {
+  top: 0;
+  height: 28px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.cm-editor .cm-panel.cm-search .cm-search-row label {
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+.cm-editor .cm-panel.cm-search .cm-search-row label input[type="checkbox"] {
+  margin: 0;
+  align-self: center;
+}
+.cm-editor .cm-panel.cm-search button[name="toggle-replace"] .material-symbols-rounded,
+.cm-editor .cm-panel.cm-search .cm-search-row label .material-symbols-rounded {
+  display: block;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.cm-editor .cm-panel.cm-search button[name="toggle-replace"],
+.cm-editor .cm-panel.cm-search .cm-search-row label {
+  translate: 0 1px;
+}

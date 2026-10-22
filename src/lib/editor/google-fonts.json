@@ -1,0 +1,400 @@
+[
+  {
+    "family": "Anonymous Pro",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/anonymouspro/OFL.txt"
+  },
+  {
+    "family": "Azeret Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/azeretmono/OFL.txt"
+  },
+  {
+    "family": "B612 Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/b612mono/OFL.txt"
+  },
+  {
+    "family": "Chivo Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/chivomono/OFL.txt"
+  },
+  {
+    "family": "Courier Prime",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/courierprime/OFL.txt"
+  },
+  {
+    "family": "Cousine",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cousine/OFL.txt"
+  },
+  {
+    "family": "Cutive Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/cutivemono/OFL.txt"
+  },
+  {
+    "family": "DM Mono",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/dmmono/OFL.txt"
+  },
+  {
+    "family": "Datatype",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/datatype/OFL.txt"
+  },
+  {
+    "family": "Fira Code",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/firacode/OFL.txt"
+  },
+  {
+    "family": "Fira Mono",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/firamono/OFL.txt"
+  },
+  {
+    "family": "Fragment Mono",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/fragmentmono/OFL.txt"
+  },
+  {
+    "family": "Geist Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/geistmono/OFL.txt"
+  },
+  {
+    "family": "Google Sans Code",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/googlesanscode/OFL.txt"
+  },
+  {
+    "family": "Hibur Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/hiburmono/OFL.txt"
+  },
+  {
+    "family": "IBM Plex Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ibmplexmono/OFL.txt"
+  },
+  {
+    "family": "Inconsolata",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/inconsolata/OFL.txt"
+  },
+  {
+    "family": "Intel One Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/intelonemono/OFL.txt"
+  },
+  {
+    "family": "Iosevka Charon",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/iosevkacharon/OFL.txt"
+  },
+  {
+    "family": "Iosevka Charon Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/iosevkacharonmono/OFL.txt"
+  },
+  {
+    "family": "JetBrains Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/jetbrainsmono/OFL.txt"
+  },
+  {
+    "family": "Kode Mono",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/kodemono/OFL.txt"
+  },
+  {
+    "family": "LXGW WenKai Mono TC",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lxgwwenkaimonotc/OFL.txt"
+  },
+  {
+    "family": "Lekton",
+    "styles": [
+      "400",
+      "400i",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lekton/OFL.txt"
+  },
+  {
+    "family": "Libertinus Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/libertinusmono/OFL.txt"
+  },
+  {
+    "family": "Lilex",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/lilex/OFL.txt"
+  },
+  {
+    "family": "M PLUS 1 Code",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/mplus1code/OFL.txt"
+  },
+  {
+    "family": "Nova Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/novamono/OFL.txt"
+  },
+  {
+    "family": "Overpass Mono",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/overpassmono/OFL.txt"
+  },
+  {
+    "family": "Oxygen Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/oxygenmono/OFL.txt"
+  },
+  {
+    "family": "PT Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/ptmono/OFL.txt"
+  },
+  {
+    "family": "Red Hat Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redhatmono/OFL.txt"
+  },
+  {
+    "family": "Reddit Mono",
+    "styles": [
+      "400",
+      "700"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/redditmono/OFL.txt"
+  },
+  {
+    "family": "Roboto Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/robotomono/OFL.txt"
+  },
+  {
+    "family": "Share Tech Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sharetechmono/OFL.txt"
+  },
+  {
+    "family": "Sometype Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sometypemono/OFL.txt"
+  },
+  {
+    "family": "Source Code Pro",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/sourcecodepro/OFL.txt"
+  },
+  {
+    "family": "Space Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/spacemono/OFL.txt"
+  },
+  {
+    "family": "Spline Sans Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/splinesansmono/OFL.txt"
+  },
+  {
+    "family": "Syne Mono",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/synemono/OFL.txt"
+  },
+  {
+    "family": "Ubuntu Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntumono/UFL.txt"
+  },
+  {
+    "family": "Ubuntu Sans Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ufl/ubuntusansmono/LICENCE.txt"
+  },
+  {
+    "family": "Victor Mono",
+    "styles": [
+      "400",
+      "400i",
+      "700",
+      "700i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/victormono/OFL.txt"
+  },
+  {
+    "family": "Workbench",
+    "styles": [
+      "400"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/workbench/OFL.txt"
+  },
+  {
+    "family": "Xanh Mono",
+    "styles": [
+      "400",
+      "400i"
+    ],
+    "licenseUrl": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/xanhmono/OFL.txt"
+  }
+]
