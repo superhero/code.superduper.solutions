@@ -207,7 +207,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--color-foreground); }
   output { font-size: 0.75rem; line-height: 1; font-variant-numeric: tabular-nums; }
   .field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .size-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .size-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr)); gap: 8px; }
   .size-option { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 8px; border-radius: 4px; background: var(--color-background); font-size: .6875rem; font-weight: 700; cursor: pointer; }
   .size-option input { appearance: none; flex: 0 0 14px; width: 14px; height: 14px; margin: 0; border: 0; border-radius: 50%; background: var(--color-surface); cursor: pointer; }
   .size-option input:checked { background: radial-gradient(circle, var(--color-foreground) 0 3px, var(--color-surface) 3.5px); }

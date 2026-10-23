@@ -384,7 +384,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .git-panel { --git-divider: color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); display: flex; flex-direction: column; height: 100%; min-width: 0; min-height: 0; background: var(--color-background); color: var(--color-foreground); font-size: .75rem; container: git-pane / inline-size; }
   .git-panel[data-layout="docked"] { border-left: 2px solid var(--git-divider); }
   /* Account for the close glyph's inset in its 2rem button when matching the text's right edge. */
-  .git-header { height: var(--workbench-header-height, 48px); flex: 0 0 var(--workbench-header-height, 48px); min-height: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px calc(12px + 1rem - 9px) 6px calc(var(--git-tab-icon-center, calc(11px + .46875rem)) - .5rem); }
+  .git-header { height: var(--workbench-header-height, 48px); flex: 0 0 var(--workbench-header-height, 48px); min-height: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px calc(12px + 1rem - 5px) 6px calc(var(--git-tab-icon-center, calc(11px + .46875rem)) - .5rem); }
   .pane-title { display: flex; align-items: center; gap: 9px; min-width: 0; }
   h2 { margin: 0; font-size: .6875rem; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .git-context { height: 40px; flex: 0 0 40px; padding: 4px 12px 4px calc(var(--git-tab-icon-center, calc(11px + .46875rem)) - .46875rem); display: flex; align-items: center; justify-content: flex-end; gap: 12px; background: var(--color-toolbar-background); color: var(--color-toolbar-foreground); }
