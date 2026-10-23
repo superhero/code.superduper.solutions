@@ -30,6 +30,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   ];
   let open=$state(false),loading=$state(false),errors=$state<string[]>([]),notices=$state<FormatterNotice[]>([]);
   let disposed=false,revision=0;
+  const correspondingSource = import.meta.env.VITE_SOURCE_ARCHIVE_URL || 'https://github.com/superhero/code.superduper.solutions';
   async function refresh(){
     const current=++revision;
     if(!open || disposed)return;
@@ -66,6 +67,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     <summary><MaterialIcon name="license" /><span>Licenses and notices</span></summary>
     {#if open}
       <p>Copyright © 2026 Erik Landvall. This application comes without warranty. You may redistribute it under AGPL-3.0-only and its additional terms.</p>
+      <p><a href={correspondingSource}>Corresponding source</a></p>
       <details><summary>Application license · AGPL-3.0-only</summary><pre>{applicationLicense}</pre></details>
       <details><summary>Application additional terms</summary><pre>{applicationTerms}</pre></details>
       {#if loading}<p role="status">Reading notices…</p>{/if}
@@ -81,4 +83,6 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .license-notices>details>summary{font-size:0.9375rem;font-weight:650}
   details details{margin-top:12px}p{font-size:0.6875rem;line-height:1.6;margin:16px 0}
   pre{font-size:0.6875rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0}
+  a{color:inherit;text-underline-offset:3px}
+  a:focus-visible{outline:0;background:var(--color-secondary);color:var(--color-secondary-foreground)}
 </style>

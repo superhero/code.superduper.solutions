@@ -13,7 +13,8 @@ const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exac
 const dialog=page=>page.locator('[data-git-panel]');
 const action=(page,name)=>dialog(page).getByRole('button',{name,exact:true});
 async function identity(page){await dialog(page).getByRole('textbox',{name:'Commit author name',exact:true}).fill('Browser author');await dialog(page).getByRole('textbox',{name:'Commit author email',exact:true}).fill('browser@example.invalid');}
-async function open(page){await page.getByRole('button',{name:'Commit changes',exact:true}).click();await expect(dialog(page)).toBeVisible();await expect(action(page,'Stage all')).toBeVisible();}
+async function openOperations(page){if(!await dialog(page).count())await page.getByRole('button',{name:'Git operations',exact:true}).click();await expect(dialog(page)).toBeVisible();await action(page,'Actions').click();}
+async function open(page){await openOperations(page);await action(page,'Staging').click();await expect(action(page,'Stage all')).toBeVisible();}
 async function close(page){await action(page,'Close').click();await expect(dialog(page)).toHaveCount(0);await saved(page);}
 async function createBranch(page,name){
  const menu=await openNavigationMenu(page,'Branch');await menu.getByRole('menuitem',{name:'New branch',exact:true}).click();
@@ -47,7 +48,7 @@ Then('new commit reviews stage all files and retain manual exclusions across reo
  },repositoryId);
  await page.reload();await saved(page);
  const before=await repositorySnapshot(page);
- await page.getByRole('button',{name:'Git operations',exact:true}).click();
+ await openOperations(page);
  await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
  expect((await repositoryGitStatus(page)).files.every(file=>file.head===file.stage)).toBe(true);
  await action(page,'Staging').click();
@@ -163,7 +164,7 @@ Then('Git action buttons and commit rows change only their foreground on hover',
   await dialog(page).locator('[data-pane-heading]').hover();await expect(button).toBeEnabled();
   const before=await button.evaluate(element=>getComputedStyle(element).backgroundColor);
   const foreground=await button.evaluate(element=>{
-   const probe=document.createElement('span');probe.style.color='var(--color-hover-foreground)';element.append(probe);
+   const probe=document.createElement('span');probe.style.color='var(--control-hover-foreground, var(--color-hover-foreground))';element.append(probe);
    const color=getComputedStyle(probe).color;probe.remove();return color;
   });
   await button.hover();await expect(button).toHaveCSS('color',foreground);await expect(button).toHaveCSS('background-color',before);
@@ -192,11 +193,11 @@ Then('Git action buttons and commit rows change only their foreground on hover',
 Then('both history views expose Git operations and commit inspection does not check out',{timeout:90000},async function(){
  const page=this.page;await page.getByLabel('Code editor document',{exact:true}).fill('const saved = true;');await saved(page);
  await open(page);await commit(page,'Source baseline');await close(page);
- await selectPage(page,'History');await expect(page.getByRole('button',{name:'Commit changes',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Git operations',exact:true})).toBeVisible();
+ await selectPage(page,'History');await expect(page.getByRole('button',{name:'Commit changes',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Git operations',exact:true})).toBeVisible();
  await page.getByRole('navigation',{name:'History views',exact:true}).getByRole('button',{name:'Commit history',exact:true}).click();const graph=page.getByRole('list',{name:'Commit history',exact:true});const current=await graph.locator('li[aria-current="true"]').getAttribute('data-oid');
  await graph.getByRole('button',{name:`Inspect commit ${current.slice(0,8)}`,exact:true}).click();await expect(dialog(page).getByRole('region',{name:'Selected commit',exact:true})).toContainText('Source baseline');
  await expect(page.getByRole('button',{name:'Branch',exact:true})).toHaveAttribute('data-value','main');await close(page);
- await page.getByRole('button',{name:'Git operations',exact:true}).click();await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
+ await openOperations(page);await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
  const operations=['Merge branch','Rebase branch','Cherry-pick commit','Revert commit','Squash commits through branch tip','Reset branch','Recovery','Create tag','Delete tag','Rename branch','Delete branch'];
  await page.getByRole('button',{name:'Git operation',exact:true}).click();for(const name of operations)await expect(page.getByRole('menuitemradio',{name,exact:true})).toBeVisible();await page.keyboard.press('Escape');
  await close(page);
@@ -204,7 +205,7 @@ Then('both history views expose Git operations and commit inspection does not ch
 Then('commit comparisons retain both immutable versions in editor tabs across reload',{timeout:90000},async function(){
  const page=this.page,before=await repositorySnapshot(page),index=await repositoryGitStatus(page);
  const versions=[['Changed version','const version = 1;','const version = 2;'],['Original version','','const version = 1;']];
- await page.getByRole('button',{name:'Git operations',exact:true}).click();await action(page,'Commits').click();
+ await openOperations(page);await action(page,'Commits').click();
  const comparison=page.getByRole('region',{name:'Commit file diff',exact:true});
  const read=label=>comparison.getByLabel(label,{exact:true}).locator('.cm-line').allTextContents().then(lines=>lines.join('\n'));
  const verify=async(parent,current)=>{
@@ -261,10 +262,10 @@ Then('Git targets and merge methods start selected and preserve explicit choices
  await expect(page.getByRole('button',{name:'Reset mode',exact:true})).toHaveAttribute('data-value','hard');
  await close(page);
  await createBranch(page,'topic/defaults');await createBranch(page,'topic/current');
- await page.reload();await saved(page);await page.getByRole('button',{name:'Git operations',exact:true}).click();
+ await page.reload();await saved(page);await openOperations(page);
  await expect(target).toHaveAttribute('data-value','refs/heads/main');await expect(method).toHaveAttribute('data-value','merge');
  await selectDropdown(page,'Git target','refs/heads/topic/defaults');await selectDropdown(page,'Merge method','squash');
- await close(page);await page.getByRole('button',{name:'Git operations',exact:true}).click();
+ await close(page);await openOperations(page);
  await expect(target).toHaveAttribute('data-value','refs/heads/topic/defaults');await expect(method).toHaveAttribute('data-value','squash');
  await page.getByLabel('Code editor document',{exact:true}).fill('const changed = true;\n');await saved(page);
  await expect(target).toHaveAttribute('data-value','refs/heads/topic/defaults');await expect(method).toHaveAttribute('data-value','squash');
@@ -287,7 +288,7 @@ Then('Git targets match their operation and exclude the current branch where req
  await selectDropdown(page,'Git operation','tag');await dialog(page).getByLabel('New name',{exact:true}).fill('v1.0');
  await action(page,'Create tag').click();await expect.poll(async()=>(await repositoryGitStatus(page)).tags.map(tag=>tag.name)).toEqual(['v1.0']);
  await close(page);await createBranch(page,'feature/targets');await selectDropdown(page,'Branch','main');await saved(page);
- await page.getByRole('button',{name:'Git operations',exact:true}).click();
+ await openOperations(page);
  for(const kind of ['merge','rebase','delete-branch']){
   await selectDropdown(page,'Git operation',kind);await expect(target).toHaveAttribute('data-value','refs/heads/feature/targets');
   await choices(['refs/heads/feature/targets']);await expect(dialog(page).locator('label[for="git-target"]')).toHaveText('Target (branch)');
@@ -388,7 +389,7 @@ Then('Git pane motion, layout and focus adapt without losing the commit draft',{
  await page.getByLabel('Code editor document',{exact:true}).fill('const changed = false;\n');await saved(page);
  await expect(dialog(page)).toBeVisible();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Preserve this draft');
  await close(page);
- await page.getByRole('button',{name:'Git operations',exact:true}).click();await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
+ await openOperations(page);await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
  await selectDropdown(page,'Git operation','rebase');await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
  await this.attach(await page.screenshot({path:`${this.artifactDirectory}/git-pane-docked.png`}), 'image/png');
  await action(page,'Staging').click();await page.setViewportSize({width:390,height:844});
@@ -416,20 +417,22 @@ Then('the {string} button toggles the Git pane without losing drafts',async func
   const button=page.getByRole('button',{name:entry,exact:true});
   await expect(button).toHaveAttribute('aria-expanded','false');
   await button.click();await expect(dialog(page)).toBeVisible();await expect(button).toHaveAttribute('aria-expanded','true');
-  await expect(action(page,entry==='Commit changes'?'Staging':'Actions')).toHaveAttribute('aria-pressed','true');
+  await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
+  await action(page,'Staging').click();
   await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Retained toggle draft');
-  const other=page.getByRole('button',{name:entry==='Commit changes'?'Git operations':'Commit changes',exact:true});
-  await other.click();await expect(dialog(page)).toBeVisible();
-  await expect(action(page,entry==='Commit changes'?'Actions':'Staging')).toHaveAttribute('aria-pressed','true');
   await button.click();await expect(dialog(page)).toBeVisible();
-  await expect(action(page,entry==='Commit changes'?'Staging':'Actions')).toHaveAttribute('aria-pressed','true');
+  await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
+  await action(page,'Staging').click();
+  await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
   await action(page,'Commits').click();
   await button.click();await expect(dialog(page)).toBeVisible();
-  await expect(action(page,entry==='Commit changes'?'Staging':'Actions')).toHaveAttribute('aria-pressed','true');
+  await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
+  await action(page,'Staging').click();
   await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
+  await action(page,'Actions').click();
   await button.click();await expect(dialog(page)).toHaveCount(0);await expect(button).toHaveAttribute('aria-expanded','false');await expect(button).toBeFocused();
-  await button.click();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
-  await button.click();await expect(dialog(page)).toHaveCount(0);
+  await button.click();await action(page,'Staging').click();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
+  await close(page);
  }
 });
 Then('Git pane resizing supports dragging cancellation keyboard and responsive restoration',{timeout:90000},async function(){
@@ -468,7 +471,7 @@ Then('the main view follows Git pane opening and closing across views',{timeout:
  const session=await page.context().newCDPSession(page);await session.send('Performance.enable');
  const results=[];
  for(const view of ['Editor','Editor','Editor','History','Settings']){
-  if(view==='Settings'){await selectPage(page,'Editor');await page.getByRole('button',{name:'Git operations',exact:true}).click();await expect(dialog(page)).toBeVisible();}
+  if(view==='Settings'){await selectPage(page,'Editor');await openOperations(page);await expect(dialog(page)).toBeVisible();}
   await selectPage(page,view);await saved(page);
   for(const opening of (view==='Settings'?[false]:[true,false])){
    const before=await session.send('Performance.getMetrics');
@@ -484,7 +487,7 @@ Then('the main view follows Git pane opening and closing across views',{timeout:
     };sample();
    });
    await (opening?page.getByRole('button',{name:'Git operations',exact:true}):action(page,'Close')).click();
-   if(opening){await expect(dialog(page)).toBeVisible();await page.locator('[data-slot="sheet-dock"]').evaluate(async element=>{await Promise.all(element.getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{})));});}
+   if(opening){await expect(dialog(page)).toBeVisible();await page.locator('[data-slot="sheet-dock"]').filter({has:dialog(page)}).evaluate(async element=>{await Promise.all(element.getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{})));});}
    else await expect(dialog(page)).toHaveCount(0);
    await page.evaluate(()=>new Promise(requestAnimationFrame));
    const samples=await page.evaluate(()=>{window.gitDockSampling=false;cancelAnimationFrame(window.gitDockFrame);return window.gitDockSamples;});
@@ -529,8 +532,7 @@ Then('Git header toolbar and tab edges share the main view pixel coordinates',{t
    let difference=0;
    for(const [main,git]of pairs){const a=document.querySelector(main).getBoundingClientRect(),b=document.querySelector(git).getBoundingClientRect();difference=Math.max(difference,Math.abs(a.top-b.top),Math.abs(a.bottom-b.bottom));}
    const center=element=>{const r=element.getBoundingClientRect();return r.x+r.width/2;};
-   const gitTitle=document.querySelector('.git-header .material-symbols-rounded'),gitBranch=document.querySelector('.git-context .material-symbols-rounded'),gitTab=document.querySelector('.git-tab .material-symbols-rounded');
-   difference=Math.max(difference,Math.abs(center(gitTitle)-center(gitBranch)));
+   const gitTitle=document.querySelector('.git-header .material-symbols-rounded'),gitTab=document.querySelector('.git-tab .material-symbols-rounded');
    if(gitTab.getBoundingClientRect().width>0)difference=Math.max(difference,Math.abs(center(gitTitle)-center(gitTab)));
    if(tabs?.getBoundingClientRect().height>0){const a=document.querySelector('.file-tab-select').getBoundingClientRect(),b=document.querySelector('.git-tab .button-content').getBoundingClientRect();difference=Math.max(difference,Math.abs((a.top+a.bottom-b.top-b.bottom)/2));}
    if(tabs?.getBoundingClientRect().height>0){
@@ -540,7 +542,7 @@ Then('Git header toolbar and tab edges share the main view pixel coordinates',{t
    return difference;
   })).toBeLessThan(.01);
   await expect.poll(()=>page.evaluate(()=>{
-   const icon=document.querySelector('.git-header button .material-symbols-rounded'),text=document.querySelector('.git-context code');
+   const icon=document.querySelector('.git-context button .material-symbols-rounded'),text=document.querySelector('.git-status');
    const context=document.createElement('canvas').getContext('2d'),style=getComputedStyle(icon);
    context.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
    const right=icon.getBoundingClientRect().x+context.measureText(icon.textContent).actualBoundingBoxRight;
@@ -594,15 +596,15 @@ Then('Git tab changes keep their first card visible with {string} motion at {int
  const results=[];
  for(let repeat=0;repeat<3;repeat++)for(const tab of ['Actions','Stashes','Commits','Staging']){
   await page.evaluate(()=>{
-   const pane=document.querySelector('[data-git-panel]'),previous=pane.querySelector('.view-content');
+   const pane=document.querySelector('[data-git-panel]'),previous=pane.querySelector('.git-scroll > .view-content, .git-scroll > .git-card');
    const chrome=[pane.querySelector('.git-header'),pane.querySelector('.git-context'),pane.querySelector('.git-tabs')];
    const bounds=chrome.map(element=>{const r=element.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height}});
    window.gitTabSample={done:false,frames:[],animations:[],chromeShift:0};
    const observer=new MutationObserver(()=>{
-    const view=pane.querySelector('.view-content');if(!view||view===previous)return;observer.disconnect();
+    const view=pane.querySelector('.git-scroll > .view-content, .git-scroll > .git-card');if(!view||view===previous)return;observer.disconnect();
     const started=performance.now();
     const sample=()=>{
-     const data=window.gitTabSample,style=getComputedStyle(view),card=view.querySelector('.git-card');
+     const data=window.gitTabSample,style=getComputedStyle(view),card=view.matches('.git-card')?view:view.querySelector('.git-card');
      data.frames.push({time:performance.now()-started,opacity:Number(style.opacity),transform:style.transform,cardTop:card.getBoundingClientRect().top});
      if(!data.animations.length)data.animations=view.getAnimations().map(animation=>animation.effect.getKeyframes().map(frame=>({opacity:frame.opacity,transform:frame.transform})));
      for(let i=0;i<chrome.length;i++){const r=chrome[i].getBoundingClientRect(),b=bounds[i];data.chromeShift=Math.max(data.chromeShift,Math.abs(r.x-b.x),Math.abs(r.y-b.y),Math.abs(r.width-b.width),Math.abs(r.height-b.height));}
@@ -631,7 +633,7 @@ Then('Git tab changes keep their first card visible with {string} motion at {int
 });
 Then('Git dropdown labels and controls share a continuous hover area at {int} pixels',{timeout:90000},async function(width){
  const page=this.page;await page.setViewportSize({width,height:900});
- await page.getByRole('button',{name:'Git operations',exact:true}).click();await expect(dialog(page).locator('#git-command')).toBeVisible();
+ await openOperations(page);await expect(dialog(page).locator('#git-command')).toBeVisible();
  const palette=await dialog(page).evaluate(pane=>{
   const probe=document.createElement('span');probe.hidden=true;pane.append(probe);
   const values={};for(const state of ['hover','focus']){probe.style.color=`var(--color-${state}-foreground)`;probe.style.backgroundColor=`var(--color-${state}-background)`;const style=getComputedStyle(probe);values[state]={color:style.color,background:style.backgroundColor};}

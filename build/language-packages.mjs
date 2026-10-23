@@ -10,6 +10,7 @@ import {bundledLiquidDocs,liquidDocs} from './liquid-docs.mjs';
 import {browserLanguageResources,resourcesFor} from './language-resources.mjs';
 import { offlineDockerRegistry } from './offline-docker-registry.mjs';
 import { collectInlineWorkerLicenses } from './license-notices.mjs';
+import { publishPackageArtifact } from './package-artifacts.mjs';
 const definitions = [
   ['liquid','Shopify Liquid','Shopify Liquid','@shopify/theme-language-server-browser'],
   ['postgres','PostgreSQL','PostgreSQL SQL','@postgres-language-server/wasm'],
@@ -70,7 +71,8 @@ async function generate() {
       }
       const envelope=Buffer.from(JSON.stringify({schema:1,id,version:metadata.version,kind:'module',payload:payload.toString('base64'),resources:await resourcesFor(id),notices:[...projectNotices,...unique.values()]}));
       const sha256=createHash('sha256').update(envelope).digest('hex'),filename=`languages/${id}-${metadata.version}-${sha256.slice(0,12)}.language.json`;
-      assets.set(filename,envelope);catalog.push({id,name,languages,version:metadata.version,kind:'module',github:githubRepository(metadata.repository),bytes:envelope.length,payloadBytes:payload.length,sha256,url:`./${filename}`});
+      const transport=publishPackageArtifact(assets,filename,envelope);
+      catalog.push({id,name,languages,version:metadata.version,kind:'module',github:githubRepository(metadata.repository),bytes:envelope.length,payloadBytes:payload.length,sha256,...transport});
     }finally{await bundle.close();}
   }
   return{assets,catalog};

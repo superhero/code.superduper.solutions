@@ -32,6 +32,28 @@ Feature: Reuse the active Pages deployment when the tested bundle is unchanged
     When the Pages deployment is prepared
     Then the Pages decision is deploy "true" and skipped "false"
 
+  Scenario: A complete Pages bundle includes reusable optional package parts
+    Given a tested Pages bundle for "develop"
+    And the Pages bundle includes optional support assets
+    And the Pages destination is "identical"
+    When the Pages deployment is prepared
+    Then the Pages decision is deploy "false" and skipped "false"
+
+  Scenario: A changed optional package invalidates an identical application page
+    Given a tested Pages bundle for "develop"
+    And the Pages bundle includes optional support assets
+    And the Pages destination is "identical"
+    And an optional Pages package changes
+    When the Pages deployment is prepared
+    Then the Pages decision is deploy "true" and skipped "false"
+
+  Scenario: A nested optional package cannot redirect hashing through a symlink
+    Given a tested Pages bundle for "develop"
+    And the Pages bundle includes optional support assets
+    And an optional Pages package is a symlink
+    When the Pages deployment is prepared
+    Then Pages preparation fails with "eleven nonempty regular application, hosting, and favicon files"
+
   Scenario: A dependency badge update does not invalidate a tested bundle
     Given a tested Pages bundle for "develop"
     And the Pages destination is "identical"

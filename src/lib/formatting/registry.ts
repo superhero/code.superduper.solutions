@@ -5,6 +5,7 @@ import { openDB, type DBSchema } from 'idb';
 import catalog from 'virtual:formatter-catalog';
 import { validatePackage, type FormatterPackage, type PackageEnvelope } from './packages.ts';
 import type { FormatterRoute } from './types.ts';
+import { downloadPackage } from '../packages/download.ts';
 export const formatterPackages: readonly FormatterPackage[] = catalog;
 interface InstalledPackage { id: string; version: string; sha256: string; bytes: ArrayBuffer; installedAt: number }
 interface FormatterDB extends DBSchema { packages: { key: string; value: InstalledPackage; indexes: { metadata: [string,string,string] } } }
@@ -71,7 +72,9 @@ export async function importFormatterPackage(bytes: ArrayBuffer): Promise<void> 
 }
 export async function installFormatter(item: FormatterPackage, onprogress: (received: number) => void,
   signal?: AbortSignal): Promise<void> {
-  if (!formatterPackages.some(known => known.id === item.id && known.sha256 === item.sha256)) throw new Error('Unknown formatter package.');
+  const known = formatterPackages.find(known => known.id === item.id && known.sha256 === item.sha256);
+  if (!known) throw new Error('Unknown formatter package.');
+  item = known;
   if (location.protocol === 'file:') throw new Error('Use Import package when opening the application from a local HTML file.');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(new Error('The formatter download timed out. Try again.')), 120_000);
@@ -79,22 +82,8 @@ export async function installFormatter(item: FormatterPackage, onprogress: (rece
   signal?.addEventListener('abort', abort, { once: true });
   if (signal?.aborted) abort();
   try {
-    const response = await fetch(new URL(item.url, document.baseURI), { credentials: 'omit', signal: controller.signal });
-    if (!response.ok || !response.body) throw new Error('The formatter could not be downloaded. Try again online, or import its package file.');
-    const reader = response.body.getReader(), chunks: Uint8Array[] = [];
-    let received = 0;
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      received += value.byteLength;
-      if (received > item.bytes) { await reader.cancel(); throw new Error('The formatter download exceeded its expected size.'); }
-      chunks.push(value); onprogress(received);
-    }
-    const bytes = new Uint8Array(received);
-    let offset = 0;
-    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
-    if (controller.signal.aborted) throw controller.signal.reason;
-    await storePackage(bytes.buffer, item, controller.signal);
+    const bytes = await downloadPackage(item, document.baseURI, onprogress, controller.signal);
+    await storePackage(bytes, item, controller.signal);
   } finally { clearTimeout(timeout); signal?.removeEventListener('abort', abort); }
 }
 export async function removeFormatter(id: string): Promise<void> {

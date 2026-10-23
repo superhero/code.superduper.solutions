@@ -12,6 +12,31 @@ import { createFromBuffer } from "@dprint/formatter";
 import { collectInlineWorkerLicenses, embedLicenseNotices, licenseInventoryFile, renderLicenseNotices } from "../build/license-notices.mjs";
 import { faviconFiles } from "../build/favicons.mjs";
 
+async function publishedPackageBytes(item) {
+  return Buffer.concat(await Promise.all((item.parts ?? [{url:item.url}]).map(part => readFile(`dist/${part.url.slice(2)}`))));
+}
+
+Then('every static download fits Pages and large optional packages retain verified parts', {timeout:30_000}, async function () {
+  const files = await readdir('dist', {recursive:true, withFileTypes:true});
+  for (const file of files.filter(file => file.isFile())) {
+    const bytes = await readFile(join(file.parentPath, file.name));
+    assert.ok(bytes.length <= 25 * 1024 * 1024, file.name);
+  }
+  const formatters = await (await import('../build/formatter-packages.mjs')).createFormatterPackages();
+  const languages = await (await import('../build/language-packages.mjs')).createLanguagePackages();
+  const split = [...formatters.catalog, ...languages.catalog].filter(item => item.parts);
+  assert.deepEqual(split.map(item => item.id).sort(), ['dprint-roslyn','fourmolu','toml']);
+  for (const item of split) {
+    assert.equal(item.parts.reduce((total, part) => total + part.bytes, 0), item.bytes);
+    for (const part of item.parts) {
+      const bytes = await readFile(`dist/${part.url.slice(2)}`);
+      assert.equal(bytes.length, part.bytes);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), part.sha256);
+    }
+    assert.equal(createHash('sha256').update(await publishedPackageBytes(item)).digest('hex'), item.sha256);
+  }
+});
+
 Given("the production build has completed", async function () { this.html = await readFile("dist/index.html", "utf8"); });
 Then('optional browser inference files retain pinned runtime bytes and publisher notices', async function () {
   const { BROWSER_PROFILES, artifactsFor } = await import('./lib/assistant/browser/catalog.ts');
@@ -27,7 +52,7 @@ Then('optional browser inference files retain pinned runtime bytes and publisher
 Then('upstream integrations are self-contained verified packages with complete notices',async function(){
  const {catalog}=await(await import('../build/remote-packages.mjs')).createRemotePackages();assert.equal(catalog.length,3);
  for(const item of catalog){
-  const bytes=await readFile(`dist/${item.url.slice(2)}`);assert.equal(bytes.length,item.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
+  const bytes=await publishedPackageBytes(item);assert.equal(bytes.length,item.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
   const envelope=JSON.parse(bytes.toString()),payload=Buffer.from(envelope.payload,'base64').toString();
   assert.equal(envelope.id,item.id);assert.equal(envelope.version,item.version);assert.ok(!this.html.includes(envelope.payload));assert.ok(envelope.notices.some(notice=>notice.name.includes(item.id==='github'?'@octokit/rest':item.id==='gitlab'?'@gitbeaker/rest':'bitbucket')));
   assert.ok(envelope.notices.every(notice=>notice.text.trim().length>100));assert.ok(!parseAst(payload).body.some(node=>node.type==='ImportDeclaration'||node.source));
@@ -43,7 +68,7 @@ Then("the formatter packages retain their WebAssembly notices in full", { timeou
       : (await (await import('../build/formatter-artifacts.mjs')).formatterArtifact(plugin)).bytes;
     const notice = createFromBuffer(input).getLicenseText().trim();
     const entry = catalog.find(item => item.id === `dprint-${plugin}`);
-    const artifact = JSON.parse(assets.get(entry.url.slice(2)).toString());
+    const artifact = JSON.parse(Buffer.concat((entry.parts ?? [{url:entry.url}]).map(part => assets.get(part.url.slice(2)))).toString());
     assert.equal(artifact.notices[0].text,notice);
     if (plugin === 'clang-format') {
       const supplement = JSON.parse(await readFile('build/licenses/clang-format-0.1.0.json','utf8'));
@@ -65,7 +90,7 @@ Then("optional formatter packages match their catalog and have no external modul
   assert.equal(catalog.length, 38);
   assert.deepEqual(catalog.map(item=>item.id).sort(),providers.map(item=>item.id).sort());
   for (const item of catalog) {
-    const bytes = await readFile(`dist/${item.url.slice(2)}`);
+    const bytes = await publishedPackageBytes(item);
     assert.equal(bytes.length, item.bytes);
     assert.equal(createHash("sha256").update(bytes).digest("hex"), item.sha256);
     const envelope = JSON.parse(bytes.toString());
@@ -148,7 +173,9 @@ Then("an unaccounted worker inventory fails the build", async function () {
   }), /worker dependency license inventory is empty/);
 });
 Then("the distribution contains only the page hosting headers and favicon assets", async function () {
-  assert.deepEqual((await readdir("dist")).sort(), ["_headers", "index.html", "formatters", "languages", "syntax", "remotes", "types", "browser-models", ...faviconFiles].sort());
+  const files = await readdir('dist');
+  assert.deepEqual(files.sort(), ["_headers", "index.html", "formatters", "languages", "syntax", "remotes", "types", "browser-models", ...faviconFiles,
+    ...(files.includes('source.tar.gz') ? ['source.tar.gz'] : [])].sort());
 });
 Then("the hosting headers enable cross-origin isolation", async function () {
   const headers = await readFile("dist/_headers", "utf8");
@@ -263,7 +290,7 @@ Then("language engine packages match their trusted catalog without external impo
   const {catalog}=await(await import('../build/language-packages.mjs')).createLanguagePackages();
   assert.deepEqual(catalog.map(item=>item.id).sort(),['typescript','html','css','json','yaml','markdown','graphql','dockerfile','postgres','toml','wgsl','liquid'].sort());
   for(const item of catalog){
-    const bytes=await readFile(`dist/${item.url.slice(2)}`),envelope=JSON.parse(bytes);
+    const bytes=await publishedPackageBytes(item),envelope=JSON.parse(bytes);
     assert.equal(bytes.length,item.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
     assert.equal(envelope.version,item.version);
     for(const resource of Object.values(envelope.resources??{}))assert.ok(WebAssembly.validate(Buffer.from(resource,'base64')));assert.equal(envelope.id,item.id);
@@ -283,7 +310,7 @@ Then('type library packages contain declarations and notices outside the engine 
   const engine=JSON.parse(await readFile(`dist/languages/${engineFile}`,'utf8')),engineText=Buffer.from(engine.payload,'base64').toString();
   assert.ok(!engine.notices.some(notice=>['@types/node','undici-types'].includes(notice.name)));
   for(const item of catalog){
-    const bytes=await readFile(`dist/${item.url.slice(2)}`),envelope=JSON.parse(bytes);
+    const bytes=await publishedPackageBytes(item),envelope=JSON.parse(bytes);
     assert.equal(bytes.length,item.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
     assert.equal(envelope.id,item.id);assert.equal(envelope.version,item.version);assert.equal(envelope.kind,'data');
     const payload=Buffer.from(envelope.payload,'base64');assert.equal(payload.length,item.payloadBytes);
@@ -307,7 +334,7 @@ Then('type library packages contain declarations and notices outside the engine 
 Then("optional HCL syntax stays separate with verified metadata and complete notices", async function () {
   const {catalog}=await(await import('../build/syntax-packages.mjs')).createSyntaxPackages();
   assert.deepEqual(catalog.map(item=>item.id),["hcl","handlebars-beta"]);
-  const item=catalog[0],bytes=await readFile(`dist/${item.url.slice(2)}`),envelope=JSON.parse(bytes);
+  const item=catalog[0],bytes=await publishedPackageBytes(item),envelope=JSON.parse(bytes);
   assert.equal(bytes.length,item.bytes);
   assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
   const code=Buffer.from(envelope.payload,'base64').toString();
@@ -321,7 +348,7 @@ Then("the Handlebars beta is a verified separate package with its complete upstr
   const {catalog}=await(await import('../build/syntax-packages.mjs')).createSyntaxPackages();
   const item=catalog.find(item=>item.id==='handlebars-beta');assert.ok(item);
   assert.equal(item.version,'0.1.0-beta.4');
-  const bytes=await readFile(`dist/${item.url.slice(2)}`),envelope=JSON.parse(bytes);
+  const bytes=await publishedPackageBytes(item),envelope=JSON.parse(bytes);
   assert.equal(bytes.length,item.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
   const code=Buffer.from(envelope.payload,'base64').toString();
   assert.ok(!/\bimport\s*(?:\(|["'{*])/.test(code));assert.ok(!this.html.includes(code));

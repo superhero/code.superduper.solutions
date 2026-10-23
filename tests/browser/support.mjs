@@ -49,6 +49,12 @@ async function startDevelopmentServer() {
 }
 
 BeforeAll(async function () {
+  const publishedURL = process.env.BROWSER_TEST_BASE_URL ? new URL(process.env.BROWSER_TEST_BASE_URL) : undefined;
+  if (publishedURL && (publishedURL.protocol !== 'https:' || publishedURL.hostname !== 'code.superduper.solutions'
+    || publishedURL.port || publishedURL.pathname !== '/' || publishedURL.search || publishedURL.hash
+    || publishedURL.username || publishedURL.password)) {
+    throw new Error('BROWSER_TEST_BASE_URL must be https://code.superduper.solutions/.');
+  }
   const html = await readFile(process.env.BROWSER_TEST_HTML ?? "dist/index.html");
   // Serve the production artifacts being tested, without rebuilding or reading
   // every optional package into memory before even one scenario can start.
@@ -84,7 +90,7 @@ BeforeAll(async function () {
     productionServer.once("error", reject);
     productionServer.listen(0, "127.0.0.1", done);
   });
-  productionURL = `http://127.0.0.1:${productionServer.address().port}`;
+  productionURL = publishedURL?.origin ?? `http://127.0.0.1:${productionServer.address().port}`;
   try {
     browser = await chromium.launch({
       ignoreDefaultArgs: ["--hide-scrollbars"],

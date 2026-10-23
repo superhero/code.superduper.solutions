@@ -63,7 +63,7 @@ Feature: Review and perform local Git operations
   Scenario: Git pane docks beside the editor and covers the workspace on small screens
     Then Git pane motion, layout and focus adapt without losing the commit draft
 
-  Scenario Outline: <entry> toggles its pane in Editor and History
+  Scenario Outline: <entry> toggles its pane and retains staging drafts in Editor and History
     Given the current edit and source Git histories are recorded
     Then the "<entry>" button toggles the Git pane without losing drafts
     And the edit Git history is unchanged
@@ -72,7 +72,6 @@ Feature: Review and perform local Git operations
     Examples:
       | entry          |
       | Git operations |
-      | Commit changes |
 
   Scenario: Git pane divider resizes and persists without changing file history
     Given the current edit and source Git histories are recorded

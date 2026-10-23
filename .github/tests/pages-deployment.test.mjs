@@ -3,7 +3,7 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { API, get, OTHER_SHA, REPOSITORY, SHA } from "./support.mjs";
@@ -18,6 +18,10 @@ const FILES = { "index.html": HTML, _headers: HEADERS,
 const hash = value => createHash("sha256").update(value).digest("hex");
 const bundleHash = files => hash(Object.keys(files).sort().map(name => `${hash(files[name])}  ${name}\n`).join(""));
 const HASH = bundleHash(FILES);
+const bundleContents = (root, prefix = '') => Object.fromEntries(readdirSync(join(root, prefix), {withFileTypes:true}).flatMap(entry => {
+  const name = prefix + entry.name;
+  return entry.isDirectory() ? Object.entries(bundleContents(root, name + '/')) : [[name, readFileSync(join(root, name))]];
+}));
 const QUERY = "query($owner: String!, $name: String!, $ref: String!) { repository(owner: $owner, name: $name) { ref(qualifiedName: $ref) { target { oid } } } }";
 
 Given("a tested Pages bundle for {string}", function (branch)
@@ -33,6 +37,22 @@ Given("a tested Pages bundle for {string}", function (branch)
 Given("the Pages destination is {string}", function (state)
 {
   this.pages.state = state;
+  this.pages.destinationHash = bundleHash(bundleContents(this.pages.bundle));
+});
+
+Given('the Pages bundle includes optional support assets', function () {
+  for (const [directory, file] of [['formatters','fixture.formatter.json.part-001'],['languages','fixture.language.json'],['browser-models/wllama','wllama.wasm']]) {
+    mkdirSync(join(this.pages.bundle, directory), {recursive:true});
+    writeFileSync(join(this.pages.bundle, directory, file), 'Verified optional bytes');
+  }
+});
+Given('an optional Pages package changes', function () {
+  writeFileSync(join(this.pages.bundle, 'formatters/fixture.formatter.json.part-001'), 'Changed optional bytes');
+});
+Given('an optional Pages package is a symlink', function () {
+  const path = join(this.pages.bundle, 'formatters/fixture.formatter.json.part-001');
+  unlinkSync(path); symlinkSync(join(this.pages.bundle, 'index.html'), path);
+  this.pages.invalidInput = true;
 });
 
 Given("the Pages branch is {string}", function (state)
@@ -106,7 +126,7 @@ When("the Pages deployment is prepared", function ()
     aliases: [alias],
     environment: branch === "main" ? "production" : "preview",
     latest_stage: { name: "deploy", status: "success" },
-    deployment_trigger: { metadata: { branch, commit_message: `bundle-sha256:${HASH}` } }
+    deployment_trigger: { metadata: { branch, commit_message: `bundle-sha256:${this.pages.destinationHash ?? HASH}` } }
   };
   if (state === "changed") deployment.deployment_trigger.metadata.commit_message = `bundle-sha256:${"b".repeat(64)}`;
   if (state === "legacy HTML hash") deployment.deployment_trigger.metadata.commit_message = `bundle-sha256:${hash(HTML)}`;
@@ -188,8 +208,7 @@ Then("the Pages decision is deploy {string} and skipped {string}", function (dep
   const output = Object.fromEntries(readFileSync(this.automation.output, "utf8").trim().split("\n")
     .map(line => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1)]));
   assert.deepEqual(output, {
-    deploy, skipped, bundle_hash: bundleHash(Object.fromEntries(Object.keys(FILES)
-      .map(filename => [filename, readFileSync(join(this.pages.bundle, filename))]))), alias_url: this.pages.alias,
+    deploy, skipped, bundle_hash: bundleHash(bundleContents(this.pages.bundle)), alias_url: this.pages.alias,
     deployment_id: deploy === "false" && skipped === "false" ? ID : "",
     deployment_url: deploy === "false" && skipped === "false" ? `https://12345678.${PROJECT}.pages.dev` : ""
   });

@@ -10,6 +10,7 @@ import { dockerfileFormatterPackage,browserFormatterPackage } from './browser-fo
 import { fourmoluPackage } from './fourmolu-package.mjs';
 import { formatterArtifact } from './formatter-artifacts.mjs';
 import { collectInlineWorkerLicenses } from './license-notices.mjs';
+import { publishPackageArtifact } from './package-artifacts.mjs';
 
 const providers = JSON.parse(await readFile(new URL('../src/lib/formatting/providers.json', import.meta.url), 'utf8'));
 const definitions = providers.filter(provider => provider.engine === 'dprint').map(provider => [provider.plugin, provider.name, provider.languages]);
@@ -26,9 +27,9 @@ async function generate() {
       payload: payload.toString('base64'), notices, ...resources }));
     const sha256 = createHash('sha256').update(envelope).digest('hex');
     const filename = `formatters/${id}-${version}-${sha256.slice(0, 12)}.formatter.json`;
-    assets.set(filename, envelope);
+    const transport = publishPackageArtifact(assets, filename, envelope);
     catalog.push({ id, name, languages, version, kind, github: providers.find(provider => provider.id === id).github, bytes: envelope.length,
-      payloadBytes: payload.length, sha256, url: `./${filename}` });
+      payloadBytes: payload.length, sha256, ...transport });
   };
   for (const [plugin, name, languages] of definitions) {
     const definition = providers.find(provider => provider.id === `dprint-${plugin}`);

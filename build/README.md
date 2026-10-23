@@ -61,6 +61,24 @@ No formatter payload enters the main HTML. There are no runtime registry calls
 or generated remote bundles. Release artifacts must preserve the package files
 with their matching HTML; publishing a newer catalog is how updates are offered.
 
+`package-artifacts.mjs` emits optional formatter/language envelopes above 20 MiB
+as ordered static parts. Their trusted catalog includes each part's URL, byte
+size and SHA-256; installation reconstructs and validates the original envelope.
+The 38 formatter and twelve language packages are logical counts, not a fixed
+count of hosted files. Every emitted file fits Pages' 25 MiB limit. Publish all
+parts with their matching HTML, including the per-part metadata; do not omit a
+large provider or move it to a different origin without updating the contract.
+
+For an authorized manual working-tree publication, build with
+`VITE_SOURCE_ARCHIVE_URL=./source.tar.gz` and include the reviewed corresponding
+source archive at that path in the published directory. The Licenses and notices
+view links to it. Include tracked source and reviewed new source files, the
+lockfile and complete project/asset notices; exclude ignored local data,
+credentials, caches, dependencies, and build output. The published source must
+match the deployed application changes. Clean committed builds default to the
+project's GitHub source link. `source.tar.gz` is optional hosting output and
+participates in the complete deployment hash when present.
+
 Wasm packages preserve the original plugin bytes and full notices obtained from
 `getLicenseText()`. Prettier providers are independent minified browser ESM
 bundles with embedded dependencies and no external imports; their actual module

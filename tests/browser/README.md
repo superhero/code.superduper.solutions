@@ -1,5 +1,34 @@
 # Browser scenarios
 
+The opt-in `pagesLive` profile verifies a reviewed Pages distribution against
+`CODE_PAGES_URL` (the production domain by default) and the local JSON manifest
+selected by `CODE_DEPLOYMENT_MANIFEST`. It checks application startup, effective
+isolation headers, the corresponding-source link, every served asset's bytes and
+SHA-256, and real Roslyn/Taplo installations from split static downloads. It uses
+fresh browser contexts and writes `tmp/test/cucumber-pages-live.json`; ordinary
+offline browser runs do not contact the deployment. A loopback HTTP candidate
+server is also supported for verification before publication. Use the pinned
+Playwright browser, or the existing explicit `BROWSER_EXECUTABLE_PATH` override.
+
+The `pagesBehavior` profile runs the existing editing, import, local Git, vault,
+and formatter scenarios against the published editor. Set
+`BROWSER_TEST_BASE_URL=https://code.superduper.solutions/` to use the live origin;
+without that explicit override, the harness serves the local production build.
+The override accepts only that HTTPS hostname and rejects credentials, alternate
+ports, paths and query strings. Development-only fixtures remain excluded.
+Each scenario gets a fresh isolated browser context, and vault tests use only
+synthetic credentials with intercepted provider requests. The profile writes
+`tmp/test/cucumber-pages-behavior.json` and retains normal browser diagnostics.
+Run it with the pinned toolchain and `BROWSER_TEST_RUNTIME=local` when using a
+local Chromium executable:
+
+```sh
+BROWSER_TEST_BASE_URL=https://code.superduper.solutions/ \
+  BROWSER_TEST_RUNTIME=local \
+  node node_modules/@cucumber/cucumber/bin/cucumber.js \
+  --config cucumber.config.mjs --profile pagesBehavior
+```
+
 `@auto-stash-ui` exercises dirty commit checkout and return through the real Git
 and History panes, preserving partial staging and independent edits on both
 versions across reload. Branch cases also verify that selecting another branch

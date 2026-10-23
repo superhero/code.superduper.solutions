@@ -88,7 +88,10 @@ Then('the AI vault and saved OpenAI connection preserve ciphertext across reload
   const page=this.page;await create(this);await profile(this);
   const state=await snapshot(page),encoded=JSON.stringify(state);expect(encoded).not.toContain(key);expect(encoded).not.toContain(password);expect(encoded).not.toContain(this.recovery);
   expect(state.connections[0].credentialId).toBeTruthy();expect(state.connections[0].provider).toBe('openai');
-  await page.reload();await saved(page);await button(page,'AI chat').click();await selectDropdown(page,'AI connection',{label:'OpenAI fixture'});
+  await page.reload();await saved(page);
+  await expect(button(page,'AI chat')).toHaveAttribute('aria-expanded','true');
+  await selectDropdown(page,'AI connection',{label:'OpenAI fixture'});
+  await expect(button(page,'AI connection')).toContainText('OpenAI fixture');
   await button(page,'Connect').click();await expect(page.getByRole('alert')).toContainText('Unlock');
   await openVault(page);await expect(vault(page).getByText('OpenAI fixture key',{exact:true})).toBeVisible();await expect(button(page,'Copy OpenAI fixture key')).toBeDisabled();
   await page.getByLabel('Vault password or recovery key',{exact:true}).fill('wrong-fixture-password');await button(page,'Unlock vault').click();await expect(vault(page).getByRole('alert')).toContainText('could not be unlocked');
@@ -120,7 +123,7 @@ Then('locking the AI vault invalidates another tab without affecting local chat'
   await companion.close();
 });
 Then('the AI vault supports a native virtual PRF passkey',{timeout:90000},async function(){
-  // WebAuthn uses localhost as the RP, while each scenario retains its own isolated profile.
+  // Use localhost for loopback and the real secure origin for published checks.
   const page=this.page,localURL=this.baseURL.replace('127.0.0.1','localhost');
   await this.context.route(`${localURL}/**`,route=>route.continue());await page.goto(localURL);this.baseURL=localURL;
   const cdp=await this.context.newCDPSession(page);await cdp.send('WebAuthn.enable');
@@ -129,7 +132,7 @@ Then('the AI vault supports a native virtual PRF passkey',{timeout:90000},async 
     await vault(page).locator('input[name="authenticate"]').fill(password);await button(page,'Add passkey').click();
     await expect(vault(page).getByText('Passkey',{exact:true})).toBeVisible();await button(page,'Lock vault').click();
     await button(page,'Unlock with passkey').click();await expect(button(page,'Copy OpenAI fixture key')).toBeEnabled();
-    const credentials=await cdp.send('WebAuthn.getCredentials',{authenticatorId});expect(credentials.credentials).toHaveLength(1);expect(credentials.credentials[0].rpId).toBe('localhost');
+    const credentials=await cdp.send('WebAuthn.getCredentials',{authenticatorId});expect(credentials.credentials).toHaveLength(1);expect(credentials.credentials[0].rpId).toBe(new URL(localURL).hostname);
   }finally{await cdp.send('WebAuthn.removeVirtualAuthenticator',{authenticatorId});await cdp.detach();}
 });
 Then('AI vault management preserves guarded values through password rotation and restore',{timeout:120000},async function(){

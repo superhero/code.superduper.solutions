@@ -58,17 +58,33 @@ while [[ "$ancestor" != / && "$ancestor" != . ]]; do
   [[ ! -L "$ancestor" ]] || fail "Bundle directory has a symlink ancestor: $ancestor."
   ancestor="$(dirname -- "$ancestor")"
 done
-shopt -s nullglob dotglob
-files=("$bundle"/*)
-# Keep the complete release contract in bytewise filename order. Every hosted
-# icon participates in reuse detection, including compatibility-only exports.
-bundle_files=(_headers apple-touch-icon.png favicon.bmp favicon.gif favicon.ico favicon.jpg favicon.png favicon.ppm favicon.svg favicon.tiff index.html)
-[[ ${#files[@]} -eq ${#bundle_files[@]} ]] ||
-  fail 'Expected only the eleven nonempty regular application, hosting, and favicon files; additional files, directories, and symlinks are not supported.'
-for filename in "${bundle_files[@]}"; do
+shopt -s globstar nullglob dotglob
+bundle_error='Expected the eleven nonempty regular application, hosting, and favicon files, with only supported optional package directories and an optional source.tar.gz archive.'
+core_files=(_headers apple-touch-icon.png favicon.bmp favicon.gif favicon.ico favicon.jpg favicon.png favicon.ppm favicon.svg favicon.tiff index.html)
+for filename in "${core_files[@]}"; do
   [[ -f "$bundle/$filename" && ! -L "$bundle/$filename" && -s "$bundle/$filename" ]] ||
-    fail 'Expected only the eleven nonempty regular application, hosting, and favicon files; additional files, directories, and symlinks are not supported.'
+    fail "$bundle_error"
 done
+bundle_files=()
+for path in "$bundle"/**/*; do
+  filename="${path#"$bundle"/}"
+  [[ ! -L "$path" && "$filename" =~ ^[A-Za-z0-9_][A-Za-z0-9_./-]*$ ]] || fail "$bundle_error"
+  case "$filename" in
+    _headers|apple-touch-icon.png|favicon.bmp|favicon.gif|favicon.ico|favicon.jpg|favicon.png|favicon.ppm|favicon.svg|favicon.tiff|index.html|source.tar.gz)
+      [[ -f "$path" ]] || fail "$bundle_error" ;;
+    formatters|languages|types|syntax|remotes|browser-models)
+      [[ -d "$path" ]] || fail "$bundle_error" ;;
+    formatters/*|languages/*|types/*|syntax/*|remotes/*|browser-models/*) ;;
+    *) fail "$bundle_error" ;;
+  esac
+  [[ ! -d "$path" ]] || continue
+  [[ -f "$path" && -s "$path" ]] || fail "$bundle_error"
+  [[ "$(stat -c %s -- "$path")" -le 26214400 ]] || fail 'A Pages asset exceeds the 25 MiB per-file limit.'
+  bundle_files+=("$filename")
+done
+# Hash every actual payload and filename in stable bytewise order, including
+# opt-in package parts and the corresponding source for a manual deployment.
+mapfile -t bundle_files < <(printf '%s\n' "${bundle_files[@]}" | LC_ALL=C sort)
 # Include every file's bytes and fixed filename, independent of build directory.
 bundle_hash="$(cd -- "$bundle" && sha256sum -- "${bundle_files[@]}" | sha256sum)" || fail 'Could not hash the application bundle.'
 bundle_hash="${bundle_hash%% *}"

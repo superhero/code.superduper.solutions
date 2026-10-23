@@ -4,6 +4,7 @@
 export interface FormatterPackage {
   id: string; name: string; languages: string; version: string; kind: 'wasm' | 'module' | 'data';
   github: string; bytes: number; payloadBytes: number; sha256: string; url: string;
+  parts?: readonly { url: string; bytes: number; sha256: string }[];
 }
 export interface FormatterNotice { name: string; version: string; identifier?: string; text: string }
 export interface PackageEnvelope {

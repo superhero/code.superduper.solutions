@@ -8,6 +8,7 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 
 import {installFormatterPackage} from "./formatter.helpers.mjs";
+import {repositoryHistories} from "./repository-snapshot.helpers.mjs";
 
 const editor = page => page.getByLabel("Code editor document", { exact: true });
 const formatButton = page => page.getByRole("button", { name: "Format file", exact: true });
@@ -102,8 +103,8 @@ const providers = { TypeScript: "JavaScript / TypeScript", JSON: "JSON", Markdow
 
 async function historyIds(page, label) {
   await saved(page);
-  return page.getByRole("list", { name: label, exact: true, includeHidden: true })
-    .locator("[data-oid]").evaluateAll(elements => elements.map(element => element.dataset.oid));
+  const histories = await repositoryHistories(page);
+  return label === "Staged changes" ? histories.edits : histories.commits;
 }
 
 async function waitForFormatting(page) {

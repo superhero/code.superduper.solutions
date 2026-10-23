@@ -485,14 +485,17 @@ may already be deploying. Merge and production jobs have their own serialization
   without a manual approval gate.
 - Superseded previews are skipped; documentation PRs do not deploy previews.
 
-Preview and production use the tested bundle without rebuilding. Matching
-bytes for the complete eleven-file bundle reuse the active deployment on the same
-branch: `index.html`, `_headers`, `favicon.svg`, `favicon.ico`, `favicon.png`,
-`favicon.bmp`, `favicon.gif`, `favicon.jpg`, `favicon.ppm`, `favicon.tiff`, and
-`apple-touch-icon.png`. The hash includes every filename and its contents in
-bytewise filename order. An icon-only change therefore produces a deployment.
-Missing or empty files, extra files, directories, and symlinks are rejected.
-Another branch gets a separate deployment; Wrangler can reuse uploaded assets.
+Preview and production use the tested bundle without rebuilding. Matching bytes
+for the complete distribution reuse the active deployment on the same branch.
+The eleven core files remain mandatory. Optional `formatters/`, `languages/`,
+`types/`, `syntax/`, `remotes/`, and `browser-models/` directories and a manual
+publication's `source.tar.gz` are included in the hash, with every filename and
+its contents in bytewise order. A change to any icon, package part, runtime, or
+source archive therefore produces a deployment. Missing/empty core files,
+unsupported paths, symlinks at any depth, and assets above Pages' 25 MiB limit
+are rejected. Another branch gets a separate deployment; Wrangler can reuse
+uploaded assets. The developer's authorized manual publication is independent
+of enabling these automated jobs.
 
 ### Production identity
 

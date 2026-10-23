@@ -256,11 +256,15 @@ for the full command ordering and release procedures.
   and [foundation audit](docs/foundation-parity.md): adapted contracts, source
   evidence, product exclusions, and external provisioning still required.
 
-The complete automation is prepared locally. Remote mutation is **disabled
-unless `CODE_AUTOMATION_ENABLED` equals `true`**. GitHub App permissions,
-protected branches, secrets, Cloudflare resources, and domains still require
-separate provisioning and authorization. No release, deployment, or remote
-configuration is implied by these files; this work remains local without a push.
+The prepared automation remains **disabled unless `CODE_AUTOMATION_ENABLED`
+equals `true`**. GitHub App permissions, protected branches, secrets, and release
+resources require separate provisioning and authorization. The selected manual
+hosting target is Cloudflare Pages at [code.superduper.solutions](https://code.superduper.solutions),
+served by the `code-superduper-solutions` Direct Upload project through its
+proxied custom hostname. A manual publication does not activate the release pipeline. Optional formatter/language
+packages above 20 MiB are served as verified static parts, preserving the full
+product within Pages' per-file limit. A working-tree deployment offers its
+corresponding source archive in Licenses and notices.
 
 ## Editor architecture
 

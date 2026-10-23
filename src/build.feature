@@ -44,6 +44,10 @@ Feature: Standalone production build
     Given the production build has completed
     Then optional formatter packages match their catalog and have no external module imports
 
+  Scenario: Every production download fits Cloudflare Pages asset limits
+    Given the production build has completed
+    Then every static download fits Pages and large optional packages retain verified parts
+
   Scenario Outline: The standalone page preserves the full <source> notice
     Given the production build has completed
     Then the embedded notice for "<source>" preserves "<path>" in full
