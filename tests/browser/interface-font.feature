@@ -2,6 +2,18 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 Feature: Interface typography is independent of editor typography
+  Scenario Outline: Deleting a shared offline font from the <kind> control updates both selectors
+    Given a browser repository named "Delete offline font" with an empty file "notes.js"
+    Then the "<kind>" font control deletes shared cached files without changing preferences
+    Examples:
+      | kind      |
+      | editor    |
+      | interface |
+
+  Scenario: Bundled defaults are clearly distinguished from downloaded fonts
+    Given a browser repository named "Bundled fonts" with an empty file "notes.js"
+    Then bundled font controls show Built in without a misleading install or delete action
+
   Scenario: Interface fonts apply live persist and support repository overrides and undo
     Given a browser repository named "Interface fonts" with an empty file "notes.txt"
     Then interface font changes preserve the editor font across reload and undo

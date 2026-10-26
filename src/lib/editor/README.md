@@ -376,6 +376,11 @@ atomically saves them in `code.editor-fonts.v1` IndexedDB, outside repositories 
 undo history. Each installation is limited to 32 MiB. Installed fonts are used
 without contacting Google, including after reload. Failure leaves existing stored
 fonts unchanged. No font is automatically downloaded for offline storage.
+Installed optional fonts expose a Delete action in both font selectors. Deleting
+removes the saved faces and license, releases active cached faces and stylesheet
+slots, and updates both controls without changing font preferences or history.
+Offline use then falls back through the existing font stack. Bundled defaults
+show “Built in” because their bytes belong to the application distribution.
 
 Editor font menu labels preview their own family. `FontOption.svelte` starts a
 preview only when its label intersects the menu viewport. Google previews request

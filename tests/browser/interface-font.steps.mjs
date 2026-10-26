@@ -8,6 +8,43 @@ import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 import {repositorySnapshot} from './repository-snapshot.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const editorFont=page=>page.locator('.cm-scroller').evaluate(element=>getComputedStyle(element).fontFamily);
+Then('bundled font controls show Built in without a misleading install or delete action',async function(){
+  await selectPage(this.page,'Settings','Appearance');
+  for(const kind of ['editor','interface']){
+    await expect(this.page.getByRole('status',{name:`${kind==='editor'?'Editor':'Interface'} font is built in`,exact:true})).toHaveText('Built in');
+    await expect(this.page.getByRole('button',{name:`Install ${kind} font for offline use`,exact:true})).toHaveCount(0);
+    await expect(this.page.getByRole('button',{name:`Delete installed ${kind} font`,exact:true})).toHaveCount(0);
+  }
+});
+Then('the {string} font control deletes shared cached files without changing preferences',async function(kind){
+  const {readFile}=await import('node:fs/promises'),fontBytes=await readFile('src/assets/fonts/montserrat-latin.woff2');let requests=0;
+  await this.context.route('https://fonts.googleapis.com/**',route=>{
+    requests++;const family=new URL(route.request().url()).searchParams.get('family').split(':')[0];
+    return route.fulfill({contentType:'text/css',headers:{'access-control-allow-origin':'*'},body:`@font-face {font-family:'${family}';font-weight:100 900;src:url(https://fonts.gstatic.com/delete-font.woff2);}`});
+  });
+  await this.context.route('https://fonts.gstatic.com/**',route=>route.fulfill({contentType:'font/woff2',headers:{'access-control-allow-origin':'*'},body:fontBytes}));
+  await this.context.route('https://raw.githubusercontent.com/google/fonts/**',route=>route.fulfill({contentType:'text/plain',headers:{'access-control-allow-origin':'*'},body:'Retained font fixture license.'}));
+  const page=this.page;await selectPage(page,'Settings','Appearance');await selectDropdown(page,'Settings scope','global');
+  for(const label of ['Editor font','Interface font'])await selectDropdown(page,label,'google:Fira Code');await saved(page);
+  await page.getByRole('button',{name:`Install ${kind} font for offline use`,exact:true}).click();
+  for(const control of ['editor','interface'])await expect(page.getByRole('button',{name:`Delete installed ${control} font`,exact:true})).toBeEnabled();
+  const loaded=()=>page.evaluate(()=>[...document.fonts].filter(face=>face.family.replaceAll('"','')==='Fira Code').length);
+  await expect.poll(loaded).toBeGreaterThan(0);
+  const before=await repositorySnapshot(page),beforeRequests=requests;
+  await this.context.setOffline(true);
+  await page.getByRole('button',{name:`Delete installed ${kind} font`,exact:true}).click();
+  for(const control of ['editor','interface'])await expect(page.getByRole('button',{name:`Install ${control} font for offline use`,exact:true})).toBeEnabled();
+  await expect.poll(loaded).toBe(0);
+  const count=await page.evaluate(()=>new Promise((resolve,reject)=>{const request=indexedDB.open('code.editor-fonts.v1');request.onsuccess=()=>{const db=request.result,read=db.transaction('fonts').objectStore('fonts').count();read.onsuccess=()=>{resolve(read.result);db.close();};read.onerror=()=>reject(read.error);};request.onerror=()=>reject(request.error);}));
+  assert.equal(count,0);assert.deepEqual(await repositorySnapshot(page),before);
+  const html=await readFile('dist/index.html','utf8');await this.context.route(this.baseURL+'/',route=>route.fulfill({contentType:'text/html',headers:{'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Embedder-Policy':'credentialless'},body:html}));
+  await page.reload({waitUntil:'networkidle'});await saved(page);
+  for(const [control,label]of [['editor','Editor font'],['interface','Interface font']]){
+    await expect(page.getByRole('button',{name:label,exact:true})).toHaveAttribute('data-value','google:Fira Code');
+    await expect(page.getByRole('button',{name:`Install ${control} font for offline use`,exact:true})).toBeEnabled();
+  }
+  assert.equal(await loaded(),0);assert.equal(requests,beforeRequests);await this.context.setOffline(false);
+});
 Then('interface font changes preserve the editor font across reload and undo',async function(){
   const original=await editorFont(this.page);
   await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
@@ -135,7 +172,7 @@ Then('Google editor fonts load only on selection and installed fonts survive off
   await expect(this.page.locator('.cm-scroller')).toHaveCSS('font-family',/Fira Code/);
   assert.ok(!await editorFont(this.page).then(font=>font.includes('Montserrat')));
   await this.page.getByRole('button',{name:'Install editor font for offline use',exact:true}).click();
-  await expect(this.page.getByRole('button',{name:'Install editor font for offline use',exact:true})).toHaveText('Installed');
+  await expect(this.page.getByRole('button',{name:'Delete installed editor font',exact:true})).toBeEnabled();
   assert.equal(licenseRequests,1);
   const stored=await this.page.evaluate(()=>new Promise((resolve,reject)=>{const request=indexedDB.open('code.editor-fonts.v1');request.onsuccess=()=>{const db=request.result,tx=db.transaction('fonts'),record=tx.objectStore('fonts').get('google:Fira Code');record.onsuccess=()=>{resolve({license:record.result.license,count:record.result.faces.length});db.close();};record.onerror=()=>reject(record.error);};request.onerror=()=>reject(request.error);}));
   assert.equal(stored.license,'Test fixture license retained with the font.');assert.ok(stored.count>0);
@@ -145,7 +182,7 @@ Then('Google editor fonts load only on selection and installed fonts survive off
   await this.context.setOffline(true);
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
   await expect(this.page.locator('.cm-scroller')).toHaveCSS('font-family',/Fira Code/);
-  await expect(this.page.getByRole('button',{name:'Install editor font for offline use',exact:true})).toHaveText('Installed');
+  await expect(this.page.getByRole('button',{name:'Delete installed editor font',exact:true})).toBeEnabled();
   await expect.poll(()=>this.page.evaluate(()=>document.fonts.check('14px "Fira Code"'))).toBe(true);
   assert.deepEqual({cssRequests,fontRequests,licenseRequests},before);
   await this.context.setOffline(false);
@@ -182,14 +219,14 @@ Then('JetBrains Mono starts at thirteen pixels and stays installed on offline re
     await expect(this.page.locator('.cm-editor')).toHaveCSS('font-size','13px');
     await expect(this.page.locator('body')).toHaveCSS('font-family',/Geomini/);
     await expect(this.page.getByRole('button',{name:'Interface font',exact:true})).toHaveAttribute('data-value','google:Geomini');
-    await expect(this.page.getByRole('button',{name:'Install interface font for offline use',exact:true})).toHaveText('Installed');
+    await expect(this.page.getByRole('button',{name:'Delete installed interface font',exact:true})).toBeEnabled();
     await this.page.evaluate(()=>document.fonts.load('700 16px Geomini'));
     assert.ok(await this.page.evaluate(()=>Array.from(document.fonts).some(face=>face.family.includes('Geomini')&&face.status==='loaded')));
     await expect(this.page.locator('.cm-scroller')).toHaveCSS('font-family',/JetBrains Mono/);
     await this.page.evaluate(async()=>{for(const style of ['normal 400','italic 400','normal 700','italic 700'])await document.fonts.load(`${style} 13px "JetBrains Mono"`);});
     assert.equal(await this.page.evaluate(()=>Array.from(document.fonts).filter(face=>face.family.includes('JetBrains Mono')&&face.status==='loaded').length),4);
     await expect(this.page.getByRole('button',{name:'Editor font',exact:true})).toHaveAttribute('data-value','google:JetBrains Mono');
-    await expect(this.page.getByRole('button',{name:'Install editor font for offline use',exact:true})).toHaveText('Installed');
+    await expect(this.page.getByRole('button',{name:'Delete installed editor font',exact:true})).toBeEnabled();
   };
   await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
   await check();
@@ -222,13 +259,13 @@ Then('interface Google fonts preview install and restore offline independently o
   await expect(this.page.locator('body')).toHaveCSS('font-family',/Roboto/);
   assert.equal(await editorFont(this.page),originalEditor);
   await this.page.getByRole('button',{name:'Install interface font for offline use',exact:true}).click();
-  await expect(this.page.getByRole('button',{name:'Install interface font for offline use',exact:true})).toHaveText('Installed');
+  await expect(this.page.getByRole('button',{name:'Delete installed interface font',exact:true})).toBeEnabled();
   const before=requests;
   const html=await readFile('dist/index.html','utf8');await this.context.route(this.baseURL+'/',route=>route.fulfill({contentType:'text/html',body:html}));
   await this.context.setOffline(true);await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
   await expect(this.page.locator('body')).toHaveCSS('font-family',/Roboto/);
   await expect(this.page.getByRole('button',{name:'Interface font',exact:true})).toHaveAttribute('data-value','google:Roboto');
-  await expect(this.page.getByRole('button',{name:'Install interface font for offline use',exact:true})).toHaveText('Installed');
+  await expect(this.page.getByRole('button',{name:'Delete installed interface font',exact:true})).toBeEnabled();
   assert.equal(await editorFont(this.page),originalEditor);assert.equal(requests,before);
   await this.context.setOffline(false);
 });

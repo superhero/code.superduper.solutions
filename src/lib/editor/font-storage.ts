@@ -46,11 +46,23 @@ export async function installFont(key:string):Promise<void>{
   try{await new Promise<void>((resolve,reject)=>{const tx=db.transaction('fonts','readwrite');tx.objectStore('fonts').put(record);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}finally{db.close();}
   window.dispatchEvent(new Event('code-editor-font-installed'));
 }
-const activations = new Map<string,{generation:number;link?:HTMLLinkElement}>();
+/** Delete the offline copy without changing repository font preferences. */
+export async function removeFont(key:string):Promise<void>{
+  if(isBundledEditorFont(key))throw new Error('This font is built into the app.');
+  if(!googleFont(key))throw new Error('Unknown editor font.');
+  const db=await database();
+  try{await new Promise<void>((resolve,reject)=>{const tx=db.transaction('fonts','readwrite');tx.objectStore('fonts').delete(key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}finally{db.close();}
+  for(const state of activations.values())if(state.key===key){state.generation++;state.link?.remove();delete state.link;}
+  for(const face of loaded.get(key)??[])document.fonts.delete(face);
+  loaded.delete(key);
+  window.dispatchEvent(new Event('code-editor-font-removed'));
+}
+const activations = new Map<string,{generation:number;key?:string;link?:HTMLLinkElement}>();
 const loaded=new Map<string,FontFace[]>();
 export async function activateEditorFont(key:string,slot='editor'):Promise<void>{
   let state=activations.get(slot);if(!state){state={generation:0};activations.set(slot,state);}
   const epoch=++state.generation;
+  state.key=key;
   state.link?.remove();delete state.link;
   const font=googleFont(key);if(!font || isBundledEditorFont(key))return;
   const stored=await read(key).catch(()=>undefined);if(epoch!==state.generation)return;
@@ -61,6 +73,7 @@ export async function activateEditorFont(key:string,slot='editor'):Promise<void>
     }
     return;
   }
+  if(!navigator.onLine)return;
   const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href=fontStylesheet(key);stylesheet.dataset.editorFont=key;state.link=stylesheet;
   await new Promise<void>(resolve=>{stylesheet.onload=()=>resolve();stylesheet.onerror=()=>resolve();document.head.append(stylesheet);});
   if(epoch===state.generation)await document.fonts.load(`14px ${JSON.stringify(font.family)}`);
