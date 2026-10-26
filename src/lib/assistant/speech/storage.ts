@@ -43,16 +43,20 @@ export async function cacheSpeechArtifact(cache: Cache, file: SpeechArtifact, pr
   try {
     await cache.put(key(file), new Response(stream, { headers: { 'Content-Type': mime(file), 'Content-Length': String(file.bytes), 'x-code-sha256': file.sha256 } }));
     signal.throwIfAborted();
-  } catch (error) { await cache.delete(key(file)); throw verificationError ?? error; }
+  } catch (error) {
+    await stream.cancel().catch(() => {});
+    await cache.delete(key(file));
+    const failure = verificationError ?? error;
+    if (failure instanceof DOMException && failure.name === 'QuotaExceededError')
+      throw new Error('The browser ran out of storage while saving this speech model. Remove an unused model and try again.', { cause: failure });
+    throw failure;
+  }
 }
 export async function installSpeech(mode: SpeechMode, progress: (event: SpeechProgress) => void, signal: AbortSignal): Promise<void> {
   if (!navigator.locks) throw new Error('Speech storage requires a secure browser with Web Locks.');
   await navigator.locks.request('code-speech-install', { signal }, async () => {
     const cache = await caches.open(CACHE), files = speechArtifacts(mode);
-    const estimate = await navigator.storage?.estimate();
-    let missing = 0;
-    for (const file of files) if (!(await cache.match(key(file)))) missing += file.bytes;
-    if (estimate?.quota && missing > estimate.quota - (estimate.usage ?? 0)) throw new Error('Not enough browser storage for this speech model.');
+    // Privacy protections can mask quota estimates. Actual writes determine capacity.
     let received = 0; const total = files.reduce((sum, file) => sum + file.bytes, 0);
     for (const file of files) {
       await cacheSpeechArtifact(cache, file, bytes => progress({ file: file.id, received: received + bytes, total }), signal);

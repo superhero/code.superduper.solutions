@@ -32,6 +32,8 @@ Then("browser resource cards charts and database counts are readable and respons
     };
   }));
   await selectPage(page, "Resources"); await ready(page);
+  await expect(metric(page,"Storage","Estimated remaining")).toBeVisible();
+  await expect(dashboard(page)).toContainText('Browser privacy settings can mask these estimates.');
   for (const name of ["Processing", "Memory", "Storage", "Repositories", "IndexedDB records", "Live resource history"])
     await expect(dashboard(page).getByRole("region", { name, exact: true })).toBeVisible();
   await expect(page.locator('[data-resources-panel]').getByRole('button',{name:'Undo',exact:true})).toHaveCount(0);

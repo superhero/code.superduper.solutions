@@ -8,6 +8,7 @@ import { rolldown } from 'rolldown';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { BROWSER_PROFILES } from '../../src/lib/assistant/browser/catalog.ts';
 import { selectDropdown, selectPage, addOllamaConnection } from './navigation.helpers.mjs';
+import { speechBrowserFixture } from '../speech/browser-harness.mjs';
 let fixtureCode;
 async function fixture(page) {
   if(!fixtureCode) {
@@ -16,6 +17,48 @@ async function fixture(page) {
   }
   await page.addScriptTag({content:fixtureCode});
 }
+Then('{string} model installation starts with a {string} storage estimate',async function(kind,estimate){
+  await fixture(this.page);
+  if(kind==='speech')await this.page.addScriptTag({content:await speechBrowserFixture()});
+  const result=await this.page.evaluate(async({kind,estimate})=>{
+    Object.defineProperty(navigator.storage,'estimate',{configurable:true,value:async()=>{
+      if(estimate==='unavailable')throw new Error('Estimate unavailable');
+      return {quota:2*1024**3,usage:2*1024**3-17*1024**2};
+    }});
+    let downloads=0,error='';const fetch=globalThis.fetch;
+    globalThis.fetch=async()=>{downloads++;throw new Error('Download probe reached');};
+    try {
+      const signal=new AbortController().signal;
+      if(kind==='speech')await speechTest.installSpeech('gpu-fp32',()=>{},signal);
+      else await browserModelsFixture.installModel(browserModelsFixture.BROWSER_PROFILES[2].id,()=>{},signal);
+    } catch(reason){error=reason.message;} finally{globalThis.fetch=fetch;}
+    return {downloads,error};
+  },{kind,estimate});
+  expect(result).toEqual({downloads:1,error:'Download probe reached'});
+});
+Then('a real model storage write failure preserves its quota cause and removes partial files',async function(){
+  await fixture(this.page);
+  const result=await this.page.evaluate(async()=>{
+    const put=IDBObjectStore.prototype.put,fetch=globalThis.fetch;let writes=0,error='',cause='';
+    const weight=browserModelsFixture.artifactsFor(browserModelsFixture.BROWSER_PROFILES[0])[0];
+    IDBObjectStore.prototype.put=function(...args){
+      if(this.name==='blocks'&&this.transaction.db.name==='code-browser-models'){writes++;throw new DOMException('Storage is full.','QuotaExceededError');}
+      return put.apply(this,args);
+    };
+    globalThis.fetch=(input,init)=>{
+      if(new URL(input,location.href).origin===location.origin)return fetch(input,init);
+      const range=new Headers(init?.headers).get('Range');
+      if(range!==`bytes=0-${browserModelsFixture.BLOCK_BYTES-1}`)throw new Error('Unexpected upstream download');
+      return Promise.resolve(new Response(new Uint8Array(browserModelsFixture.BLOCK_BYTES),{status:206,headers:{'Content-Range':`bytes 0-${browserModelsFixture.BLOCK_BYTES-1}/${weight.bytes}`}}));
+    };
+    try{await browserModelsFixture.installModel(browserModelsFixture.BROWSER_PROFILES[0].id,()=>{},new AbortController().signal);}
+    catch(reason){error=reason.message;cause=reason.cause?.name;}
+    finally{IDBObjectStore.prototype.put=put;globalThis.fetch=fetch;}
+    const db=await browserModelsFixture.modelDatabase();
+    try{return {writes,error,cause,artifacts:await db.count('artifacts'),blocks:await db.count('blocks'),models:await db.count('models')};}finally{db.close();}
+  });
+  expect(result).toEqual({writes:1,error:'The browser ran out of storage while saving this model. Remove an unused model and try again.',cause:'QuotaExceededError',artifacts:0,blocks:0,models:0});
+});
 async function controls(page) {
   await page.getByRole('button',{name:'AI chat',exact:true}).click();
   await selectPage(page,'Settings','AI');

@@ -129,10 +129,11 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
       <dl class="metrics">
         <div><dt>Used storage</dt><dd>{formatBytes(latest?.storage.usage ?? null)}</dd></div>
         <div><dt>Estimated quota</dt><dd>{formatBytes(latest?.storage.quota ?? null)}</dd></div>
-        <div><dt>Available quota</dt><dd>{formatBytes(latest?.storage.quota != null && latest.storage.usage != null ? Math.max(0, latest.storage.quota - latest.storage.usage) : null)}</dd></div>
+        <div><dt>Estimated remaining</dt><dd>{formatBytes(latest?.storage.quota != null && latest.storage.usage != null ? Math.max(0, latest.storage.quota - latest.storage.usage) : null)}</dd></div>
         <div><dt>Persistence</dt><dd class="text-value">{latest?.storage.persisted == null ? "Unavailable" : latest.storage.persisted ? "Persistent" : "Best effort"}</dd></div>
       </dl>
       {#if storageRatio !== null}<div class="meter-heading"><strong>{percentage(storageRatio)} of estimated quota</strong></div><meter min="0" max="1" value={storageRatio} aria-label="Estimated storage utilization">{percentage(storageRatio)}</meter>{/if}
+      <p class="note">Browser privacy settings can mask these estimates. Actual storage capacity may be higher.</p>
       {#if latest?.storage.persisted === false}
         <p class="note">The browser may clear best-effort storage when space is needed.</p>
       {/if}

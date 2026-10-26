@@ -66,7 +66,10 @@ Restoration creates local Blob URLs and has no download fallback. Downloads are
 serialized with Web Locks; shared artifacts survive removal of another mode.
 Downloads can be cancelled. Browser eviction or an incomplete cache requires an
 explicit installation again.
-Available storage is checked before installation. Temporary/private browser
+Installation uses actual storage writes rather than rejecting a download from
+`navigator.storage.estimate()`: Brave can mask that quota as 2 GiB even when
+more capacity is available. Real `QuotaExceededError` failures remove the
+incomplete artifact and explain how to free space. Temporary/private browser
 contexts can impose tighter storage limits than an ordinary persistent profile.
 
 Speech audio stays in memory for transcription; no recording, transcript archive

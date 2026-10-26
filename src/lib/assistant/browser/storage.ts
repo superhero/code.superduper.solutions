@@ -116,13 +116,9 @@ export async function installModel(id: string, progress: (event: Progress) => vo
     ...(file.parts ? { parts: file.parts.map(part => ({ ...part, url: new URL(part.url, baseURL).href })) } : {}) }));
   await locked(async () => {
     signal.throwIfAborted();
-    const estimate = await navigator.storage?.estimate();
     const db = await modelDatabase();
     try {
-      const missing = [];
-      for (const file of files) if (!(await db.get('artifacts', file.sha256))) missing.push(file);
-      const needed = missing.reduce((sum, file) => sum + file.bytes, 0);
-      if (estimate?.quota && needed > estimate.quota - (estimate.usage ?? 0)) throw new Error('Not enough browser storage for this model. Remove a model or free device space.');
+      // Privacy protections can mask quota estimates. Actual writes determine capacity.
       const total = files.reduce((sum, file) => sum + file.bytes, 0); let received = 0;
       for (const file of files) {
         await installArtifact(file, bytes => progress({ message: `Installing ${file.id}`, received: received + bytes, total }), signal);
@@ -134,6 +130,8 @@ export async function installModel(id: string, progress: (event: Progress) => vo
     } catch (error) {
       const retained = new Set((await db.getAll('models')).flatMap(item => item.hashes));
       for (const file of files) if (!retained.has(file.sha256)) await clearArtifact(file.sha256);
+      if (error instanceof DOMException && error.name === 'QuotaExceededError')
+        throw new Error('The browser ran out of storage while saving this model. Remove an unused model and try again.', { cause: error });
       throw error;
     } finally { db.close(); }
   }, signal);

@@ -64,8 +64,12 @@ Then('speech model preparation has shared progress and readable compact model co
 Then('speech and language model errors use the same divided alert layout',async function(){
   const page=this.page;await selectPage(page,'Settings','AI');
   const language=page.locator(`[data-model-id="${BROWSER_PROFILES[0].id}"]`);await language.getByRole('button',{name:'Model settings',exact:true}).click();await language.getByLabel('Context tokens',{exact:true}).fill('1');await expect(language.getByRole('alert')).toContainText('context_tokens');
-  await page.evaluate(()=>Object.defineProperty(navigator.storage,'estimate',{configurable:true,value:async()=>({quota:1,usage:1})}));
-  const speech=page.locator('[data-speech-mode="gpu-fp32"]');await speech.getByRole('button',{name:'Install speech model',exact:true}).click();await expect(speech.getByRole('alert')).toContainText('Not enough browser storage');await expect(speech.getByRole('status')).toHaveCount(0);
+  await page.evaluate(()=>{
+    const put=Cache.prototype.put,fetch=globalThis.fetch;
+    Cache.prototype.put=function(request,response){return String(request).includes('/__code_speech__/')?Promise.reject(new DOMException('Storage quota exceeded.','QuotaExceededError')):put.call(this,request,response);};
+    globalThis.fetch=(input,init)=>String(input).includes('huggingface.co')?Promise.resolve(new Response(new ReadableStream())):fetch(input,init);
+  });
+  const speech=page.locator('[data-speech-mode="gpu-fp32"]');await speech.getByRole('button',{name:'Install speech model',exact:true}).click();await expect(speech.getByRole('alert')).toContainText('The browser ran out of storage');await expect(speech.getByRole('status')).toHaveCount(0);
   const styles=await Promise.all([language,speech].map(row=>row.getByRole('alert').evaluate(node=>{const s=getComputedStyle(node);return{background:s.backgroundColor,color:s.color,padding:s.padding,gap:s.gap,divider:s.borderTopWidth,icon:node.querySelector('.material-symbols-rounded').textContent};})));
   expect(styles[1]).toEqual(styles[0]);expect(styles[0].divider).toBe('1px');expect(styles[0].icon).toBe('error');await mkdir(this.artifactDirectory,{recursive:true});await speech.screenshot({path:`${this.artifactDirectory}/speech-error.png`});
 });

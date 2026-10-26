@@ -3,6 +3,18 @@
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 @browser-models-ui
 Feature: Explicit browser model installation and local inference controls
+  Scenario Outline: A <estimate> storage estimate does not block <kind> model downloads
+    Then "<kind>" model installation starts with a "<estimate>" storage estimate
+    Examples:
+      | kind     | estimate    |
+      | language | masked      |
+      | speech   | masked      |
+      | language | unavailable |
+      | speech   | unavailable |
+
+  Scenario: Actual model storage exhaustion cleans incomplete data and explains recovery
+    Then a real model storage write failure preserves its quota cause and removes partial files
+
   Scenario: Browser chat opens directly with all catalog models
     Then browser model menus expose the full catalog before any model is installed
   Scenario: New browser chats skip connection setup while remote sessions keep their choices

@@ -137,6 +137,12 @@ Installation is serialized across tabs with Web Locks. Complete shared files
 remain reference-counted through model metadata. Listing installations never
 clones model payloads.
 
+Quota estimates are informational: privacy protections such as
+[Brave's fixed 2 GiB report](https://github.com/brave/brave-core/pull/6622)
+must not block installation. Actual browser writes determine
+capacity. A real `QuotaExceededError` cleans unreferenced files and reports a
+storage failure without replacing network, cancellation or verification errors.
+
 WebML receives an HTTP-shaped reader backed only by installed chunks. Wllama
 receives lazy Blob slices backed by those same chunks. Native tensor requests
 can exceed 128 MiB and need a transient tensor-sized buffer, as in the selected
