@@ -740,6 +740,18 @@ export function createRepositoryEngine(options: EngineOptions): RepositoryOperat
         return snapshot(stored);
       });
     },
+    renameRepository: (id, name, expected) => locked(id, async () => {
+      if (typeof name !== "string" || !name.trim() || name.length > 200 || /[\u0000-\u001f]/.test(name)) throw validation("Use a repository name of 1–200 characters.");
+      await recover(id);
+      const stored = await project(id);
+      if (stored.revision !== expected) throw new Error("This repository changed in another tab. Reload before renaming it.");
+      if (stored.name === name.trim()) return snapshot(stored);
+      const renamed = { ...stored, name: name.trim(), revision: crypto.randomUUID() };
+      delete renamed.lastAction;
+      delete renamed.editGroup;
+      await metadata.finish(renamed);
+      return snapshot(renamed);
+    }),
     open: id => locked(id, async () => { await recover(id); return snapshot(await project(id)); }),
     read: (id, path) => { filePath(path); return locked(id, async () => {
       await project(id);

@@ -32,7 +32,7 @@ interface DroppedTransfer {
 
 function droppedPath(path: string): string {
   if (path.split("/").some(part => part.toLowerCase() === ".git")) {
-    throw new Error("Dropped Git metadata cannot be added to a repository. Use Import directory to import a whole Git repository with its history.");
+    throw new Error("Dropped Git metadata cannot be added to a repository. Use Import repository to import a whole Git repository with its history.");
   }
   return filePath(path);
 }

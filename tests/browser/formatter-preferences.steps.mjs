@@ -2,25 +2,26 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import assert from 'node:assert/strict';
-import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {readFile,readdir,mkdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {Given,When,Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
 import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 import {installFormatterPackage} from './formatter.helpers.mjs';
+import {repositorySnapshot} from './repository-snapshot.helpers.mjs';
 import {formats} from '../../src/lib/formatting/formats.ts';
 const providers=JSON.parse(await readFile('src/lib/formatting/providers.json','utf8'));
 const preferences=page=>page.getByRole('region',{name:'Formatters',exact:true});
 const documentText=page=>page.getByLabel('Code editor document',{exact:true}).locator('.cm-line').allTextContents().then(lines=>lines.join('\n'));
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
-async function personal(page) {await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');}
+async function personal(page) {await selectPage(page, 'Settings', 'Formatting');await selectDropdown(page,'Settings scope','global');}
 async function choose(page,label,id){await preferences(page).getByLabel('Find a formatter preference',{exact:true}).fill(label);await selectDropdown(page,`${label} formatter`,id);await saved(page);}
 async function install(page,provider){await installFormatterPackage(page,provider.id);}
 
-async function history(page,label){return page.getByRole('list',{name:label,exact:true,includeHidden:true}).locator('[data-oid]').evaluateAll(elements=>elements.map(e=>e.dataset.oid));}
+async function history(page,label){const snapshot=await repositorySnapshot(page);return (label==='Staged changes'?snapshot.history:snapshot.commits).map(entry=>entry.oid);}
 async function importSample(world,path,source){
  const directory=join(world.artifactDirectory,'provider-repository');await mkdir(directory,{recursive:true});await writeFile(join(directory,path),source);
- await world.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(world.page);await selectPage(world.page,'Editor');
+ await world.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(world.page);await selectPage(world.page,'Editor');
  await world.page.getByRole('treeitem',{name:path,exact:true}).locator(':scope > .tree-row').click();
  await expect.poll(()=>documentText(world.page)).toBe(source);await saved(world.page);
  world.providerSource=source;world.recordedHistories={edits:await history(world.page,'Staged changes'),commits:await history(world.page,'Commit history')};
@@ -38,7 +39,8 @@ Then('the selected provider produced one formatting change',async function(){
  await expect(this.page.getByRole('alert')).toHaveCount(0);
  assert.equal((await history(this.page,'Staged changes')).length,this.recordedHistories.edits.length+1);
  const downloads=this.requests.filter(item=>item.url.includes('/formatters/'));
- assert.equal(downloads.length,1);assert.ok(downloads[0].url.includes(this.providerId+'-'));
+ const expected=(await readdir('dist/formatters')).filter(name=>name.startsWith(this.providerId+'-')&&/\d/.test(name[this.providerId.length+1])).sort();
+ assert.ok(expected.length);assert.deepEqual(downloads.map(item=>new URL(item.url).pathname.split('/').at(-1)).sort(),expected);
 });
 When('I select {string} as the personal formatter for {string}',async function(id,label){await personal(this.page);await choose(this.page,label,id);});
 When('I select {string} as the repository formatter for {string}',async function(id,label){await selectDropdown(this.page,'Settings scope','repository');await choose(this.page,label,id);});
@@ -55,8 +57,8 @@ Then('both Typst timings are visible without changing the selection',async funct
 });
 When('I reload the formatter preferences',async function(){await saved(this.page);await this.page.reload({waitUntil:'networkidle'});await saved(this.page);await selectDropdown(this.page,'Settings scope','global');});
 Then('the YAML formatter selection is {string}',async function(value){await preferences(this.page).getByLabel('Find a formatter preference',{exact:true}).fill('YAML');await expect(this.page.getByRole('button',{name:'YAML formatter',exact:true})).toHaveAttribute('data-value',value);});
-When('I undo the formatter preference change',async function(){await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);});
-When('I redo the formatter preference change',async function(){await this.page.getByRole('button',{name:'Redo',exact:true}).click();await saved(this.page);});
+When('I undo the formatter preference change',async function(){await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);});
+When('I redo the formatter preference change',async function(){await this.page.getByRole('button',{name:'Redo settings',exact:true}).click();await saved(this.page);});
 Given('the Markdown YAML fence fixture uses Pretty YAML',async function(){
  await personal(this.page);await choose(this.page,'YAML','dprint-pretty-yaml');
  await install(this.page,providers.find(p=>p.id==='dprint-markdown'));await install(this.page,providers.find(p=>p.id==='dprint-pretty-yaml'));

@@ -4,7 +4,56 @@
 import assert from "node:assert/strict";
 import { Then } from "@cucumber/cucumber";
 import { emptyRepositoryWorkspace, normalizeWorkspace, reconcileRepositoryWorkspace, renameRepositoryWorkspace,
-  rightDockWidths, resolvePaneSizes, splitPaneSizes, removePaneSize, moveWorkspaceTab, commitDiffTab, commitDiffOid, diffTab, tabFile, tabLabel, activePaneTab, WORKSPACE_KEY } from "./workspace.ts";
+  rightDockWidths, fitWorkspacePanes, explorerDockWidth, resolvePaneSizes, splitPaneSizes, removePaneSize, moveWorkspaceTab, commitDiffTab, commitDiffOid, diffTab, tabFile, tabLabel, activePaneTab, settingsScrollTop, WORKSPACE_KEY } from "./workspace.ts";
+
+const crowdedPanes = () => ({version:1,repositoryId:'',page:'editor',repositories:{},rightPanes:['history','git','ai'],paneOrder:['explorer','history','git','ai']});
+Then('Vault pane preferences migrate persist and fit without storing secret drafts',function(){
+  const state=normalizeWorkspace({...crowdedPanes(),page:'vault',vaultPaneWidth:480.4,vault:{password:'synthetic-only'}});
+  assert.equal(state.page,'editor');assert.deepEqual(state.rightPanes,['history','git','ai','vault']);
+  assert.equal(state.vaultPaneWidth,480);assert.equal(Object.hasOwn(state,'vault'),false);
+  assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(state))),state);
+  assert.equal(normalizeWorkspace({...state,vaultPaneWidth:1}).vaultPaneWidth,320);
+  assert.equal(normalizeWorkspace({...state,vaultPaneWidth:9999}).vaultPaneWidth,640);
+  for(const value of [null,'480',NaN,Infinity])assert.equal(normalizeWorkspace({...state,vaultPaneWidth:value}).vaultPaneWidth,undefined);
+  const widths=rightDockWidths(2400,{history:440,git:320,ai:380,vault:480});
+  assert.ok(["history","git","ai","vault"].every(pane=>widths[pane]>=320));assert.equal(widths.resources,0);
+  assert.ok(Object.values(widths).reduce((sum,width)=>sum+width,320)<=2400);
+  const selected=fitWorkspacePanes(2400,{...state,paneOrder:['explorer','vault','history','git','ai']},'vault');
+  assert.equal(selected.paneOrder.at(-1),'vault');
+  const narrow=fitWorkspacePanes(600,selected);
+  assert.equal(narrow.explorerOpen,false);assert.deepEqual(narrow.rightPanes,['vault']);
+  const fitted=rightDockWidths(600,{vault:480});assert.equal(fitted.vault,300);
+});
+Then('the newest side pane stays open while older panes close to preserve the editor',function(){
+  const wide=fitWorkspacePanes(2000,crowdedPanes());
+  assert.equal(wide.explorerOpen,true);assert.deepEqual(wide.rightPanes,['history','git','ai']);
+  const narrower=fitWorkspacePanes(1280,wide);
+  assert.equal(narrower.explorerOpen,false);assert.deepEqual(narrower.rightPanes,['history','git','ai']);
+  const narrow=fitWorkspacePanes(1000,narrower);
+  assert.deepEqual(narrow.rightPanes,['git','ai']);
+  const files=fitWorkspacePanes(600,{...narrow,explorerOpen:true},'explorer');
+  assert.equal(files.explorerOpen,true);assert.deepEqual(files.rightPanes,[]);
+  const ai=fitWorkspacePanes(600,{...files,rightPanes:['ai']},'ai');
+  assert.equal(ai.explorerOpen,false);assert.deepEqual(ai.rightPanes,['ai']);
+});
+Then('explorer visibility and pane opening order normalize safely and remain closed on expansion',function(){
+  const input={...crowdedPanes(),explorerOpen:false,paneOrder:['ai','bad','git','ai','explorer']};
+  const stored=normalizeWorkspace(input);assert.equal(stored.explorerOpen,false);assert.deepEqual(stored.paneOrder,['ai','git','explorer']);
+  assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(stored))),stored);
+  const small=fitWorkspacePanes(500,crowdedPanes()),large=fitWorkspacePanes(2000,small);
+  assert.equal(large,small);assert.equal(large.explorerOpen,false);assert.deepEqual(large.rightPanes,['ai']);
+  assert.equal(fitWorkspacePanes(0,stored),stored);assert.equal(fitWorkspacePanes(NaN,stored),stored);
+});
+Then('all retained pane widths leave space for the editor at every supported viewport width',function(){
+  for(const available of [240,320,480,600,640,800,1000,1280,1440,1600,2000]){
+    const state=fitWorkspacePanes(available,crowdedPanes());
+    const explorer=state.explorerOpen?explorerDockWidth(available,state.rightPanes.length,600):0;
+    const preferred=Object.fromEntries(state.rightPanes.map(pane=>[pane,pane==='ai'?640:1600]));
+    const widths=rightDockWidths(available-explorer,preferred),editor=available-explorer-Object.values(widths).reduce((sum,width)=>sum+width,0);
+    assert.ok(editor>=Math.min(320,available/2),`Editor remains visible at ${available}px`);
+    assert.ok(editor>0);for(const pane of state.rightPanes)assert.ok(widths[pane]>0);
+  }
+});
 
 Then('commit comparison tabs survive normalization moves reload and missing working files',function(){
  const oid='a'.repeat(40),other='b'.repeat(40),file='src/old.ts',key=commitDiffTab(file,oid),second=commitDiffTab(file,other);
@@ -33,7 +82,8 @@ Then("the resources view and scroll position survive safe workspace normalizatio
   const input = { version: 1, repositoryId: "first", page: "resources", repositories: {
     first: { ...repository(), scroll: { ...repository().scroll, resources: 220 } } }, samples: [{ heap: 900 }] };
   const normalized = normalizeWorkspace(input);
-  assert.equal(normalized.page, "resources"); assert.equal(normalized.repositories.first.scroll.resources, 220);
+  assert.equal(normalized.page, "editor"); assert.deepEqual(normalized.rightPanes, ["resources"]);
+  assert.equal(normalized.repositories.first.scroll.resources, 220);
   assert.ok(!Object.hasOwn(normalized, "samples"));
   assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(normalized))), normalized);
   for (const invalid of [-1, Infinity, "100", null]) {
@@ -43,11 +93,34 @@ Then("the resources view and scroll position survive safe workspace normalizatio
   assert.ok(!Object.hasOwn(emptyRepositoryWorkspace().scroll, "resources"));
 });
 
+Then('Resources widths visibility and priority survive normalization without storing measurements',function(){
+  const input={...crowdedPanes(),rightPanes:['history','git','ai','vault','resources'],
+    paneOrder:['explorer','history','git','ai','vault','resources'],resourcesPaneWidth:480.4,samples:[{heap:900}]};
+  const state=normalizeWorkspace(input);
+  assert.equal(state.resourcesPaneWidth,480);assert.equal(Object.hasOwn(state,'samples'),false);
+  assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(state))),state);
+  assert.equal(normalizeWorkspace({...state,resourcesPaneWidth:1}).resourcesPaneWidth,320);
+  assert.equal(normalizeWorkspace({...state,resourcesPaneWidth:9999}).resourcesPaneWidth,1600);
+  for(const value of [null,'480',NaN,Infinity])assert.equal(normalizeWorkspace({...state,resourcesPaneWidth:value}).resourcesPaneWidth,undefined);
+  for(const available of [320,600,1280,2000,2800]){
+    const fitted=fitWorkspacePanes(available,state);
+    const explorer=fitted.explorerOpen?explorerDockWidth(available,fitted.rightPanes.length,245):0;
+    const widths=rightDockWidths(available-explorer,Object.fromEntries(fitted.rightPanes.map(pane=>[pane,480])));
+    assert.ok(available-explorer-Object.values(widths).reduce((sum,width)=>sum+width,0)>=Math.min(320,available/2));
+    assert.equal(fitted.rightPanes.at(-1),'resources');
+  }
+  const selected=fitWorkspacePanes(2800,{...state,paneOrder:['explorer','resources','history','git','ai','vault']},'resources');
+  assert.equal(selected.paneOrder.at(-1),'resources');
+  const narrow=fitWorkspacePanes(600,selected);
+  assert.equal(narrow.explorerOpen,false);assert.deepEqual(narrow.rightPanes,['resources']);
+  assert.equal(rightDockWidths(600,{resources:480}).resources,300);
+});
+
 Then('the vault view survives workspace normalization without credential drafts', function () {
   const input = { version: 1, repositoryId: '', page: 'vault', repositories: {},
     vault: { password: 'synthetic-only', value: 'synthetic-secret' }, recovery: 'synthetic-recovery' };
   const normalized = normalizeWorkspace(input);
-  assert.deepEqual(normalized, { version: 1, repositoryId: '', page: 'vault', repositories: {} });
+  assert.deepEqual(normalized, { version: 1, repositoryId: '', page: 'editor', rightPanes: ['vault'], repositories: {} });
   assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(normalized))), normalized);
 });
 
@@ -121,7 +194,7 @@ Then('split pane sizes persist normalize and follow pane insertion deletion and 
 });
 
 Then("a workspace roundtrip preserves repository tabs selections scroll and focus", function () {
-  const input = { version: 1, repositoryId: "second", page: "settings", repositories: {
+  const input = { version: 1, repositoryId: "second", page: "editor", rightPanes: ["settings"], repositories: {
     first: repository(), second: { ...emptyRepositoryWorkspace(), focus: "tree" }
   } };
   const before = structuredClone(input);
@@ -468,7 +541,7 @@ Then('both right panes survive reload and their widths keep room for the editor'
   for(const available of [1000,1200,1600,2000]){
     const widths=rightDockWidths(available,{ai:640,git:1600});assert.ok(widths.ai>=320);assert.ok(widths.git>=320);assert.ok(available-widths.ai-widths.git>=320);
   }
-  assert.deepEqual(rightDockWidths(1600,{ai:380,git:320}),{ai:380,git:320,history:0});
+  assert.deepEqual(rightDockWidths(1600,{ai:380,git:320}),{ai:380,git:320,history:0,vault:0,resources:0,settings:0});
 });
 
 Then("History migrates into the independent dock and three pane widths preserve the editor", function () {
@@ -482,9 +555,72 @@ Then("History migrates into the independent dock and three pane widths preserve 
   assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(state))),state);
   for (const available of [1280,1400,1800,2400]) {
     const widths = rightDockWidths(available,{history:520,git:640,ai:480});
-    for (const width of Object.values(widths)) assert.ok(width>=320);
+    for (const pane of ["history","git","ai"]) assert.ok(widths[pane]>=320);
     assert.ok(Object.values(widths).reduce((sum,width)=>sum+width,320)<=available);
   }
-  assert.deepEqual(rightDockWidths(1200,{history:440}),{history:440,git:0,ai:0});
-  assert.equal(rightDockWidths(800,{history:440}).history,320);
+  assert.deepEqual(rightDockWidths(1200,{history:440}),{history:440,git:0,ai:0,vault:0,resources:0,settings:0});
+  assert.equal(rightDockWidths(800,{history:440}).history,440);
+});
+
+Then('the resized dock pane receives its requested width before neighbours share the remaining space',function(){
+  const preferred={history:354,git:328,ai:341,vault:373,resources:362};
+  const result=rightDockWidths(2048,preferred,'vault');
+  assert.equal(result.vault,373);assert.ok(result.ai<341);assert.ok(result.resources<362);
+  assert.ok(Object.keys(preferred).every(pane=>result[pane]>=320));
+  assert.ok(Object.values(result).reduce((sum,width)=>sum+width,320)<=2048);
+  assert.deepEqual(rightDockWidths(2048,{history:440},'vault'),rightDockWidths(2048,{history:440}));
+  const input={version:1,repositoryId:'',page:'editor',repositories:{},explorerOpen:false,rightPanes:['history','git','ai','vault','resources']};
+  for(const available of [320,600,1280,1920,2048,2400,3200]){
+    const fitted=fitWorkspacePanes(available,input),editorMinimum=Math.min(320,available/2);
+    const preferred=Object.fromEntries(fitted.rightPanes.map(pane=>[pane,pane==='ai'||pane==='vault'?640:1600]));
+    const base=rightDockWidths(available,preferred),minimum=Math.min(320,available/(fitted.rightPanes.length+1));
+    for(const pane of fitted.rightPanes){
+      const request=base[pane]+48,cap=pane==='ai'||pane==='vault'?640:1600;
+      const maximum=Math.min(cap,available-editorMinimum-minimum*(fitted.rightPanes.length-1));
+      // Only visible panes participate in the width calculation.
+      const visible=Object.fromEntries(fitted.rightPanes.map(key=>[key,base[key]]));
+      const widths=rightDockWidths(available,{...visible,[pane]:request},pane);
+      assert.equal(widths[pane],Math.min(request,maximum));
+      for(const key of fitted.rightPanes)assert.ok(widths[key]>=Math.floor(minimum));
+      assert.ok(Object.values(widths).reduce((sum,width)=>sum+width,editorMinimum)<=available);
+    }
+  }
+});
+
+Then('Settings migrate into an independent pane with durable widths and opening priority',function(){
+  const legacy={version:1,repositoryId:'first',page:'settings',rightPane:'ai',repositories:{first:repository()}};
+  const migrated=normalizeWorkspace(legacy);
+  assert.equal(migrated.page,'editor');assert.deepEqual(migrated.rightPanes,['ai','settings']);
+  assert.equal(migrated.repositories.first.scroll.settings,300);
+  const base={...migrated,rightPanes:['history','git','ai','vault','resources','settings','settings'],paneOrder:['explorer','history','git','ai','vault','resources','settings'],settingsPaneWidth:640.4};
+  const stored=normalizeWorkspace(base);
+  assert.equal(stored.settingsPaneWidth,640);assert.equal(stored.paneOrder.at(-1),'settings');
+  assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(stored))),stored);
+  assert.equal(normalizeWorkspace({...base,settingsPaneWidth:10}).settingsPaneWidth,320);
+  assert.equal(normalizeWorkspace({...base,settingsPaneWidth:2000}).settingsPaneWidth,1600);
+  assert.equal(normalizeWorkspace({...base,settingsPaneWidth:NaN}).settingsPaneWidth,undefined);
+  for(const available of [320,600,1280,2400,3200]){
+    const fitted=fitWorkspacePanes(available,stored,'settings');
+    assert.ok(fitted.rightPanes.includes('settings'));
+    const explorer=fitted.explorerOpen?explorerDockWidth(available,fitted.rightPanes.length):0;
+    const preferred=Object.fromEntries(fitted.rightPanes.map(pane=>[pane,480]));
+    const widths=rightDockWidths(available-explorer,preferred,'settings');
+    assert.ok(widths.settings>0);
+    assert.ok(available-explorer-Object.values(widths).reduce((sum,width)=>sum+width,0)>=Math.min(320,(available-explorer)/2));
+  }
+  assert.equal(rightDockWidths(1600,{ai:380,settings:720},'settings').settings,720);
+  assert.deepEqual(fitWorkspacePanes(600,stored,'settings').rightPanes,['settings']);
+});
+
+Then('Settings sections and per-section scroll positions normalize and persist independently',function(){
+  const repo={...repository(),settingsScroll:{appearance:220.5,editor:340,remotes:-20,controls:Infinity,unknown:900}};
+  const state=normalizeWorkspace({version:1,repositoryId:'first',page:'editor',settingsTab:'formatting',repositories:{first:repo}});
+  assert.equal(state.settingsTab,'formatting');assert.deepEqual(state.repositories.first.settingsScroll,{appearance:220.5,editor:340,controls:0,remotes:0});
+  assert.equal(settingsScrollTop(state.repositories.first,'editor'),340);assert.equal(settingsScrollTop(state.repositories.first,'formatting'),0);
+  assert.equal(settingsScrollTop(repository(),'appearance'),300);assert.equal(settingsScrollTop(repository(),'editor'),0);
+  assert.deepEqual(normalizeWorkspace(JSON.parse(JSON.stringify(state))),state);
+  assert.equal(normalizeWorkspace({...state,settingsTab:'invalid'}).settingsTab,undefined);
+  const renamed=renameRepositoryWorkspace(state.repositories.first,'src','lib');assert.deepEqual(renamed.settingsScroll,state.repositories.first.settingsScroll);
+  assert.deepEqual(reconcileRepositoryWorkspace(state.repositories.first,['src/main.ts']).settingsScroll,state.repositories.first.settingsScroll);
+  assert.equal(normalizeWorkspace(null).settingsTab,undefined);
 });

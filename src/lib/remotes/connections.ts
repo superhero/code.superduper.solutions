@@ -14,7 +14,7 @@ if (channel) channel.onmessage = event => { if (typeof event.data === "string") 
 export function subscribeConnections(listener: () => void): () => void { listeners.add(listener); return () => { listeners.delete(listener); }; }
 export function connectionUnlocked(connection: Connection): boolean { return !connection.remembered || sessions.has(connection.id); }
 export function connectionAccess(connection: Connection): RemoteAccess {
-  if (!connectionUnlocked(connection)) throw new Error("Unlock this connection in Settings → Upstream connections.");
+  if (!connectionUnlocked(connection)) throw new Error("Unlock this connection in Settings → Remote connections.");
   return { provider: connection.provider, host: connection.host, relay: connection.relay, token: sessions.get(connection.id) ?? "" };
 }
 const additionalData = (record: Connection) => new TextEncoder().encode(JSON.stringify([record.id, record.provider, record.host]));

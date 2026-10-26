@@ -102,7 +102,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     padding-left: calc(11px + (var(--tree-level) - 1) * 25px); border-radius: 4px; font-size: 0.6875rem; font-weight: 700;
     cursor: pointer; user-select: none; }
   /* Match the branch trigger height, with a 2px gap between rows. */
-  .tree-row::before { content: ""; position: absolute; inset: 0 0 0 -14px; z-index: -1;
+  .tree-row::before { content: ""; position: absolute; inset: 0; z-index: -1;
     border-radius: 4px; background: var(--tree-row-background, transparent); pointer-events: none; }
   .tree-guide-space { flex: 0 0 8px; height: 16px; }
   .tree-row :global(.material-symbols-rounded) { flex-shrink: 0; }

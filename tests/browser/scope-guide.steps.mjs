@@ -170,7 +170,7 @@ Then("no active bracket scope guide is drawn", async function () {
 });
 
 When("I turn bracket matching {word} for scope guide checks", async function (state) {
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Editor");
   await selectDropdown(this.page, "Settings scope", "global");
   await this.page.getByRole("switch", { name: "Bracket matching", exact: true }).setChecked(state === "on");
   await saved(this.page);
@@ -191,7 +191,10 @@ Given("the editor contains a scope with {int} body lines", async function (count
 
 When("I place the scope-guide caret after the long scope closing brace", async function () {
   await this.page.keyboard.press("Control+End");
-  await expect(this.page.locator(".editor-status")).toContainText(this.longScopeCursor);
+  await expect(this.page.getByLabel('Code editor document',{exact:true})).toBeFocused();
+  await expect.poll(()=>this.page.evaluate(()=>{
+    const selection=getSelection();return {line:selection?.focusNode?.parentElement?.closest('.cm-line')?.textContent,offset:selection?.focusOffset};
+  })).toEqual({line:'}',offset:1});
 });
 
 Then("the scope guide reaches the closing brace with its opening brace offscreen", async function () {
@@ -237,7 +240,7 @@ Then("the scope guide spans the viewport while the caret remains at the closing 
   assert.ok(guide.right < geometry.body.left, "The guide stays left of the visible body");
   assert.ok(guide.top <= geometry.viewport.top + 1, "The guide covers the visible scope's top edge");
   assert.ok(guide.bottom >= geometry.viewport.bottom - 1, "The guide covers the visible scope's bottom edge");
-  await expect(this.page.locator(".editor-status")).toContainText(this.longScopeCursor);
+  await expect.poll(()=>this.page.evaluate(()=>{const selection=getSelection();return {text:selection?.anchorNode?.parentElement?.closest('.cm-line')?.textContent,offset:selection?.anchorOffset};})).toEqual({text:'}',offset:1});
 });
 
 Then("adjacent bracket pairs omit outlines and spaced pairs retain them", async function () {

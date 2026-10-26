@@ -101,7 +101,7 @@ Then('all editor panes and tabs move together during the split',async function()
       expect(pane.live).toEqual(end[index].live);
       expect(pane.content.width).toBe(start[index].content.width);
       if(pane.scrollbar)expect(Math.abs(pane.editor.right-pane.scrollbar.right)).toBeLessThan(1);
-      if(pane.map&&pane.editor.width>20){
+      if(pane.map?.width>0&&pane.editor.width>20){
         expect(pane.editor.right-pane.map.right).toBeGreaterThanOrEqual(-1);
         expect(pane.editor.right-pane.map.right).toBeLessThan(16);
       }

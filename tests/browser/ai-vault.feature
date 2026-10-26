@@ -3,8 +3,8 @@
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 @ai-vault-ui
 Feature: AI connections and guarded values
-  Scenario: Vault is a global header page with no AI vault buttons or retained secret drafts
-    Then the header opens the shared vault independently of AI and clears drafts on navigation
+  Scenario: Vault is an independent sliding pane without retained secret drafts
+    Then the header opens the shared vault beside AI and clears drafts on closing
   Scenario: Encrypted values and OpenAI profiles survive reload with locked access
     Then the AI vault and saved OpenAI connection preserve ciphertext across reload
   Scenario: Worker-only OpenAI streaming keeps credentials out of the conversation

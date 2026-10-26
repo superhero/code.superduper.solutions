@@ -71,7 +71,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     <div class="description"><h4>{library.name}</h4><p>{library.description}</p><span class="detail">{current?`${current.version} · ${packageSize(current.bytes)}`:library.included?'Types included in the library':'Community declarations'}</span></div>
     <div class="controls"><div class="selection"><NavigationDropdown matchTriggerWidth placeholder="Disabled" label={`${library.name} types`} value={repository&&!Object.hasOwn(value,id)?'inherit':effective[id]?'enabled':'disabled'} disabled={disabled||Boolean(pending)}
       items={[...(repository?[{value:'inherit',label:`Inherited · ${inherited[id]?'Enabled':'Disabled'}`,icon:'public'}]:[]),{value:'enabled',label:'Enabled',icon:'check'},{value:'disabled',label:'Disabled',icon:'block'}]} onchange={selection=>choose(library.name,selection)} /></div>
-      <Button variant="ghost" disabled={disabled||Boolean(pending)} aria-label={`${current?'Update':'Install'} ${library.name} types`} onclick={()=>install(library.name)}>{pending===id?'Installing…':current?'Update':'Install'}</Button>
+      <Button variant="ghost" size="icon" tooltip={pending===id?'Installing…':current?'Update':'Install'} disabled={disabled||Boolean(pending)} aria-label={`${current?'Update':'Install'} ${library.name} types`} onclick={()=>install(library.name)}><MaterialIcon name={current?'downloading':'install_desktop'} size={18}/></Button>
       {#if current}
         <Button variant="ghost" size="icon" tooltip="Export package" aria-label={`Export ${library.name} types`} disabled={disabled||Boolean(pending)} onclick={()=>exportFile(current)}><MaterialIcon name="download" size={18}/></Button>
         <Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${library.name} types`} disabled={disabled||Boolean(pending)} onclick={()=>remove(current)}><MaterialIcon name="delete" size={18}/></Button>
@@ -90,7 +90,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   {#if error}<p class="message" role="alert">{error}</p>{/if}
   {#if phase}<div class="progress"><p role="status">{phase}</p><Button variant="ghost" onclick={()=>controller?.abort()}>Cancel</Button></div>{/if}
   {#each rows.slice(0,limit) as library (library.name)}{@render row(library)}{/each}
-  {#if rows.length>limit}<Button class="more" variant="ghost" onclick={()=>limit+=8}>Show {Math.min(8,rows.length-limit)} more packages</Button>{/if}
+  {#if rows.length>limit}<Button class="more" variant="ghost" onclick={()=>limit+=8}><MaterialIcon name="visibility" size={18}/>Show {Math.min(8,rows.length-limit)} more packages</Button>{/if}
   {#if !rows.length&&!nativeRows.length}<p role="status">{searched?'No matching type packages found on npm.':'No matching common packages. Search npm to find more.'}</p>{/if}
   {#if nativeRows.length}<details open={nativeOpen||Boolean(query.trim())} ontoggle={event=>nativeOpen=event.currentTarget.open}>
     <summary><MaterialIcon name="code" size={18}/>Libraries with included types</summary>
@@ -105,7 +105,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 <style>
   .npm-types{margin-top:24px;min-width:0}h3{margin:0;font-size:.875rem;font-weight:650}p{margin:6px 0 14px;font-size:.6875rem;line-height:1.6}
   .search{display:flex;gap:8px;align-items:center;margin:12px 0}.search>input{flex:1;min-width:0;padding:9px 11px;border:0;border-radius:4px;background:var(--color-background);color:var(--color-foreground);font-size:.6875rem}
-  .npm-type-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px;margin-top:6px;padding:12px;background:var(--color-background);border-radius:4px}
+  .npm-type-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:var(--pane-gap);margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-background);border-radius:4px}
   .description{min-width:0;overflow-wrap:anywhere}h4{margin:0;font-size:.75rem;font-weight:650}.description p{margin:4px 0}.detail{font-size:.625rem;opacity:.65}
   .controls{display:flex;align-items:center;gap:6px;min-width:0}.selection{flex:1;min-width:0}.footer{display:flex;margin-top:12px}.progress{display:flex;align-items:center;gap:12px}.progress p{margin:0;flex:1}.message{margin:12px 0}
   details{margin-top:18px}summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;font-size:.75rem;font-weight:650}summary::-webkit-details-marker{display:none}

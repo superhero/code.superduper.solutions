@@ -11,7 +11,7 @@ Then("the page has its application title and an accessible editor shell", async 
   await expect(surface).toHaveCount(1);
   await expect(surface).toBeVisible();
   await expect(this.page.getByRole("button", { name: "Repository", exact: true })).toBeEnabled();
-  await expect(this.page.getByRole("button", { name: "Page", exact: true })).toBeVisible();
+  await expect(this.page.locator(".topbar").getByRole("heading", { name: "Editor", exact: true })).toBeVisible();
 });
 Then("the application makes no runtime asset requests", function () {
   const allowed = ["/", "/favicon.ico", "/favicon.png", "/apple-touch-icon.png"].map(path => `${this.baseURL}${path}`);

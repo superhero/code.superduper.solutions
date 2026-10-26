@@ -17,7 +17,9 @@ import { remotePackages } from "./build/remote-packages.mjs";
 import { languagePackages } from "./build/language-packages.mjs";
 import { typePackages } from "./build/type-packages.mjs";
 import { startupPreview } from "./build/startup-preview.mjs";
+import { modelRuntimes } from "./build/model-runtimes.mjs";
 import { browserModels } from "./build/browser-models.mjs";
+import { speechRuntime } from "./build/speech-runtime.mjs";
 
 const workerLicenses = [];
 
@@ -122,6 +124,8 @@ export default defineConfig({
   },
   plugins: [
     browserModels(),
+    modelRuntimes(),
+    speechRuntime(),
     formatterPackages(),
     languagePackages(),
     typePackages(),

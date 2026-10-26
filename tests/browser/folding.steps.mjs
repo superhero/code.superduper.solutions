@@ -147,7 +147,7 @@ When("I insert {string} during the paused code fold transition", async function 
 When("I use the editor font {string} at size {int} and line height {float}", async function (font, size, height) {
   const saved = () => expect(this.page.getByRole("status", { name: "Persistence status", exact: true }))
     .toHaveText("All changes saved");
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Editor");
   await selectDropdown(this.page, "Settings scope", "global");
   await selectDropdown(this.page, "Editor font", { label: font });
   await saved();

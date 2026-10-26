@@ -9,7 +9,7 @@ import {defaultKeymap,indentMore,indentLess,indentSelection,selectAll,selectLine
   moveLineUp,moveLineDown,copyLineUp,copyLineDown,deleteLine,addCursorAbove,addCursorBelow} from '@codemirror/commands';
 import {searchKeymap,openSearchPanel,findNext,findPrevious,gotoLine,selectNextOccurrence} from '@codemirror/search';
 import {foldKeymap,foldCode,unfoldCode,foldAll,unfoldAll} from '@codemirror/language';
-import {closeBracketsKeymap} from '@codemirror/autocomplete';
+import {closeBracketsKeymap,nextSnippetField,prevSnippetField} from '@codemirror/autocomplete';
 import {shortcutsFor,keybindingActions,shortcutIdentity,type KeybindingAction} from './keybindings';
 import type {EditorSettings} from './settings';
 const actions:Partial<Record<KeybindingAction,Command>>={
@@ -26,6 +26,8 @@ export function editorKeybindings(settings:EditorSettings,history?:{undo():void;
     if(readOnly&&!readOnlyActions.has(id))continue;
     if((key==='Tab'||key==='Shift-Tab')&&settings.tabBehavior!=='indent')continue;
     custom.push({key,scope:["find","replace","findNext","findPrevious"].includes(id)?"editor search-panel":"editor",run:view=>{
+      if(key==='Tab'&&nextSnippetField(view))return true;
+      if(key==='Shift-Tab'&&prevSnippetField(view))return true;
       if((key==='Tab'||key==='Shift-Tab')&&settings.indentSize===0)return true;
       return run(view);
     },preventDefault:true});

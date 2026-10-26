@@ -81,7 +81,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           <div class="type-select"><NavigationDropdown matchTriggerWidth placeholder="Disabled" label={`${library.name} types`} value={repository&&!Object.hasOwn(value,library.id)?'inherit':effective[library.id]?'enabled':'disabled'} disabled={disabled||Boolean(pending)}
             items={[...(repository?[{value:'inherit',label:`Inherited · ${inherited[library.id]?'Enabled':'Disabled'}`,icon:'public'}]:[]),{value:'enabled',label:'Enabled',icon:'check'},{value:'disabled',label:'Disabled',icon:'block'}]}
             onchange={selection=>choose(library.id,selection)} /></div>
-          {#if !ready(item)}<Button variant="ghost" disabled={disabled||Boolean(pending)} aria-label={`${current?'Update':'Install'} ${library.name} types`} onclick={()=>install(item)}>{pending===item.id?'Installing…':current?'Update':'Install'}</Button>{/if}
+          {#if !ready(item)}<Button variant="ghost" size="icon" tooltip={pending===item.id?'Installing…':current?'Update':'Install'} disabled={disabled||Boolean(pending)} aria-label={`${current?'Update':'Install'} ${library.name} types`} onclick={()=>install(item)}><MaterialIcon name={current?'downloading':'install_desktop'} size={18}/></Button>{/if}
           {#if ready(item)}<Button variant="ghost" size="icon" tooltip="Export package" aria-label={`Export ${library.name} types`} disabled={disabled||Boolean(pending)} onclick={()=>exportFile(item)}><MaterialIcon name="download" size={18} /></Button>{/if}
           {#if current}<Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${library.name} types`} disabled={disabled||Boolean(pending)} onclick={()=>uninstall(item.id)}><MaterialIcon name="delete" size={18} /></Button>{/if}
         </div>
@@ -94,11 +94,11 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 {/if}
 
 <style>
-  .type-preferences{margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px;min-width:0}
+  .type-preferences{margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px;min-width:0}
   .card-heading{display:flex;align-items:center;gap:12px;margin-bottom:14px}h2{margin:0;font-size:.9375rem;font-weight:650}
   p{margin:0 0 18px;font-size:.6875rem;line-height:1.6}p[role=alert]{color:var(--color-foreground)}
-  .type-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px;margin-top:6px;padding:12px;background:var(--color-background);border-radius:4px}
+  .type-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:var(--pane-gap);margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-background);border-radius:4px}
   .type-description{min-width:0}h3{margin:0;font-size:.75rem;font-weight:650}.type-description p{margin:4px 0;font-size:.6875rem}.package-detail{font-size:.625rem;opacity:.65}
   .type-controls{display:flex;align-items:center;gap:6px;min-width:0}.type-select{flex:1;min-width:0}.type-footer{display:flex;margin-top:12px}
-  @media(max-width:640px){.type-choice{grid-template-columns:minmax(0,1fr)}}
+  @container settings-pane (max-width:640px){.type-choice{grid-template-columns:minmax(0,1fr)}}
 </style>

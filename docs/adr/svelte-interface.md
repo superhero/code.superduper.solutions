@@ -6,7 +6,7 @@
 ## Foundation
 
 Svelte 5, strict TypeScript, Vite, and Tailwind form the interface foundation.
-Owned Button and Sheet components use Bits UI behavior; adapt those components
+Owned Button, Dialog and Sheet components use Bits UI behavior; adapt those components
 before creating equivalent controls. Shared class and prop utilities keep
 composition consistent. An owned Svelte component integrates the official
 CodeMirror packages directly. Settings reconfigure extensions without replacing
@@ -45,6 +45,26 @@ normal personal/repository preferences; installation is device-local state.
 
 ## Adopted interaction requirements
 
+Repository explorer, editor, History, Git, AI, Vault, Resources and Settings use
+columns at every viewport width. Never replace them with stacked rows or hide the editor to accommodate
+side panes. Shrink available widths, then close older panes when their minimums
+cannot fit, preserving the newly opened pane and the editor. Explorer visibility
+and pane opening order are workspace metadata; the explorer toggle is first in
+the editor toolbar, before Undo. Widening the viewport does not reopen
+closed panes. Vault follows AI, Resources follows Vault, and Settings is the final
+column. These utility panes have independent visibility, remembered widths and
+shared sliding transitions. Settings keeps the editor visible, with its scope
+selector and settings history controls in its own headers. Its responsive content
+uses the pane width; keyboard undo follows the focused editor or Settings pane.
+Its tab row groups Appearance, Editor, Languages, Formatting, Controls, AI, Git
+remotes and Licenses. Global/repository scope stays shared, drafts survive tab
+changes, and each category retains its own scroll position.
+
+Modal forms and confirmations use a centered Bits UI Dialog with palette surfaces,
+no shadow, and a short opacity transition. Reduced motion
+disables that transition. These dialogs remain inset from the viewport and scroll
+when their contents exceed the available height.
+
 The original palette catalog had primary, tooltip, and surface contrast gaps.
 The editor uses corrected shared roles and palette values; browser checks measure
 the actual role pairs in every palette and both modes. New controls and syntax
@@ -68,7 +88,7 @@ choices stay exact. Restrict references to earlier roles to prevent cycles and
 validate stored sources rather than accepting arbitrary CSS. Color mappings and
 selection opacity inherit by role from personal defaults to repository overrides,
 participate in each settings scope's Undo/Redo, and update open views without
-editing source files. They are appearance preferences, outside file overrides.
+editing source files. They use global defaults and repository overrides.
 Transparency is reserved for effects such as
 shadows, control fills, backdrops, scroll fades, canvas decoration and transitions.
 Page backgrounds remain solid beneath animated lines.
@@ -82,9 +102,15 @@ Validate every palette in both modes, correcting palette values or shared roles
 rather than adding mode-specific exceptions. Checks cover reversal, replacement
 palettes, role bindings and contrast without duplicating shipped hex values.
 
-Primary/destructive and Settings buttons follow the same hover foreground role.
+Standard buttons and selection triggers preserve their existing background on
+hover and change only their foreground. This shared default also covers
+primary/destructive and Settings buttons, including portalled controls. Explicit
+component styles follow it. File-tree rows and staged/commit-history widgets
+retain their dedicated hover fills.
 Buttons inside the second header keep their normal foreground and indicate hover
-with their existing background fill. Controls retain their size
+with their existing background fill. Explorer and side-pane toggles retain that
+fill while open, with a 2px inner border in the foreground color at full opacity. The
+History toggle stays active on either tab. Controls retain their size
 on hover and focus, including after resizing and inside portal panels. Keyboard
 focus remains visible through focus indicators. Disabled controls remain fully
 opaque, use native disabled semantics, and do not activate on hover. Interface
@@ -95,25 +121,34 @@ colors without borders or outlines. Keyboard focus uses palette fills and text
 colors, including menus, tree rows and inline renaming; invalid states retain
 their error text and semantic attributes. Shared CSS covers portalled controls
 as well as the application shell. Borders and focus/match outlines belong only
-inside CodeMirror. Tree connectors, graph nodes and loading illustrations are
+inside CodeMirror, except the explicitly requested active-pane toolbar borders
+and dialog frames. Tree connectors, graph nodes and loading illustrations are
 drawn content rather than control frames.
 
-The first header contains repository context, the Editor/History/Settings tabs
-and persistence status. The second contains left-aligned undo/redo actions and
-branch label; open-file tabs follow it. There is no separate fourth toolbar.
+Workspace columns have three aligned header rows: repository/pane titles,
+context toolbars, and tabs or the explorer branch selector. Settings categories
+use that third row. Persistence status stays in the explorer footer.
 The file-action header uses the third foreground (`tone-4`) as its background
 and the first background (`tone-1`) for text and icons.
 
 Local Git review uses a right-hand pane shared by the editor and History.
-When the available workspace fits both panes, Git occupies its own layout space
-and leaves the explorer and workbench usable. When space is insufficient, the
-shared Sheet provides a modal covering the entire viewport. Sliding content is
-clipped to the dock so it cannot cover the explorer. Layout changes preserve
+Git always occupies its own layout space beside the workbench. When space is
+insufficient, older side panes close, including the explorer when necessary.
+Sliding content is clipped to the dock so it cannot cover the editor. Layout changes preserve
 the operation and draft; opening transitions never replay on staging or editing.
 Docked entry and exit animate the shared layout boundary, so the main view moves
 with Git rather than jumping to its final size ahead of the pane. Git's form
-retains its target width throughout the short, reversible motion. Reduced motion
+retains its target width throughout the short, reversible motion. When a middle
+pane such as Vault opens or closes, surviving dock widths and the explorer
+share that timing; an outgoing dock retains its last allocated width until
+its slide ends. This prevents instant neighbour jumps or temporarily squeezing
+the editor out. Reduced motion
 applies the layout immediately.
+Explicit dock resizing gives the dragged pane its requested width. Once spare
+editor space is exhausted, other side panes share the reduction down to their
+minimums. Resize limits therefore use those minimums, rather than freezing the
+handle at its current width after another pane opens. AI uses the same preview,
+cancellation and persistence path as the other dock panes.
 
 File and folder names in the tree, and open-file tabs, expose a Bits UI context
 menu through right-click or the keyboard menu key. Change name edits the basename

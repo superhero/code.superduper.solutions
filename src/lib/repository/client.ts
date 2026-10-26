@@ -85,6 +85,8 @@ export const repositoryClient: RepositoryClient = {
   gitDiff: (id, request) => call("gitDiff", [id, request]),
   gitAction: (id, request, expected) => call("gitAction", [id, request, expected]),
   list: () => call("list", []), create: (name, files) => call("create", [name, files]), open: id => call("open", [id]),
+  renameRepository: (id, name, expected) => call("renameRepository", [id, name, expected]),
+  deleteRepository: (id, expected, activity, state) => call("deleteRepository", [id, expected, activity, state]),
   write: (id, path, content, expected, group, action) => call("write", [id, path, content, expected, ...(action ? [group, action] : group ? [group] : [])]),
   createFile: (id, path, content, expected) => call("createFile", [id, path, content, expected]),
   addFiles: (id, files, expected) => call("addFiles", [id, files, expected]),

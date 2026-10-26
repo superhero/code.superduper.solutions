@@ -22,7 +22,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </script>
 
 <Sheet.Pane bind:open {docked} {width} label={`History · ${repository.name}`}>
-  {#snippet divider(moving: boolean)}<WidthDivider edge="left" label="Resize History pane" minimum={320} maximum={maximumWidth}
+  {#snippet divider(moving: boolean)}<WidthDivider edge="left" label="Resize History pane" minimum={Math.min(320,maximumWidth)} maximum={maximumWidth}
     disabled={resizeDisabled || frozen || moving} onstart={onresizestart} onpreview={onresizepreview} onend={onresizeend}/>{/snippet}
   <div class="history-pane" inert={frozen} data-history-panel data-layout={docked ? "docked" : "overlay"}>
     <header>
@@ -31,15 +31,15 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     <div class="history-actions">
       <Button variant="ghost" size="icon-sm" aria-label="Close History" tooltip="Close History pane" onclick={() => open = false}><MaterialIcon name="close" size={18}/></Button>
     </div>
-    <nav class="history-tabs" aria-label="History views">
-      <Button class="history-tab" variant="ghost" aria-pressed={view === "changes"} {disabled} onclick={() => onviewchange("changes")}>
-        <MaterialIcon name="manage_history" size={16}/><span>Staged changes</span>
+    <nav class="history-tabs view-tabs tab-scroll" data-hover="foreground" aria-label="History views">
+      <Button class="history-tab view-tab" variant="ghost" aria-pressed={view === "changes"} {disabled} onclick={() => onviewchange("changes")}>
+        <MaterialIcon name="manage_history" size={15}/><span>Staged</span>
       </Button>
-      <Button class="history-tab" variant="ghost" aria-pressed={view === "versions"} {disabled} onclick={() => onviewchange("versions")}>
-        <MaterialIcon name="commit" size={16}/><span>Commit history</span>
+      <Button class="history-tab view-tab" variant="ghost" aria-pressed={view === "versions"} {disabled} onclick={() => onviewchange("versions")}>
+        <MaterialIcon name="commit" size={15}/><span>Committed</span>
       </Button>
     </nav>
-    <div class="page-with-minimap" class:hide-scrollbars={!settings.scrollbars}>
+    <div class="page-with-minimap" class:hide-scrollbars={settings.historyMinimap && !settings.scrollbars}>
       <div bind:this={panel} id="panel-history" role="region" tabindex="-1" aria-label="History" class="scroll-panel" onscroll={event => onscroll(event.currentTarget)}>
         <div class="history-page">
           {#key repository.id}
@@ -50,7 +50,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           {/key}
         </div>
       </div>
-      {#if settings.minimap}<PageMinimap target={panel} label="History"/>{/if}
+      {#if settings.historyMinimap}<PageMinimap target={panel} label="History"/>{/if}
     </div>
   </div>
 </Sheet.Pane>
@@ -61,17 +61,13 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   header { display:flex; align-items:center; justify-content:space-between; height:var(--workbench-header-height, 48px); flex:0 0 var(--workbench-header-height, 48px); min-height:0; gap:12px; padding:6px 12px; }
   .title { display:flex; align-items:center; gap:8px; }
   h2 { font-size:0.75rem; font-weight:600; margin:0; outline:none; }
-  .history-actions { display:flex; align-items:center; gap:2px; justify-content:flex-end; padding:4px 12px; height:40px; flex:0 0 40px; background:var(--color-toolbar-background); color:var(--color-toolbar-foreground); }
-  .history-actions :global(button) { --color-hover-background:color-mix(in srgb, var(--color-foreground) 50%, transparent); }
+  .history-actions { display:flex; align-items:center; gap:2px; justify-content:flex-end; padding:4px calc(12px - .5rem) 4px 12px; height:40px; flex:0 0 40px; background:var(--color-toolbar-background); color:var(--color-toolbar-foreground); }
   .history-actions :global(button:disabled) { background:transparent; color:color-mix(in srgb, var(--color-surface) 65%, transparent); }
-  .history-tabs { display:flex; min-width:0; height:var(--workbench-tabs-height, 40px); flex:0 0 var(--workbench-tabs-height, 40px); background:var(--color-surface); border-block:2px solid var(--history-divider); overflow-x:auto; scrollbar-width:none; }
-  .history-tabs :global(.history-tab) { flex:1 0 auto; justify-content:flex-start; height:var(--workbench-tabs-content-height, 36px); padding:6px 12px; border-radius:0; background:var(--color-hover-background); font-size:.625rem; gap:6px; }
-  .history-tabs :global(.history-tab[aria-pressed="true"]) { background:var(--color-background); }
-  .history-tabs::-webkit-scrollbar { display:none; }
+
   .page-with-minimap { --page-minimap-width:clamp(24px,4vw,60px); position:relative; display:flex; flex:1; min-height:0; min-width:0; }
   .scroll-panel { position:relative; flex:1; min-height:0; min-width:0; overflow:auto; }
-  .history-page { padding:12px 0 40px; }
+  .history-page { padding:var(--pane-gap) 0; }
   section { min-width:0; }
-  .hide-scrollbars .scroll-panel { scrollbar-width:none; }
-  .hide-scrollbars .scroll-panel::-webkit-scrollbar { display:none; }
+  .hide-scrollbars:has(> :global(.page-minimap:not([hidden]))) > .scroll-panel { scrollbar-width:none; }
+  .hide-scrollbars:has(> :global(.page-minimap:not([hidden]))) > .scroll-panel::-webkit-scrollbar { display:none; }
 </style>

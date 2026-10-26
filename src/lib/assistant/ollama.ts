@@ -5,7 +5,7 @@
 export const OLLAMA_ADDRESS = "http://localhost:11434";
 export const OLLAMA_MODEL = "ornith:9b-q8_0";
 export interface OllamaModel { id: string; label: string; contextWindow?: number }
-export interface ChatImage { type: 'image'; data: string; mimeType: string }
+export interface ChatImage { type: 'image'; data: string; mimeType: string; width?: number; height?: number }
 export interface ChatMessage { role: "user" | "assistant"; content: string; images?: ChatImage[] }
 export interface NativeToolCall { function: { name: string; arguments: Record<string, unknown> } }
 export interface ChatResult { reason: string; tokens: number; inputTokens?: number; toolCalls?: NativeToolCall[] }

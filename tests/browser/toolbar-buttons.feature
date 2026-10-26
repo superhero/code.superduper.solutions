@@ -13,8 +13,11 @@ Feature: Editor toolbar buttons can be chosen in Settings
   Scenario: Repository toolbar choices inherit defaults and reset independently
     Then repository toolbar choices inherit defaults and support reset
 
-  Scenario: Settings and History toolbar choices are independent of Editor
-    Then each view independently controls its toolbar buttons
+  Scenario: Settings toolbar choices are independent of the adjacent Editor
+    Then Settings independently controls its toolbar buttons
 
-  Scenario: Editor history shortcuts open the requested graph and can be hidden
-    Then editor history buttons open their graphs and respect toolbar choices
+  Scenario: AI connection shortcut is opt-in and its visibility survives reload
+    Then the AI connection settings shortcut defaults off and follows its Controls preference
+
+  Scenario: History and Git pane controls stay available after removing the staged shortcut
+    Then History remains available without a separate staged toolbar shortcut

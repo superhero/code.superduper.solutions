@@ -3,13 +3,21 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import {When,Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
+import {mkdir,writeFile} from 'node:fs/promises';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const text='const value = 2;\nconst added = true;';
 Then('the diff minimaps match their line change highlights',async function(){
   const region=this.page.getByRole('region',{name:'File diff',exact:true});
   for(const side of ['a','b']){
     const pane=region.locator(`.cm-merge-${side}`);
-    const expected=await pane.locator('.cm-lineNumbers .cm-diff-changedNumber:visible').evaluateAll(markers=>markers.map(marker=>getComputedStyle(marker).backgroundColor.match(/\d+/g).slice(0,3).map(Number)));
+    const expected=await pane.locator('.cm-lineNumbers .cm-diff-changedNumber:visible').evaluateAll(markers=>{
+      const canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+      const context=canvas.getContext('2d');
+      return markers.map(marker=>{
+        context.clearRect(0,0,1,1);context.fillStyle=getComputedStyle(marker).getPropertyValue('--diff-change-color').trim();context.fillRect(0,0,1,1);
+        return [...context.getImageData(0,0,1,1).data].slice(0,3);
+      });
+    });
     expect(expected.length).toBeGreaterThan(0);
     const overflow=await pane.locator('.cm-scroller').evaluate(element=>element.scrollHeight>element.clientHeight+1);
     if(!overflow){await expect(pane.locator('.cm-minimap-gutter')).toBeHidden();continue;}
@@ -17,15 +25,26 @@ Then('the diff minimaps match their line change highlights',async function(){
     await expect.poll(()=>pane.locator('.cm-minimap-inner canvas').evaluate((canvas,colors)=>{
       const context=canvas.getContext('2d'),left=context.getImageData(2,0,4,canvas.height).data,right=context.getImageData(canvas.width-6,0,4,canvas.height).data;
       if(!left.every((value,index)=>value===right[index]))return false;
-      const background=getComputedStyle(canvas.parentElement).backgroundImage.replace(/\s/g,'');
+      const sample=document.createElement('canvas');sample.width=sample.height=1;const brush=sample.getContext('2d');
+      const background=(getComputedStyle(canvas.parentElement).backgroundImage.match(/(?:rgba?|color)\([^)]*\)/g)??[]).map(color=>{
+        brush.clearRect(0,0,1,1);brush.fillStyle=color;brush.fillRect(0,0,1,1);return [...brush.getImageData(0,0,1,1).data];
+      });
       return colors.every(color=>{
         let found=false;
         for(let offset=0;offset<left.length;offset+=4)if(left[offset+3]===255&&color.every((value,index)=>Math.abs(value-left[offset+index])<=1)){found=true;break;}
-        return found&&background.includes(`rgba(${color.join(',')},0.24)`);
+        return found&&background.some(pixel=>Math.abs(pixel[3]-61)<=1&&color.every((value,index)=>Math.abs(value-pixel[index])<=3));
       });
     },expected)).toBe(true);
   }
 });
+function expectMinimapMotion(frames){
+  // Short documents hide their minimaps; the long-file scenario checks painting.
+  if(!frames.some(frame=>frame.liveMapRight>0)){
+    expect(frames.every(frame=>frame.mapRight===0&&!frame.mapPainted)).toBe(true);return;
+  }
+  expect(frames.every(frame=>frame.mapPainted&&Math.abs(frame.mapRight-frames[0].mapRight)<1&&Math.abs(frame.mapRight-frame.liveMapRight)<1)).toBe(true);
+  expect(frames.every(frame=>frame.committedMapGap<2&&frame.pinnedMapGap<2&&frame.canvasGap<2)).toBe(true);
+}
 async function observeMotion(page,direction,key){
   await page.evaluate(({direction,key,capture})=>{
     const pane=document.activeElement?.closest('.split-editor, .primary-pane')??
@@ -78,8 +97,7 @@ Then('the committed pane slides away and the current view expands back',async fu
   expect(frames[2].leftLeft).toBeLessThan(frames[0].leftLeft-frames[0].leftWidth*.9);
   expect(Math.abs(frames[2].rightWidth-frames[0].rightWidth)).toBeLessThan(1);
   expect(Math.abs(frames[2].liveWidth-frames[0].liveWidth)).toBeLessThan(1);
-  expect(frames.every(frame=>frame.mapPainted&&Math.abs(frame.mapRight-frames[0].mapRight)<1&&Math.abs(frame.mapRight-frame.liveMapRight)<1)).toBe(true);
-  expect(frames.every(frame=>frame.committedMapGap<2&&frame.pinnedMapGap<2&&frame.canvasGap<2)).toBe(true);
+  expectMinimapMotion(frames);
   expect(frames.every(frame=>frame.scrollbarVisible)).toBe(true);
   await expect(this.page.getByLabel('Code editor document',{exact:true})).toBeVisible();
 });
@@ -96,17 +114,21 @@ When('I open the file diff while observing its reveal',async function(){
 Then('the committed pane slides in and the current pane moves to the right',async function(){
   await expect.poll(()=>this.page.evaluate(()=>window.diffReveal.frames.length)).toBe(3);
   const {source,frames}=await this.page.evaluate(()=>window.diffReveal);
+  await mkdir(this.artifactDirectory,{recursive:true});
+  await writeFile(`${this.artifactDirectory}/diff-motion-frames.json`,JSON.stringify({source,frames},null,2));
   expect(Math.abs(frames[0].rightLeft-source.left)).toBeLessThan(4);
   expect(frames[0].rightWidth).toBeGreaterThan(source.width*.95);
   expect(frames[1].leftLeft).toBeGreaterThan(frames[0].leftLeft);
   expect(frames[2].rightLeft).toBeGreaterThan(frames[0].rightLeft+source.width*.4);
   expect(Math.abs(frames[2].rightWidth-frames[0].rightWidth)).toBeLessThan(1);
   expect(Math.abs(frames[2].liveWidth-frames[0].liveWidth)).toBeLessThan(1);
-  expect(frames.every(frame=>frame.mapPainted&&Math.abs(frame.mapRight-frames[0].mapRight)<1&&Math.abs(frame.mapRight-frame.liveMapRight)<1)).toBe(true);
-  expect(frames.every(frame=>frame.committedMapGap<2&&frame.pinnedMapGap<2&&frame.canvasGap<2)).toBe(true);
+  expectMinimapMotion(frames);
   expect(frames.every(frame=>frame.scrollbarVisible)).toBe(true);
   await expect(this.page.getByLabel('Current file',{exact:true})).toHaveAttribute('contenteditable','true');
   for(const side of ['a','b']){
+    if(!frames.some(frame=>frame.liveMapRight>0)){
+      await expect(this.page.locator(`.file-diff .cm-merge-${side} .cm-minimap-gutter`)).toBeHidden();continue;
+    }
     const geometry=await this.page.locator(`.file-diff .cm-merge-${side}`).evaluate(element=>{
       const pane=element.getBoundingClientRect(),map=element.querySelector('.cm-minimap-gutter').getBoundingClientRect();
       return {right:Math.abs(map.right-pane.right),onRight:map.left>pane.left+pane.width/2};

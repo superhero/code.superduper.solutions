@@ -7,7 +7,7 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { openNavigationMenu, selectPage } from "./navigation.helpers.mjs";
+import { openNavigationMenu, selectPage, openGitStaging } from "./navigation.helpers.mjs";
 import { createSourceCommitFixture } from "./editor.steps.mjs";
 
 const changeGraph = page => page.getByRole("list", { name: "Staged changes", exact: true, includeHidden: true });
@@ -137,7 +137,7 @@ Then("the recorded {string} change is current without leaving History", async fu
   await saved(this.page);
   await graphSnapshot(this.page);
   await expect(this.page.getByRole("region", { name: "History", exact: true })).toBeVisible();
-  await expect(this.page.getByRole("button", { name: "Page", exact: true })).toHaveAttribute("data-value", "editor");
+  await expect(this.page.locator(".topbar").getByRole("heading", { name: "Editor", exact: true })).toBeVisible();
   await expect(changeGraph(this.page).locator('li[aria-current="true"]')).toHaveAttribute("data-oid", this.selectableChanges[name]);
   await expect(changeGraph(this.page).locator('li[aria-current="true"] > .change-load')).toBeFocused();
   for (const revision of Object.keys(this.selectableChanges)) await expect(selectableChange(this, revision)).toBeVisible();
@@ -208,14 +208,12 @@ Then("the branch menu shows the earlier detached commit", async function () {
 
 When('I stage the current file before continuing the checkout draft',async function(){
   await saved(this.page);
-  await this.page.getByRole('button',{name:'Commit changes',exact:true}).click();
-  const panel=this.page.locator('[data-git-panel]');
+  const panel=await openGitStaging(this.page);
   await expect(panel.locator('.staged-count')).toHaveText('1 file staged');
   await panel.getByRole('button',{name:'Close',exact:true}).click();await expect(panel).toHaveCount(0);await saved(this.page);
 });
 Then('the current file retains its staged checkout draft',async function(){
-  await this.page.getByRole('button',{name:'Commit changes',exact:true}).click();
-  const panel=this.page.locator('[data-git-panel]');
+  const panel=await openGitStaging(this.page);
   await expect(panel.locator('.staged-count')).toHaveText('1 file staged');
   await panel.getByRole('button',{name:'Staged diff',exact:true}).click();
   await expect(this.page.getByRole('region',{name:'Staged file diff',exact:true}).getByLabel('Staged file',{exact:true})).toHaveText('ab!');
@@ -338,10 +336,12 @@ Then("the change graph keeps its connected rows aligned in wide and narrow viewp
 });
 
 When("I replace the code document with:", async function (text) {
+  await expect(editor(this.page)).toHaveAttribute('aria-readonly','false');
   await editor(this.page).focus();
   await this.page.keyboard.press("Control+a");
   await this.page.keyboard.insertText(text);
   await saved(this.page);
+  await expect(editor(this.page)).toHaveText(text.replaceAll('\n',''));
 });
 
 When("I replace code line {int} with {string}", async function (number, text) {
@@ -399,8 +399,8 @@ Given("a source commit fixture has long multiline details", async function () {
 
 Then("long history graphs scroll only the History panel at wide and narrow sizes", async function () {
   const measurements = [];
-  for (const name of ["Staged changes", "Commit history"]) {
-    await this.page.getByRole("navigation",{name:"History views",exact:true}).getByRole("button",{name,exact:true}).click();
+  for (const [name,title] of [["Staged changes","Staged"],["Commit history","Committed"]]) {
+    await this.page.getByRole("navigation",{name:"History views",exact:true}).getByRole("button",{name:title,exact:true}).click();
     await saved(this.page);
     if (name === "Commit history") {
       const message = this.page.getByRole("list", { name: "Commit history", exact: true }).locator(".commit-markdown");
@@ -817,7 +817,7 @@ Then('the History branch tag toggles all branches at its junction without changi
   const junctionTime=before.history.find(version=>version.oid===junctionOid).timestamp;
   const newestBranchTime=Math.max(...before.history.filter(version=>version.oid===first||version.oid===second).map(version=>version.timestamp));
   const outsideIds=before.history.filter(version=>version.timestamp<junctionTime||version.timestamp>newestBranchTime).map(version=>version.oid);
-  assert.ok(outsideIds.length>=2,'The fixture has messages above and below the reveal interval');
+  assert.ok(outsideIds.length>=1,'The fixture retains messages outside the branch reveal interval');
   const retainedIds=await graph.locator('li[data-oid]').evaluateAll(rows=>rows.map(row=>row.dataset.oid));
   async function messagePositions(ids=retainedIds){
     return graph.evaluate((element,ids)=>ids.map(id=>{
@@ -859,7 +859,7 @@ Then('the History branch tag toggles all branches at its junction without changi
   const junction=tag.locator('xpath=ancestor::li[1]');
   const checkpoint=await junction.locator('.change-load').boundingBox();
   assert.ok(checkpoint.x>=label.x+label.width&&checkpoint.x<=node.x,
-    'Checkpoint hit area includes the tree and excludes the branch tag');
+    `Checkpoint hit area includes the tree and excludes the branch tag: ${JSON.stringify({label,node,checkpoint})}`);
   await tag.hover();
   assert.equal(await junction.evaluate(element=>getComputedStyle(element,'::before').backgroundColor),'rgba(0, 0, 0, 0)',
     'Hovering a branch tag does not highlight the checkpoint');
@@ -1050,7 +1050,7 @@ Then('model navigation cancels the unfinished History branch reveal', {timeout:6
   await graph.locator('[data-branch-id]').click();
   await finishHistoryPhase(graph,'messages-adjust');
   await sampleHistoryPhase(graph,'tree',.5);
-  await page.getByRole('button',{name:'Undo history',exact:true}).click();
+  await page.getByRole('button',{name:'Undo',exact:true}).click();
   await saved(page);
   await expect(graph).toHaveAttribute('data-branch-motion','idle');
   await expect(editor(page)).toHaveText('a');

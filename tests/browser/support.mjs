@@ -35,10 +35,10 @@ async function startDevelopmentServer() {
     // Keep editor scenarios on their ordinary startup path while the local
     // development landing page previews the loading studies.
     define: { "import.meta.env.VITE_LOADING_GALLERY": JSON.stringify("false") },
-    // The fixture is imported on demand; prebundle its dependencies before the
-    // first scenario so Vite does not reload the page during keyboard checks.
-    optimizeDeps: { entries: [resolve(applicationRoot, "index.html"), resolve(applicationRoot, "test-fixtures/ui-primitives.ts"),
-      resolve(applicationRoot, "test-fixtures/repository-recovery.ts")] },
+    // Browser fixtures are imported on demand. Scan their dependencies before the
+    // first scenario so lazy AI or repository imports cannot reload a live test.
+    optimizeDeps: { entries: [resolve(applicationRoot, "index.html"),
+      resolve(applicationRoot, "test-fixtures/*.ts")], include: ["@earendil-works/pi-agent-core", "typebox"] },
     cacheDir: resolve(directory, ".vite"),
     server: { host: "127.0.0.1", port: 0, strictPort: true, open: false },
   });
@@ -58,9 +58,10 @@ BeforeAll(async function () {
   const html = await readFile(process.env.BROWSER_TEST_HTML ?? "dist/index.html");
   // Serve the production artifacts being tested, without rebuilding or reading
   // every optional package into memory before even one scenario can start.
-  const packageFiles = new Set((await Promise.all(['formatters','languages','syntax','remotes','types'].map(async directory=>
+  const packageFiles = new Set((await Promise.all(['formatters','languages','syntax','remotes','types','speech'].map(async directory=>
     (await readdir(`dist/${directory}`)).map(name=>`${directory}/${name}`)))).flat());
-  for (const directory of ['wllama','notices']) for (const name of await readdir(`dist/browser-models/${directory}`)) packageFiles.add(`browser-models/${directory}/${name}`);
+  for (const entry of await readdir('dist/browser-models',{recursive:true,withFileTypes:true})) if (entry.isFile()) packageFiles.add(`${entry.parentPath}/${entry.name}`.replace(/^dist\//,''));
+  for (const name of await readdir('dist/speech/notices')) packageFiles.add(`speech/notices/${name}`);
   const iconTypes = {
     "favicon.svg": "image/svg+xml", "favicon.ico": "image/x-icon", "favicon.png": "image/png",
     "favicon.bmp": "image/bmp", "favicon.gif": "image/gif", "favicon.jpg": "image/jpeg",
@@ -102,7 +103,7 @@ BeforeAll(async function () {
   }
 });
 
-Before(async function ({ pickle }) {
+Before({ timeout: 120_000 }, async function ({ pickle }) {
   const development = pickle.tags.some(tag => tag.name === "@development");
   const loadingGallery = pickle.tags.some(tag => tag.name === "@loading-gallery");
   if (development) await startDevelopmentServer();
@@ -118,6 +119,24 @@ Before(async function ({ pickle }) {
   this.updateDevelopmentStyles = async token => {
     const path = resolve(developmentRoot, "app.css");
     await writeFile(path, `${await readFile(path, "utf8")}\n:root { --browser-hmr-generation: ${JSON.stringify(token)}; }\n`);
+  };
+  this.replaceDevelopmentPaneImplementation = async (legacy, token) => {
+    let source = await readFile(resolve("src/lib/components/ui/sheet/sheet-pane.svelte"), "utf8");
+    if (legacy) {
+      const start = source.indexOf("  $effect(() => {\n    const element = paneElement");
+      const end = source.indexOf("  function focusHeading", start);
+      if (start < 0 || end < 0) throw new Error("The upgrade fixture must identify the animation-completion owner");
+      source = source.slice(0, start) + source.slice(end);
+      source = source.replace("moving = duration() > 0", "moving = true")
+        .replace("in:dockMotion out:dockMotion>", 'in:dockMotion out:dockMotion onintrostart={() => moving = true} onintroend={() => { if (open) moving = false; }} onoutrostart={() => moving = true} onoutroend={() => { if (!open) moving = false; }}>');
+    }
+    source = source.replace('<div class="sheet-pane"', `<div class="sheet-pane" data-browser-pane-generation="${token}"`);
+    await writeFile(resolve(developmentRoot, "lib/components/ui/sheet/sheet-pane.svelte"), source);
+  };
+  this.updateDevelopmentPane = async token => {
+    const path = resolve(developmentRoot, "lib/components/ui/sheet/sheet-pane.svelte");
+    const source = (await readFile(path, "utf8")).replace(/ data-browser-pane-generation="[^"]*"/g, "");
+    await writeFile(path, source.replace('<div class="sheet-pane"', `<div class="sheet-pane" data-browser-pane-generation="${token}"`));
   };
   this.updateDevelopmentApp = async token => {
     const path = resolve(developmentRoot, "App.svelte");

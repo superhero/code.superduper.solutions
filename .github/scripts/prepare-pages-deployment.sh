@@ -72,9 +72,9 @@ for path in "$bundle"/**/*; do
   case "$filename" in
     _headers|apple-touch-icon.png|favicon.bmp|favicon.gif|favicon.ico|favicon.jpg|favicon.png|favicon.ppm|favicon.svg|favicon.tiff|index.html|source.tar.gz)
       [[ -f "$path" ]] || fail "$bundle_error" ;;
-    formatters|languages|types|syntax|remotes|browser-models)
+    formatters|languages|types|syntax|remotes|browser-models|speech)
       [[ -d "$path" ]] || fail "$bundle_error" ;;
-    formatters/*|languages/*|types/*|syntax/*|remotes/*|browser-models/*) ;;
+    formatters/*|languages/*|types/*|syntax/*|remotes/*|browser-models/*|speech/*) ;;
     *) fail "$bundle_error" ;;
   esac
   [[ ! -d "$path" ]] || continue

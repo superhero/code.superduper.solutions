@@ -18,11 +18,12 @@ Keep `data-slot="button"` and the content wrapper aligned with shared styles.
 Use explicit `type="submit"` in forms and accessible names for icon-only
 content. Preserve native disabled behavior, semantic focus/error styling, and
 reduced-motion handling when adding variants. See [UI ownership](../README.md).
-Hover uses the first background color at 50% opacity (`--color-hover-background`),
-while preserving size. Text and icons use the fourth palette
-color (`--color-hover-foreground`) in both modes. Filled primary/destructive
-buttons use the same color through `--color-primary-hover-foreground`. Disabled
-controls retain their colors; selected and keyboard-focus states remain distinct.
-Containers marked `data-hover="foreground"` keep each control's existing
-background on hover while applying the shared foreground color. Explicit
-component hover styles must follow that policy too; keyboard focus retains its fill.
+Standard buttons and selection triggers preserve their backgrounds and size on
+hover. Text and icons use `--color-hover-foreground`; filled primary/destructive
+buttons use the same role through `--color-primary-hover-foreground`. This is the
+shared default in `src/app.css`, including controls rendered through portals;
+it does not require a `data-hover="foreground"` container. Component styles must
+follow the same rule. Disabled controls retain their colors, and keyboard focus
+keeps its separate palette fill. Second-header buttons use their dedicated hover
+fill. File-tree and staged/commit-history widgets own their row and branch-tag
+feedback separately from standard controls.

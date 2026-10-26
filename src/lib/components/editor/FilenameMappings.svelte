@@ -34,7 +34,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     <input aria-label="Filename suffix" placeholder=".example" bind:value={suffix} {disabled} />
     <NavigationDropdown matchTriggerWidth label="Language for new suffix" placeholder="Language" value={language} {disabled}
       items={languages.map(item=>({value:item.id,label:item.label,icon:'code'}))} onchange={id=>language=id} />
-    <Button type="submit" variant="ghost" {disabled}><MaterialIcon name="add" size={18} />Add</Button>
+    <Button type="submit" variant="ghost" size="icon" tooltip="Add" aria-label="Add" {disabled}><MaterialIcon name="add" size={18} /></Button>
   </form>
   <div class="mapping-list">
     {#each rows.slice(0,limit) as [suffix,id] (suffix)}
@@ -47,20 +47,22 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     {/each}
     {#if !rows.length}<p>No matching suffixes.</p>{/if}
 
-    {#if rows.length>limit}<Button class="show-more" variant="ghost" onclick={()=>limit+=20}>Show {Math.min(20,rows.length-limit)} more of {rows.length-limit}</Button>{/if}
+    {#if rows.length>limit}<Button class="show-more" variant="ghost" onclick={()=>limit+=20}><MaterialIcon name="visibility" size={18}/>Show {Math.min(20,rows.length-limit)} more of {rows.length-limit}</Button>{/if}
   </div>
   {#if error}<p role="alert">{error}</p>{/if}
 </section>
 <style>
-  .filename-mappings{margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px}
-  .card-heading{display:flex;gap:12px;margin-bottom:22px;align-items:center}
+  .filename-mappings{margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px}
+  .card-heading{display:flex;gap:12px;margin-bottom:var(--pane-padding);align-items:center}
   
   h2{margin:0;font-size:0.9375rem;font-weight:650}p{font-size:0.75rem;line-height:1.6;margin:6px 0 16px}
   input{width:100%;min-width:0;background:var(--color-background);color:var(--color-foreground);border:0;border-radius:4px;padding:8px 11px;font-size:0.6875rem}
   .mapping-list{margin:6px 0 12px;}
   .mapping-list :global(.show-more){width:100%;}
-  .mapping-row{display:grid;grid-template-columns:minmax(80px,160px) minmax(0,1fr);gap:12px;align-items:center;margin-bottom:6px}
-  code{display:flex;align-items:center;justify-content:flex-end;text-align:right;min-height:36px;padding:8px 11px;border-radius:4px;background:var(--palette-8);color:var(--color-background);font-size:0.6875rem;overflow-wrap:anywhere}
-  .new-mapping{margin-top:6px;display:grid;grid-template-columns:minmax(80px,160px) minmax(0,1fr) auto;gap:12px;align-items:center}
-  @media(max-width:600px){.new-mapping{grid-template-columns:minmax(80px,1fr) minmax(0,2fr)}.new-mapping :global(button[type="submit"]){grid-column:1/-1}}
+  .mapping-row{display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr);gap:0;align-items:start;margin-bottom:6px;min-width:0;border-radius:4px;background:var(--color-background);overflow:hidden}
+  code{display:flex;align-items:center;justify-content:flex-end;text-align:right;box-sizing:border-box;height:36px;min-height:36px;padding:1px 8px;border-block:1px solid var(--color-background);background:var(--palette-8);color:var(--color-background);font-size:0.6875rem;line-height:1.25;overflow-wrap:anywhere}
+  .mapping-row :global(button.navigation-trigger){border-block:1px solid var(--color-background);border-radius:0}
+  .new-mapping{margin-top:6px;display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr) auto;gap:0;align-items:center;min-width:0;border-radius:4px;background:var(--color-background);overflow:hidden}
+  .new-mapping input,.new-mapping :global(button.navigation-trigger),.new-mapping :global(button[data-slot="button"]){border-radius:0}
+  @container settings-pane (max-width:550px){.mapping-row{grid-template-columns:minmax(0,1fr)}code{justify-content:flex-start;text-align:left}.new-mapping{grid-template-columns:minmax(0,1fr) auto}.new-mapping input{grid-column:1/-1}}
 </style>

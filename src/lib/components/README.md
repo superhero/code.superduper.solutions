@@ -1,18 +1,21 @@
 # Shared interface controls
 
 Reusable Svelte controls live here. `editor/` owns the CodeMirror component and
-settings page and recursive file-tree components; `App.svelte` composes repository
-navigation and history. Owned [UI primitives](ui/README.md) provide Button and Sheet.
-`resources/` presents the browser resource dashboard and bounded SVG chart;
+sliding Settings pane and recursive file-tree components; `App.svelte` composes repository
+navigation and history. Owned [UI primitives](ui/README.md) provide Button, Dialog and Sheet.
+`resources/` presents the sliding Resources pane after Vault, with a browser
+resource dashboard and bounded SVG chart;
 its collectors live in [`$lib/resources`](../resources/README.md).
 [assistant/](assistant/README.md) presents AI conversations and saved connections
-in the shared dock/overlay with buffered text updates.
-[vault/](vault/README.md) owns guarded value management as the Vault main page,
-selected through the header's Page dropdown.
+in the shared dock with buffered text updates.
+[vault/](vault/README.md) owns guarded value management in the sliding Vault pane,
+opened through the editor toolbar.
 [Startup progress](loading/README.md) presents actual loading stages with the
 shared responsive animations and reduced-motion compositions.
 `HintButton.svelte` supplies accessible, noninteractive tooltip composition and
 `MaterialIcon.svelte` renders the bundled Material Symbols font.
+Package Install and Update actions use the `install_desktop` and
+`downloading` symbols, retaining their text as tooltips and accessible names.
 The tooltip root disables hoverable content so its floating layer cannot intercept
 nearby controls. Explanations still open on trigger hover or keyboard focus.
 An optional `rightLabel` pairs a left explanation with a right tooltip around the
@@ -23,6 +26,8 @@ read only when the pair opens. Resizing or scrolling dismisses the tooltips.
 and focus events without button attributes or click/press handlers. Callers own
 its accessible role and name. Plain tooltip text uses 90% size, normal weight
 and 60% opacity without changing the icon's appearance.
+`Devicon.svelte` renders bundled monochrome brand symbols, including the Git
+pane and toolbar icon, using the existing Devicon font and glyph map.
 `FileIcon.svelte` shares filename detection between the file tree and open tabs.
 It renders bundled monochrome Devicon glyphs in the surrounding text color,
 with Material Symbols as the fallback. Icons are decorative; filenames supply
@@ -31,7 +36,7 @@ Square JavaScript, TypeScript, npm, Fortran, and WebAssembly badges render at
 87.5% size within the unchanged icon slot, keeping filenames aligned with other
 file types.
 
-`NavigationDropdown.svelte` uses Bits UI radio menu items for repository/page/branch
+`NavigationDropdown.svelte` uses Bits UI radio menu items for repository/settings/branch
 choices, selected checkmarks, and optional actions. Its menu and file context
 menus share the semantic colors, focus styles, and transitions in `ui/menu.css`.
 File tabs use the same context primitive with split-view actions; file and folder
@@ -40,7 +45,17 @@ pane’s owned CodeMirror instance, applying its active file settings and loadin
 through the repository service. Each pane has its own ordered tabs and file
 positions; switching tabs retains the editor instance. Application composition owns writes and workspace history.
 The application owns selection so a failed repository change keeps the actual
-repository checked. Actions can hand focus to a sheet or directory picker.
+repository checked. Actions can hand focus to a dialog or directory picker.
+Workspace file, History, Git, AI, Vault, Resources and Settings tabs share the always-visible `tab-scroll`
+rail. Its space and background remain present when the tabs fit without scrolling.
+History and Git use shared `view-tabs` styling for compact widths, square edges,
+dividers, padding and selection colours. Their icons stay visible in narrow panes.
+Content cards and inset groups share `--pane-gap` (12px) for outer spacing and
+`--pane-padding` (12px) for equal padding on every side. Explorer, Git, Settings,
+AI, Resources and Vault use these values across viewport sizes, including remote
+connection cards and nested resource cards.
+Native scrollbar styling shares `--native-scrollbar-size` (2px), including the
+development overlays and AI content.
 Left-click and right-click open the same anchored dropdown; right-click suppresses
 the browser menu and does not select a different value or open the sidebar menu.
 

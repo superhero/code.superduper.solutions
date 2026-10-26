@@ -106,7 +106,7 @@ Then('backgrounding the application saves each pane before the scroll idle timeo
   expect(captured).toEqual([500,1000]);
 });
 When('I disable smoothing and set scroll speed to one and a half',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');
   const slider=this.page.getByRole('slider',{name:'Scroll speed',exact:true});
   await slider.evaluate(element=>{element.value='1.5';element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}));});
   await this.page.getByRole('switch',{name:'Smooth scrolling',exact:true}).uncheck();await saved(this.page);

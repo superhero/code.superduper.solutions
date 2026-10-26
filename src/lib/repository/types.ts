@@ -39,6 +39,7 @@ export interface RepositoryOperations {
   gitAction(id: string, request: GitAction, expectedRevision: string): Promise<RepositorySnapshot>;
   list(): Promise<RepositorySummary[]>;
   create(name: string, files?: ImportedFile[]): Promise<RepositorySnapshot>;
+  renameRepository(id: string, name: string, expectedRevision: string): Promise<RepositorySnapshot>;
   open(id: string): Promise<RepositorySnapshot>;
   write(id: string, path: string, content: string, expectedRevision: string, group?: EditGroup, action?: "format"): Promise<RepositorySnapshot>;
   createFile(id: string, path: string, content: string, expectedRevision: string): Promise<RepositorySnapshot>;
@@ -59,7 +60,7 @@ export interface RepositoryOperations {
 }
 export type ActivityState = { workspace: WorkspaceState; settings: SettingsStore };
 export type ActivityScope = {kind:"repository";repositoryId:string} |
-  {kind:"settings";scope:"global"|"repository"|"file";repositoryId?:string;file?:string};
+  {kind:"settings";scope:"global"|"repository";repositoryId?:string};
 export type ActivitySnapshot = {
   scopedLegacyRedoAllowed?:boolean;
   histories?:Record<string,{canUndo:boolean;canRedo:boolean;legacyRedoAllowed:boolean}>;
@@ -74,6 +75,7 @@ export type ActivityRequest = { expected: string; label: string; before: Activit
 export type ActivityResult = { activity: ActivitySnapshot; repository?: RepositorySnapshot };
 export type LegacyActivity = { repositoryId: string; state: ActivityState;scope?:ActivityScope };
 export interface RepositoryClient extends RepositoryOperations {
+  deleteRepository(id: string, expectedRevision: string, expectedActivity: string, state: ActivityState): Promise<ActivitySnapshot>;
   loadActivity(): Promise<ActivitySnapshot>;
   recordActivity(request: ActivityRequest): Promise<ActivityResult>;
   undoActivity(expected: string, legacy?: LegacyActivity): Promise<ActivityResult>;

@@ -79,6 +79,6 @@ Feature: Remember the browser workspace separately from repository history
     And the saved workspace metadata is malformed
     And I reload the saved workspace
     Then the workspace repository is "Workspace recovery"
-    And no repository file is open
+    And the workspace tabs are "beta.txt" with "beta.txt" active
     When I open the repository file "beta.txt"
     Then the code document contains "A short second file.\n" after persistence

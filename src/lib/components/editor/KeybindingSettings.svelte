@@ -62,26 +62,37 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   <div class="bindings">
     {#each matches as action (action.id)}
       {@const keys=shortcutsFor(action.id,effective)}
-      <div class="binding-row"><span class="action-label">{action.label}</span><div class="shortcuts">
+      {@const canAdd=keys.length>0&&keys.length<8}
+      <div class="binding-row">
+        <div class="binding-header"><span class="action-label">{action.label}</span>
+          {#if canAdd}<Button variant="ghost" size="icon-sm" aria-label={`Add ${action.label} shortcut`} tooltip="Add shortcut" {disabled} onclick={async()=>{recording={id:action.id,index:keys.length};await tick();document.getElementById(`binding-${action.id}-${keys.length}`)?.focus();}}><MaterialIcon name="add_box" size={18}/></Button>{/if}
+        </div>
+        <div class="shortcuts">
+        <div class="shortcut-list">
         {#each Array.from({length:Math.max(1,keys.length+(recording?.id===action.id&&recording.index===keys.length?1:0))},(_,i)=>i) as index}
           <div class="shortcut"><input use:wheelBinding={{id:action.id,index}} id={`binding-${action.id}-${index}`} readonly aria-label={`${action.label} shortcut ${index+1}`} value={recording?.id===action.id&&recording.index===index?'':shortcutLabel(keys[index]?[keys[index]!]:[])} placeholder={recording?.id===action.id&&recording.index===index?'Press shortcut…':'Unassigned'} {disabled}
             onfocus={()=>{recording={id:action.id,index};error='';}} onblur={()=>{if(recording?.id===action.id&&recording.index===index)recording=null;}} onkeydown={event=>capture(event,action.id,index)} onmousedown={event=>{if(event.button===1&&action.id==='closeTab')event.preventDefault();}} onauxclick={event=>captureMouse(event,action.id,index)}/>
-            {#if keys[index]}<Button variant="ghost" size="icon-sm" aria-label={`Remove ${action.label} shortcut ${index+1}`} tooltip="Remove shortcut" {disabled} onclick={()=>remove(action.id,index)}><MaterialIcon name="close" size={16}/></Button>{/if}
+            {#if keys[index]}<Button variant="ghost" size="icon-sm" aria-label={`Remove ${action.label} shortcut ${index+1}`} tooltip="Remove shortcut" {disabled} onclick={()=>remove(action.id,index)}><MaterialIcon name="delete_forever" size={18}/></Button>{/if}
           </div>
         {/each}
-        {#if keys.length>0&&keys.length<8}<Button variant="ghost" size="icon-sm" aria-label={`Add ${action.label} shortcut`} tooltip="Add shortcut" {disabled} onclick={async()=>{recording={id:action.id,index:keys.length};await tick();document.getElementById(`binding-${action.id}-${keys.length}`)?.focus();}}><MaterialIcon name="add" size={16}/></Button>{/if}
+        </div>
       </div></div>
     {/each}
   </div>
   {#if !matches.length}<p>No matching actions.</p>{/if}
 </section>
 <style>
-  .keybinding-settings { margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px;min-width:0; }
-  .heading {display:flex;gap:12px;align-items:center;margin-bottom:22px;}.heading h2 {margin:0;font-size:.9375rem;font-weight:650;flex:1;}
+  .keybinding-settings { margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px;min-width:0; }
+  .heading {display:flex;gap:12px;align-items:center;margin-bottom:var(--pane-padding);}.heading h2 {margin:0;font-size:.9375rem;font-weight:650;flex:1;}
   input {border:0;outline:none;border-radius:4px;background:var(--color-background);color:var(--color-foreground);font:inherit;font-size:.6875rem;padding:0 11px;width:100%;min-width:0;}
   input:focus {background:var(--color-focus-background);color:var(--color-focus-foreground);}
-  .filter {margin-bottom:16px;}.binding-row {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin-top:8px;}.action-label {display:flex;align-items:center;justify-content:flex-end;min-height:36px;box-sizing:border-box;padding:8px 11px;border-radius:4px;background:var(--palette-8);color:var(--color-background);text-align:right;font-size:.6875rem;font-weight:650;overflow-wrap:anywhere;}
-  .shortcuts {display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0;}.shortcut {display:flex;gap:8px;min-width:0;flex:1 1 160px;}.shortcut input {font-family:inherit;}
+  .filter {margin-bottom:16px;}.binding-row {display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin-top:var(--pane-gap);min-width:0;border-radius:4px;background:var(--color-background);overflow:hidden;}
+  .binding-header {display:flex;align-items:center;min-width:0;background:var(--palette-8);}
+  .action-label {display:flex;flex:1;align-items:center;min-width:0;min-height:36px;box-sizing:border-box;padding:8px 11px;color:var(--color-background);font-size:.6875rem;line-height:20px;font-weight:650;overflow-wrap:anywhere;}
+  .shortcuts {display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:start;min-width:0;}
+  .shortcut-list {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:0;min-width:0;}
+  .shortcut {display:flex;gap:0;min-width:0;}.shortcut input {border-radius:0;font-family:inherit;}
+  .binding-row :global(button[data-slot="button"]) {border-radius:0;border-inline-start:1px solid var(--color-background);}
+  .shortcut:not(:last-child) :global(button[data-slot="button"]) {border-inline-end:2px solid var(--color-surface);}
   p {font-size:.6875rem;line-height:1.5;}p[role="alert"] {color:var(--color-foreground);}
-  @media(max-width:650px){.binding-row {grid-template-columns:1fr;gap:4px;margin-top:14px;}.action-label {justify-content:flex-start;text-align:left;}}
 </style>

@@ -23,7 +23,8 @@ Then('explorer resizing can be cancelled and controlled with the keyboard',async
   const handle=divider(this.page);await handle.focus();await handle.press('ArrowRight');await sized(this.page,original+16);
   await handle.press('Home');await sized(this.page,160);
   await handle.press('End');await sized(this.page,600);
-  await this.page.setViewportSize({width:700,height:900});await sized(this.page,460);
-  await expect(handle).toHaveAttribute('aria-valuenow','460');
+  await this.page.setViewportSize({width:700,height:900});await sized(this.page,380);
+  await expect(handle).toHaveAttribute('aria-valuenow','380');
+  expect((await this.page.locator('.workbench').boundingBox()).width).toBeGreaterThanOrEqual(320);
   await expect(this.page.getByLabel('Code editor document',{exact:true})).toBeVisible();
 });

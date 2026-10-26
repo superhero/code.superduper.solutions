@@ -183,8 +183,8 @@ calls retain their original cross-repository workspace replay contract.
 Private history uses additional storage, especially for binary changes. Git
 objects deduplicate content, but loose objects are not automatically a compact
 archive. Startup compacts only the private histories using a per-file edit budget,
-300 by default and configurable from 0 through 10,000 with personal, repository
-and file overrides. The budget is total across a file's divergent paths. Zero
+300 by default and configurable from 0 through 10,000 with personal defaults and
+repository overrides. The budget is total across a file's divergent paths. Zero
 retains branch endpoint states without intermediate edits. Current cursors, redo
 endpoints, forks and source-version scope baselines remain structural checkpoints.
 Multi-file operations remain atomic when any affected file requires their state.

@@ -8,7 +8,8 @@ import { expect } from "@playwright/test";
 const treeItem = (page, path) => page.getByRole("tree", { name: "Repository files", exact: true })
   .getByRole("treeitem", { name: path, exact: true });
 const fileTab = (page, path) => page.getByRole("button", { name: `Switch to ${path}`, exact: true });
-const menu = (page, path) => page.getByRole("menu", { name: `File actions for ${path}`, exact: true });
+const menu = (page, path) => page.getByRole("menu", { name: `File actions for ${path}`, exact: true })
+  .or(page.getByRole("menu", { name: `Tab actions for ${path}`, exact: true }));
 const filenameInput = world => world.page.getByRole("textbox", { name: `Change name of ${world.fileActionPath}`, exact: true });
 const saved = page => expect(page.getByRole("status", { name: "Persistence status", exact: true }))
   .toHaveText("All changes saved");

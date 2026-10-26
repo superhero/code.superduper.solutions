@@ -22,5 +22,4 @@ Feature: Navigation dropdowns use the same menu for either mouse button
     Examples:
       | dropdown   |
       | Repository |
-      | Page       |
       | Branch     |

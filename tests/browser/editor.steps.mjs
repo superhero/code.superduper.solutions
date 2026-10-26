@@ -43,9 +43,9 @@ async function chooseFile(page, path) {
   await expect(editor(page)).toBeVisible();
 }
 
-async function settingsScope(page, scope) {
+async function settingsScope(page, scope, section = "Appearance") {
   await saved(page);
-  await selectPage(page, "Settings");
+  await selectPage(page, "Settings", section);
   await selectDropdown(page, "Settings scope", scope);
 }
 
@@ -62,7 +62,7 @@ async function writeImportDirectory(world, files) {
 
 async function importDirectory(world, files) {
   const directory = await writeImportDirectory(world, files);
-  await world.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await world.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
   await saved(world.page);
 }
 
@@ -415,7 +415,7 @@ Then("the expanded repository tree is captured", async function () {
 
 When("I import a complete Git directory with two commits and uncommitted changes", async function () {
   const directory = await writeGitImportDirectory(this);
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
   await saved(this.page);
 });
 
@@ -425,7 +425,7 @@ When("I import a linked submodule directory with two commits and uncommitted cha
   this.linkedGitDirectory = join(this.artifactDirectory, "git-metadata");
   await rename(join(directory, ".git"), this.linkedGitDirectory);
   await writeFile(join(directory, ".git"), "gitdir: ../git-metadata\n");
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
 });
 
 Then("the import requests the Git directory {string}", async function (path) {
@@ -480,7 +480,7 @@ Then("the imported repository retains its source commits and uncommitted changes
 When("I try to import a directory containing {string} at {string}", async function (kind, path) {
   await recordCurrentRepository(this);
   const directory = await writeImportDirectory(this, { "README.md": "A repository that must not be published\n", [path]: "ref: refs/heads/main\n" });
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
 });
 
 Then("the rejected import identifies {string} and explains {string}", async function (path, kind) {
@@ -511,7 +511,7 @@ When("I import a directory with EditorConfig indentation rules", async function 
 });
 
 When("the editor Tab key is configured to indent code", async function () {
-  await settingsScope(this.page, "global");
+  await settingsScope(this.page, "global", "Editor");
   await this.page.getByRole("switch", { name: "Tab key", exact: true }).check();
   await saved(this.page);
   await selectPage(this.page, "Editor");
@@ -528,37 +528,40 @@ Then("the code editor uses a tab width of {int}", async function (size) {
   await expect(editor(this.page)).toHaveCSS("tab-size", String(size));
 });
 
-Then("settings scope is selected in the top header after Settings", async function () {
-  const navigation = this.page.getByRole("navigation", { name: "Repository navigation", exact: true });
-  const page = navigation.getByRole("button", { name: "Page", exact: true });
+Then("settings scope is selected in the Settings pane header", async function () {
+  const navigation = this.page.locator(".settings-header");
+  const page = navigation.getByRole("heading", { name: "Settings", exact: true });
   const scope = navigation.getByRole("button", { name: "Settings scope", exact: true });
   await expect(page).toContainText("Settings");
   await expect(scope).toBeVisible();
   await expect(scope).toContainText("Global defaults");
   assert.equal(await navigation.evaluate(element => {
-    const page = element.querySelector('[aria-label="Page"]');
+    const page = element.querySelector('[data-pane-heading]');
     const scope = element.querySelector('[aria-label="Settings scope"]');
     return Boolean(page && scope && (page.compareDocumentPosition(scope) & Node.DOCUMENT_POSITION_FOLLOWING));
   }), true);
   await expect(this.page.getByRole("combobox", { name: "Settings scope", exact: true })).toHaveCount(0);
   await scope.click();
   const menu = this.page.getByRole("menu", { name: "Settings scope", exact: true });
-  await expect(menu.getByRole("menuitemradio")).toHaveCount(3);
+  await expect(menu.getByRole("menuitemradio")).toHaveCount(2);
+  await expect(menu.getByRole("menuitemradio",{name:"File settings",exact:true})).toHaveCount(0);
   await expect(menu.getByRole("menuitemradio", { name: "Global defaults", exact: true })).toHaveAttribute("aria-checked", "true");
   await this.page.keyboard.press("Escape");
 });
 
 When("the {string} settings scope sets tab width to {int}", async function (scope, size) {
-  await settingsScope(this.page, scope);
-  await this.page.getByLabel("Tab width", { exact: true }).fill(String(size));
-  await this.page.getByLabel("Tab width", { exact: true }).press("Tab");
+  await settingsScope(this.page, scope, "Editor");
+  await this.page.getByLabel("Tab width", { exact: true }).evaluate((node,value)=>{node.value=String(value);node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));},size);
   await saved(this.page);
   await selectPage(this.page, "Editor");
 });
 
 When("the {string} settings scope inherits its tab width again", async function (scope) {
-  await settingsScope(this.page, scope);
-  await button(this.page, "Inherit Tab width").click();
+  assert.equal(scope,"repository");
+  await settingsScope(this.page,"global", "Controls");
+  await this.page.getByRole('region',{name:'Settings toolbar buttons',exact:true}).getByRole('switch',{name:'Reset settings',exact:true}).check();await saved(this.page);
+  await settingsScope(this.page,"repository");
+  await button(this.page,"Reset repository overrides").click();
   await saved(this.page);
   await selectPage(this.page, "Editor");
 });
@@ -587,8 +590,9 @@ When("this repository overrides the editor font size with {int}", async function
 });
 
 When("this repository inherits its editor font size again", async function () {
-  await settingsScope(this.page, "repository");
-  await button(this.page, "Inherit Font size").click();
+  await settingsScope(this.page, "repository", "Controls");
+  await this.page.getByRole('switch',{name:'Reset settings',exact:true}).check();
+  await button(this.page, "Reset repository overrides").click();
   await saved(this.page);
   await selectPage(this.page, "Editor");
 });
@@ -598,7 +602,7 @@ Then("the code editor uses font size {int}", async function (size) {
 });
 
 When("the global read-only editor setting is enabled", async function () {
-  await settingsScope(this.page, "global");
+  await settingsScope(this.page, "global", "Editor");
   await this.page.getByRole("switch", { name: "Read-only editor", exact: true }).check();
   await saved(this.page);
   await selectPage(this.page, "Editor");
@@ -621,10 +625,10 @@ Then("file and directory rows match the branch selector height",async function()
     const branch=root.querySelector('[aria-label="Branch"]').getBoundingClientRect();
     const rows=[...root.querySelectorAll('.tree-row')].filter(row=>row.getBoundingClientRect().height>0).map(row=>{
       const rect=row.getBoundingClientRect();return{height:rect.height,top:rect.top,bottom:rect.bottom};
-    });return{branch:{height:branch.height,bottom:branch.bottom},rows};
+    });return{branch:{height:branch.height,bottom:branch.bottom},treeTop:root.querySelector('[role="tree"]').getBoundingClientRect().top,rows};
   });
   assert.ok(geometry.rows.length>2);
   for(const row of geometry.rows)assert.ok(Math.abs(row.height-geometry.branch.height)<.6,JSON.stringify(geometry));
-  assert.ok(Math.abs(geometry.rows[0].top-geometry.branch.bottom-2)<.6,JSON.stringify(geometry));
+  assert.ok(Math.abs(geometry.rows[0].top-geometry.treeTop-1)<.6,JSON.stringify(geometry));
   for(let index=1;index<geometry.rows.length;index++)assert.ok(Math.abs(geometry.rows[index].top-geometry.rows[index-1].bottom-2)<.6,JSON.stringify(geometry));
 });

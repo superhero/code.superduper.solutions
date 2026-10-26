@@ -7,7 +7,7 @@ import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 Then('repository engine choices inherit defaults and can clear explicit overrides',async function(){
   const saved=()=>expect(this.page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
   const choice=this.page.getByRole('button',{name:'JSON language engine',exact:true});
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Languages');await selectDropdown(this.page,'Settings scope','global');
   await selectDropdown(this.page,'JSON language engine','none');await saved();
   await selectDropdown(this.page,'Settings scope','repository');
   await expect(choice).toHaveAttribute('data-value','inherit');await expect(choice).toContainText('Inherited · Disabled');

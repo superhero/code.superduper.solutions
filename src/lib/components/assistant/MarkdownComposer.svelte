@@ -11,7 +11,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import { tags } from '@lezer/highlight';
   import { composerMarkdown, insertedTag, spoilerTag, mathTag, rubyTag } from '$lib/assistant/markdown/composer';
 
-  let { value, disabled = false, enterAction = 'send', onchange, onsend }: { value: string; disabled?: boolean; enterAction?: 'send' | 'newline'; onchange(value: string): void; onsend(): void } = $props();
+  let { value, disabled = false, enterAction = 'send', label = 'Message AI', id, placeholderText = 'Prompt', autoGrow = false, maxLength, onchange, onsend }: { value: string; disabled?: boolean; enterAction?: 'send' | 'newline'; label?: string; id?: string; placeholderText?: string; autoGrow?: boolean; maxLength?: number; onchange(value: string): void; onsend?(): void } = $props();
   let container: HTMLDivElement, view = $state.raw<EditorView>();
   const editability = new Compartment(), external = Annotation.define<boolean>();
   const formatting = HighlightStyle.define([
@@ -30,13 +30,14 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const editable = () => [EditorState.readOnly.of(disabled), EditorView.editable.of(!disabled), EditorView.contentAttributes.of({ 'aria-disabled': String(disabled) })];
   onMount(() => {
     const editor = new EditorView({ parent: container, state: EditorState.create({ doc: value, extensions: [
-      editability.of(editable()), history(), EditorView.lineWrapping, placeholder('Prompt'),
-      EditorView.contentAttributes.of({ 'aria-label': 'Message AI', 'aria-multiline': 'true', spellcheck: 'true' }),
+      editability.of(editable()), history(), EditorView.lineWrapping, placeholder(placeholderText),
+      EditorState.changeFilter.of(transaction => maxLength === undefined || transaction.newDoc.length <= maxLength),
+      EditorView.contentAttributes.of({ ...(id ? { id } : {}), 'aria-label': label, 'aria-multiline': 'true', spellcheck: 'true' }),
       markdown({ base: markdownLanguage, addKeymap: false, completeHTMLTags: false, pasteURLAsLink: false, extensions: composerMarkdown }), syntaxHighlighting(formatting),
       keymap.of([
-        { key: 'Enter', run: editor => { if (editor.composing) return false; if (disabled) return true; if (enterAction === 'newline') return insertNewlineAndIndent(editor); onsend(); return true; } },
+        { key: 'Enter', run: editor => { if (editor.composing) return false; if (disabled) return true; if (enterAction === 'newline') return insertNewlineAndIndent(editor); onsend?.(); return true; } },
         { key: 'Shift-Enter', run: insertNewlineAndIndent },
-        { key: 'Mod-Enter', run: editor => { if (editor.composing) return false; if (!disabled) onsend(); return true; } },
+        { key: 'Mod-Enter', run: editor => { if (editor.composing) return false; if (!disabled) onsend?.(); return true; } },
         { key: 'Mod-s', run: () => true },
         { key: 'Mod-z', run: undo, preventDefault: true },
         { key: 'Mod-Shift-z', run: redo, preventDefault: true },
@@ -47,7 +48,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       EditorView.theme({
         '&': { backgroundColor: 'var(--color-surface)', color: 'var(--color-foreground)', borderRadius: '4px', fontSize: 'inherit' },
         '&.cm-focused': { outline: 'none' },
-        '.cm-scroller': { minHeight: '72px', maxHeight: '200px', overflow: 'auto', overscrollBehavior: 'contain', fontFamily: 'inherit', lineHeight: '1.65' },
+        '.cm-scroller': { minHeight: autoGrow ? '120px' : '72px', maxHeight: autoGrow ? 'none' : '200px', overflow: autoGrow ? 'hidden' : 'auto', overscrollBehavior: autoGrow ? 'auto' : 'contain', fontFamily: 'inherit', lineHeight: '1.65' },
         '.cm-content': { padding: '10px 12px', caretColor: 'var(--color-foreground)' }, '.cm-line': { padding: '0' },
         '.cm-placeholder': { color: 'color-mix(in srgb, var(--color-foreground) 60%, transparent)' },
         '.cm-content::selection, .cm-content ::selection': { backgroundColor: 'color-mix(in srgb, var(--color-background) 50%, transparent)', color: 'currentColor' },
@@ -64,7 +65,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   $effect(() => { disabled; if (view) view.dispatch({ effects: editability.reconfigure(editable()) }); });
 </script>
 
-<div class="markdown-composer" data-ai-composer bind:this={container}></div>
+<div class="markdown-composer" data-markdown-composer data-ai-composer={onsend ? '' : undefined} bind:this={container}></div>
 <style>
   .markdown-composer { min-width: 0; font-synthesis: weight style; }
   .markdown-composer :global(.ai-md-strong) { font-weight: 700; }

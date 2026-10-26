@@ -7,7 +7,7 @@
   "scripts": {
     "badges:coverage": "bash .github/scripts/generate-coverage-badge.sh tmp/test/coverage/coverage-summary.json .github/badges",
     "badges:dependencies": "bash .github/scripts/generate-dependency-badges.sh package.json .github/badges",
-    "badges:scenarios": "bash .github/scripts/generate-scenario-badge.sh .github/badges tmp/test/cucumber-source.json tmp/test/cucumber-test.json tmp/test/cucumber-automation.json tmp/test/cucumber-browser.json",
+    "badges:scenarios": "bash .github/scripts/generate-scenario-badge.sh .github/badges tmp/test/cucumber-source.json tmp/test/cucumber-test.json tmp/test/cucumber-automation.json tmp/test/cucumber-browser.json tmp/test/cucumber-speech.json",
     "build": "npm run icons:check && vite build",
     "icons:generate": "node build/favicons.mjs",
     "icons:check": "node build/favicons.mjs --check",
@@ -15,8 +15,8 @@
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
     "report:coverage": "node .github/scripts/generate-coverage-report.mjs tmp/test-coverage.html tmp/test/coverage",
-    "report:tests": "node .github/scripts/generate-test-report.mjs tmp/test-report.html tmp/test/cucumber-source.json tmp/test/cucumber-test.json tmp/test/cucumber-automation.json tmp/test/cucumber-browser.json",
-    "test": "npm run test:source:coverage && npm run test:coverage && npm run build && npm run test:acceptance && npm run test:automation && npm run test:browser",
+    "report:tests": "node .github/scripts/generate-test-report.mjs tmp/test-report.html tmp/test/cucumber-source.json tmp/test/cucumber-test.json tmp/test/cucumber-automation.json tmp/test/cucumber-browser.json tmp/test/cucumber-speech.json",
+    "test": "npm run test:speech && npm run test:source:coverage && npm run test:coverage && npm run build && npm run test:acceptance && npm run test:automation && npm run test:browser",
     "test:acceptance": "node --eval \"import('node:fs').then(({mkdirSync}) => mkdirSync('tmp/test', { recursive: true }))\" && cucumber-js --config cucumber.config.mjs --profile acceptance",
     "test:acceptance:coverage": "c8 --reporter=none npm --loglevel=error run test:acceptance",
     "test:automation": "cucumber-js --config cucumber.config.mjs --profile automation",
@@ -24,7 +24,10 @@
     "test:coverage": "c8 report --check-coverage",
     "test:source": "cucumber-js --config cucumber.config.mjs --profile source",
     "test:source:coverage": "c8 --reporter=none npm --loglevel=error run test:source",
-    "typecheck": "svelte-check --tsconfig ./tsconfig.json"
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+    "test:speech": "node build/test-speech.mjs",
+    "test:speech:live": "SPEECH_LIVE=1 node build/test-speech.mjs",
+    "models:generate": "node build/model-runtimes.mjs --generate"
   },
   "devDependencies": {
     "@cucumber/cucumber": "13.3.0",
@@ -43,6 +46,7 @@
     "c8": "12.0.0",
     "cn": "0.4.0",
     "multiple-cucumber-html-reporter": "4.4.2",
+    "quickpickle": "1.11.2",
     "rolldown": "1.2.13",
     "sharp": "0.35.5",
     "svelte": "5.57.1",
@@ -53,6 +57,7 @@
     "typescript": "6.0.3",
     "vite": "8.3.2",
     "vite-plugin-singlefile": "2.3.4",
+    "vitest": "5.0.5",
     "yaml": "2.9.1"
   },
   "engines": {
@@ -175,6 +180,8 @@
     "markdown-it": "15.0.3",
     "minimatch": "10.2.6",
     "node-html-parser": "6.1.13",
+    "onnxruntime-web": "1.30.0",
+    "parakeet.js": "1.4.4",
     "path-browserify": "1.0.1",
     "prettier": "3.9.10",
     "prettier-plugin-svelte": "4.1.1",
@@ -189,7 +196,11 @@
     "vscode-markdown-languageservice": "0.5.0",
     "vscode-uri": "3.1.0",
     "wgslender-lsp": "1.5.1",
-    "yaml-language-server": "2.0.0"
+    "yaml-language-server": "2.0.0",
+    "@litert-lm/core": "0.18.0",
+    "@huggingface/transformers": "4.3.1",
+    "@huggingface/tokenizers": "0.2.0",
+    "@huggingface/jinja": "0.5.3"
   },
   "license": "AGPL-3.0-only",
   "repository": {
@@ -200,5 +211,13 @@
   "bugs": {
     "url": "https://github.com/superhero/code.superduper.solutions/issues"
   },
-  "author": "Erik Landvall"
+  "author": "Erik Landvall",
+  "overrides": {
+    "parakeet.js": {
+      "onnxruntime-web": "1.30.0"
+    },
+    "@huggingface/transformers": {
+      "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0"
+    }
+  }
 }

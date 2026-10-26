@@ -267,7 +267,7 @@
   },
   {
     "id": "ix-browser-shared-wllama-ornith-q4",
-    "title": "Ornith 1.5 \u00b7 9B Q4_K_M / wllama",
+    "title": "Ornith 1.5 \u00b7 9B \u00b7 Q4",
     "engine": "wllama",
     "model": "ornith-ai/Ornith-1.5-9B-GGUF",
     "revision": "abdd624b12ebf020b767fff532ff44fe552b28c3",
@@ -348,7 +348,7 @@
   },
   {
     "id": "iy-browser-shared-wllama-ornith-q8",
-    "title": "Ornith 1.5 \u00b7 9B Q8_0 / wllama",
+    "title": "Ornith 1.5 \u00b7 9B \u00b7 Q8",
     "engine": "wllama",
     "model": "ornith-ai/Ornith-1.5-9B-GGUF",
     "revision": "abdd624b12ebf020b767fff532ff44fe552b28c3",

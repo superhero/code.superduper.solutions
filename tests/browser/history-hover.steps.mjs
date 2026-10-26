@@ -6,11 +6,15 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {dirname,join} from 'node:path';
 import {Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
+import {selectPage} from './navigation.helpers.mjs';
 
 Then('history hover reports rendering costs for short and long lists',{timeout:180_000},async function(){
   const page=this.page;
   await page.setViewportSize({width:1280,height:900});
   await page.emulateMedia({reducedMotion:'no-preference'});
+  await selectPage(page, 'Settings', 'Editor');await page.getByRole('switch',{name:'History minimap',exact:true}).check();
+  await expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
+  await selectPage(page,'Editor');
   const graph=page.getByRole('list',{name:'Staged changes',exact:true});
   await expect(graph).toBeVisible();
   await expect(graph.locator('svg path')).not.toHaveCount(0);

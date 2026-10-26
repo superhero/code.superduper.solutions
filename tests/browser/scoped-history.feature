@@ -13,4 +13,4 @@ Feature: File and settings undo histories stay in their own scope
 
   Scenario: Settings undo and redo are isolated by the selected scope
     Given a browser repository named "Settings scope history" with an empty file "main.js"
-    Then global repository and file settings use independent history buttons
+    Then global and repository settings use independent history buttons

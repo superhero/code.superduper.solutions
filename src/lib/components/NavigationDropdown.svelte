@@ -6,8 +6,9 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import { DropdownMenu } from "bits-ui";
   import MaterialIcon from "./MaterialIcon.svelte";
   import "./ui/menu.css";
+  type Action = { label: string; icon: string; onselect(): void };
 
-  let { id, label, value, placeholder, placeholderIcon, items, actions = [], disabled = false, matchTriggerWidth = false, searchable = false, side = "bottom", itemLabel, onchoose, onchange }: {
+  let { id, label, value, placeholder, placeholderIcon, items, actions = [], actionGroups = [], disabled = false, matchTriggerWidth = false, searchable = false, side = "bottom", itemLabel, onchoose, onchange }: {
     id?: string;
     label: string;
     value: string;
@@ -15,7 +16,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     placeholderIcon?: string;
     items: { value: string; label: string; icon: string }[];
     itemLabel?: Snippet<[{ value: string; label: string; icon: string }]>;
-    actions?: { label: string; icon: string; onselect(): void }[];
+    actions?: Action[];
+    actionGroups?: Action[][];
     disabled?: boolean;
     matchTriggerWidth?: boolean;
     searchable?: boolean;
@@ -31,6 +33,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let restoreFocus = true;
   const selected = $derived(items.find(item => item.value === value));
   const triggerIcon = $derived(selected?.icon ?? placeholderIcon);
+  const groups = $derived([...actionGroups, actions].filter(group => group.length));
 
   $effect(() => { if (disabled) open = false; });
 </script>
@@ -68,14 +71,16 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           </DropdownMenu.RadioItem>
         {/each}
       </DropdownMenu.RadioGroup>
-      {#if items.length && actions.length}<DropdownMenu.Separator class="menu-action-separator" />{/if}
-      {#each actions as action (action.label)}
+      {#each groups as group, index}
+      {#if items.length || index > 0}<DropdownMenu.Separator class="menu-action-separator" />{/if}
+      {#each group as action (action.label)}
         <DropdownMenu.Item class="menu-item" textValue={action.label} onSelect={() => {
           restoreFocus = false;
           action.onselect();
         }}>
           <MaterialIcon name={action.icon} size={16} /><span class="menu-choice">{action.label}</span>
         </DropdownMenu.Item>
+      {/each}
       {/each}
     </DropdownMenu.Content>
   </DropdownMenu.Portal>
@@ -97,5 +102,5 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .menu-search::placeholder { font-style: italic; }
   .menu-choice { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .menu-check { display: flex; width: 16px; flex: 0 0 16px; margin-left: 12px; }
-  :global(.menu-action-separator) { height: 1px; margin: 4px 10px; background: radial-gradient(circle, var(--color-menu-foreground) .5px, transparent .5px) center / 5px 1px repeat-x; }
+  :global(.menu-action-separator) { height: 2px; margin: 4px 35%; background: radial-gradient(circle, var(--color-menu-foreground) 1px, transparent 1px) center / 10px 2px repeat-x; }
 </style>

@@ -5,7 +5,7 @@ import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { selectPage, selectDropdown } from './navigation.helpers.mjs';
+import { selectPage, selectDropdown, addOllamaConnection } from './navigation.helpers.mjs';
 
 const trigger = page => page.getByRole('button', { name: 'AI chat', exact: true });
 const messages = page => page.getByRole('region', { name: 'AI conversation', exact: true });
@@ -15,6 +15,10 @@ const saved = page => expect(page.getByRole('status', { name: 'Persistence statu
 const tab = (page, number) => page.getByRole('tab', { name: `Session ${number}`, exact: true });
 const addChat = page => page.getByRole('button', { name: 'New chat', exact: true }).click();
 const send = async (page, text) => { await prompt(page).fill(text); await prompt(page).press('Enter'); };
+async function useLocalConnection(page, label = 'Local Ollama') {
+  await selectPage(page, 'Settings', 'AI');
+  await page.getByRole('button', { name: `Use ${label}`, exact: true }).click();
+}
 
 async function fixture(world, connect = true) {
   await world.page.addInitScript(() => {
@@ -84,6 +88,7 @@ async function fixture(world, connect = true) {
   await trigger(world.page).click();
   expect(await world.page.evaluate(() => window.ollamaFixture.requests)).toEqual([]);
   await expect(tab(world.page, 1)).toHaveAttribute('aria-selected', 'true');
+  await addOllamaConnection(world.page);
   if (!connect) return;
   await world.page.getByRole('button', { name: 'Connect', exact: true }).click();
   await expect(world.page.getByRole('button', { name: 'AI model', exact: true })).toContainText('ornith:9b-q8_0');
@@ -103,14 +108,14 @@ Then('AI result icons show status on the left and first response plus total time
   await expect(messages(page).locator('.question')).toHaveCSS('text-align', 'right');
   const header = messages(page).locator('article:not(.question) .speaker');
   const tooltips = page.getByRole('tooltip');
-  await expect(header).toHaveText('AI');
+  await expect(header).toHaveCount(0);
   await expect(messages(page).locator('.message-timing, .message-footer')).toHaveCount(0);
   await page.evaluate(() => {
     window.fixtureMonotonic += 1250;
     window.ollamaFixture.pending[0].append('# Document\n\nThe actual content.');
   });
   await expect(reply(page)).toContainText('The actual content.');
-  await expect(header).toHaveText('AI');
+  await expect(header).toHaveCount(0);
   await page.evaluate(() => {
     window.fixtureMonotonic += 64182;
     window.ollamaFixture.pending[0].append('\n\n---\n\n*Generated on 2024-06-15*');
@@ -126,7 +131,7 @@ Then('AI result icons show status on the left and first response plus total time
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await completed.hover();
   const status = page.getByRole('tooltip', { name: 'Generation completed', exact: true });
-  const timing = page.getByRole('tooltip', { name: '1s 250ms + 1m 5s', exact: true });
+  const timing = page.getByRole('tooltip', { name: '1s 250ms / 1m 5s', exact: true });
   await expect(status).toBeVisible(); await expect(timing).toBeVisible(); await expect(tooltips).toHaveCount(2);
   await completed.click();
   await expect(status).toBeVisible(); await expect(timing).toBeVisible();
@@ -153,9 +158,9 @@ Then('AI result icons show status on the left and first response plus total time
   }
   await expect(reply(page)).not.toContainText('Generated on');
   await expect(reply(page)).not.toContainText('1s 250ms');
-  await expect(header).toHaveText('AI');
+  await expect(header).toHaveCount(0);
   await page.evaluate(() => window.fixtureMonotonic += 10000);
-  await expect(timing).toHaveText('1s 250ms + 1m 5s');
+  await expect(timing).toHaveText('1s 250ms / 1m 5s');
   await prompt(page).hover(); await expect(tooltips).toHaveCount(0);
   await prompt(page).focus(); await completed.focus();
   await expect(status).toBeVisible(); await expect(timing).toBeVisible();
@@ -164,15 +169,15 @@ Then('AI result icons show status on the left and first response plus total time
   await page.evaluate(() => window.ollamaFixture.mode = 'controlled');
   await send(page, 'Another reply.');
   await expect(completed).toHaveCount(0);
-  await expect(header).toHaveText(['AI', 'AI']);
+  await expect(header).toHaveCount(0);
   await page.evaluate(() => window.fixtureMonotonic += 1234);
   await page.getByRole('button', { name: 'Stop generating', exact: true }).click();
   const interrupted = page.getByRole('img', { name: 'AI interruption', exact: true });
   await interrupted.hover();
   await expect(page.getByRole('tooltip', { name: 'Generation was stopped before the reply finished.', exact: true })).toBeVisible();
-  await expect(page.getByRole('tooltip', { name: '0ms + 1s 234ms', exact: true })).toBeVisible();
+  await expect(page.getByRole('tooltip', { name: '0ms / 1s 234ms', exact: true })).toBeVisible();
   await expect(tooltips).toHaveCount(2);
-  await expect(header).toHaveText(['AI', 'AI']);
+  await expect(header).toHaveCount(0);
   await expect(messages(page).locator('.message-timing, .message-footer')).toHaveCount(0);
   const payload = await page.evaluate(() => window.ollamaFixture.chats[1].messages);
   expect(payload.every(message => Object.keys(message).every(key => ['role', 'content'].includes(key)))).toBe(true);
@@ -298,7 +303,7 @@ Then('an AI {string} interruption shows a centered Skull with its reason and cle
     ? 'The model reached its output limit. The reply may be incomplete.'
     : cause === 'error' ? 'Runtime disconnected before the reply finished.' : 'Generation was stopped before the reply finished.', exact: true })).toBeVisible();
   await expect(page.getByRole('tooltip')).toHaveCount(2);
-  await expect(page.getByRole('tooltip').filter({ hasText: / \+ / })).toBeVisible();
+  await expect(page.getByRole('tooltip').filter({ hasText: / \/ / })).toBeVisible();
   await mkdir(this.artifactDirectory, { recursive: true });
   await page.screenshot({ path: `${this.artifactDirectory}/ai-interruption-${cause}.png` });
   await send(page, 'Continue.'); await expect(stop).toBeVisible(); await expect(skull).toHaveCount(0);
@@ -423,8 +428,8 @@ Then('AI input settings change the controls and keyboard behavior live and after
   const sendButton = () => page.getByRole('button', {name:'Send',exact:true});
   await expect(sendButton()).toHaveCount(0); await send(page,'default Enter sends');
   await expect(reply(page)).toContainText('default Enter sends'); await expect(page.getByRole('button',{name:'Stop generating',exact:true})).toHaveCount(0);
-  await selectPage(page,'Settings');
-  const aiSettings = page.getByRole('region',{name:'Editor settings',exact:true}).getByRole('region',{name:'AI',exact:true});
+  await selectPage(page, 'Settings', 'AI');
+  const aiSettings = page.getByRole('tabpanel',{name:'AI',exact:true});
   const visibility = aiSettings.getByRole('switch',{name:'Show Send button',exact:true});
   await expect(visibility).not.toBeChecked(); await visibility.check(); await saved(page);
   await page.getByRole('switch',{name:'Send on Enter',exact:true}).uncheck(); await saved(page); await selectPage(page,'Editor');
@@ -434,11 +439,14 @@ Then('AI input settings change the controls and keyboard behavior live and after
   await sendButton().click(); await expect(reply(page)).toContainText('first line');
   await expect(page.getByRole('button',{name:'Stop generating',exact:true})).toHaveCount(0);
   expect(await page.evaluate(() => window.ollamaFixture.chats.at(-1).messages.at(-1).content)).toBe('first line\nsecond line');
-  await selectPage(page,'Settings'); await visibility.uncheck(); await saved(page);
+  await selectPage(page, 'Settings', 'AI'); await visibility.uncheck(); await saved(page);
   await page.reload(); await saved(page);
   await expect(aiSettings.getByRole('switch',{name:'Show Send button',exact:true})).not.toBeChecked();
   await expect(page.getByRole('switch',{name:'Send on Enter',exact:true})).not.toBeChecked();
-  await selectPage(page,'Editor'); await trigger(page).click(); await page.getByRole('button',{name:'Connect',exact:true}).click();
+  await selectPage(page,'Editor');
+  if(await trigger(page).getAttribute('aria-expanded')!=='true')await trigger(page).click();
+  await useLocalConnection(page);
+  await page.getByRole('button',{name:'Connect',exact:true}).click();
   await expect(prompt(page)).toBeEnabled(); await expect(sendButton()).toHaveCount(0);
   await page.evaluate(() => window.ollamaFixture.mode = 'echo'); await prompt(page).fill('keyboard send'); await prompt(page).press('Enter');
   await expect(prompt(page).locator('.cm-line')).toHaveCount(2); expect(await page.evaluate(() => window.ollamaFixture.chats.length)).toBe(0);
@@ -530,10 +538,11 @@ Then('stopping and closing Ollama cancel generation and preserve partial replies
   await expect.poll(() => page.evaluate(() => window.ollamaFixture.aborts)).toBe(2);
   await page.setViewportSize({ width: 600, height: 800 });
   await trigger(page).click();
-  const dialog = page.getByRole('dialog', { name: 'AI', exact: true });
+  const dialog = page.getByRole('region', { name: 'AI', exact: true });
   await expect(dialog).toBeVisible();
   await expect(messages(page).locator('article')).toHaveCount(4);
-  const bounds = await dialog.boundingBox(); expect(Math.round(bounds.width)).toBe(600);
+  const bounds = await dialog.boundingBox(); expect(Math.round(bounds.width)).toBe(300);
+  await expect(page.locator('.workbench')).toBeVisible();
   await mkdir(this.artifactDirectory, { recursive: true });
   await page.screenshot({ path: `${this.artifactDirectory}/ollama-compact.png` });
   await page.keyboard.press('Escape'); await expect(dialog).toHaveCount(0); await expect(trigger(page)).toBeFocused();
@@ -542,18 +551,19 @@ Then('stopping and closing Ollama cancel generation and preserve partial replies
 Then('Ollama conversations keep independent connection choices drafts and transcripts', async function () {
   const page = this.page; await fixture(this, false);
   await addChat(page); await expect(tab(page, 2)).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('button', { name: 'Manage AI connections', exact: true }).click();
+  await selectPage(page, 'Settings', 'AI');
   await page.getByRole('button', { name: 'New connection', exact: true }).click();
   await page.getByRole('textbox', { name: 'Connection name', exact: true }).fill('Second runtime');
   await page.getByRole('textbox', { name: 'Connection runtime URL', exact: true }).fill('http://127.0.0.1:11435');
   await page.getByRole('button', { name: 'Save connection', exact: true }).click();
+  await page.getByRole('button', { name: 'Use Second runtime', exact: true }).click();
   await tab(page, 1).click();
   await expect(page.getByRole('button', { name: 'AI connection', exact: true })).toContainText('Local Ollama');
   await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await expect(prompt(page)).toBeEnabled(); await prompt(page).fill('first draft');
   await tab(page, 2).click();
   await expect(page.getByRole('button', { name: 'AI connection', exact: true })).toContainText('Second runtime');
-  await expect(prompt(page)).toBeDisabled();
+  await expect(prompt(page)).toHaveCount(0);
   await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await expect(page.getByRole('button', { name: 'AI model', exact: true })).toContainText('another-local:7b');
   await page.evaluate(() => window.ollamaFixture.mode = 'echo');
@@ -570,7 +580,8 @@ Then('Ollama conversations keep independent connection choices drafts and transc
     ['http://127.0.0.1:11435', 'another-local:7b', [{ role: 'user', content: 'second thread' }]],
     ['http://localhost:11434', 'ornith:9b-q8_0', [{ role: 'user', content: 'first draft' }]],
   ]);
-  await page.getByRole('button', { name: 'Reconnect', exact: true }).click();
+  await useLocalConnection(page);
+  await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await expect(prompt(page)).toBeEnabled(); await expect(messages(page).locator('article')).toHaveCount(2);
   await tab(page, 2).click(); await expect(prompt(page)).toHaveText('second draft');
   await expect(reply(page)).toHaveText('Reply from http://127.0.0.1:11435: second thread');
@@ -584,7 +595,8 @@ Then('switching Ollama conversations isolates streams and closing a tab cancels 
   const page = this.page; await fixture(this);
   await page.evaluate(() => window.ollamaFixture.mode = 'controlled');
   await send(page, 'one'); await expect(reply(page)).toHaveText('Reply for one');
-  await addChat(page); await send(page, 'two'); await expect(reply(page)).toHaveText('Reply for two');
+  await addChat(page); await page.getByRole('button', { name: 'Connect', exact: true }).click();
+  await send(page, 'two'); await expect(reply(page)).toHaveText('Reply for two');
   await expect(page.getByRole('tabpanel')).toHaveCount(1);
   await page.evaluate(() => window.ollamaFixture.pending[0].complete());
   await expect(reply(page)).toHaveText('Reply for two');
@@ -594,7 +606,8 @@ Then('switching Ollama conversations isolates streams and closing a tab cancels 
   await page.getByRole('button', { name: 'Close Session 2', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.ollamaFixture.aborts)).toBe(1);
   await expect(tab(page, 1)).toHaveAttribute('aria-selected', 'true'); await expect(reply(page)).toHaveText('Reply for one complete');
-  await addChat(page); await send(page, 'three'); await expect(reply(page)).toHaveText('Reply for three');
+  await addChat(page); await page.getByRole('button', { name: 'Connect', exact: true }).click();
+  await send(page, 'three'); await expect(reply(page)).toHaveText('Reply for three');
   await tab(page, 1).click(); await send(page, 'four'); await expect(reply(page)).toHaveText('Reply for four');
   await trigger(page).click();
   await expect.poll(() => page.evaluate(() => window.ollamaFixture.aborts)).toBe(3);
@@ -605,13 +618,17 @@ Then('switching Ollama conversations isolates streams and closing a tab cancels 
 
 Then('Ollama conversation tabs work before connecting with overflow and keyboard controls', async function () {
   const page = this.page; await fixture(this, false);
+  const list = page.getByRole('tablist', { name: 'AI conversations', exact: true });
+  const rail = () => list.evaluate(element => element.offsetHeight - element.clientHeight);
+  expect(await list.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+  const fittingRail = await rail(); expect(fittingRail).toBeGreaterThan(0);
   for (let i = 0; i < 6; i++) await addChat(page);
+  expect(await rail()).toBe(fittingRail);
   await expect(page.getByRole('tab')).toHaveCount(7);
   expect(await page.evaluate(() => window.ollamaFixture.requests)).toEqual([]);
   await expect(tab(page, 7)).toBeFocused(); await tab(page, 7).press('ArrowLeft');
   await expect(tab(page, 6)).toHaveAttribute('aria-selected', 'true'); await expect(tab(page, 6)).toBeFocused();
   await tab(page, 6).press('Home'); await expect(tab(page, 1)).toBeFocused();
-  const list = page.getByRole('tablist', { name: 'AI conversations', exact: true });
   await expect.poll(() => list.evaluate(element => element.scrollLeft)).toBe(0);
   await list.hover(); await page.mouse.wheel(0, 180);
   await expect.poll(() => list.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
@@ -630,11 +647,12 @@ Then('Ollama conversation tabs work before connecting with overflow and keyboard
       return selected.x >= strip.x - 1 && selected.x + selected.width <= strip.x + strip.width + 1;
     }).toBe(true);
   } finally { await this.attach(JSON.stringify(tabBounds), 'application/json'); }
-  expect(await page.locator('[data-ollama-panel]').evaluate(element => getComputedStyle(element).borderLeftWidth)).toBe('0px');
+  await expect(page.locator('[data-ollama-panel]')).toHaveAttribute('data-layout', 'docked');
+  expect(await page.locator('[data-ollama-panel]').evaluate(element => getComputedStyle(element).borderLeftWidth)).toBe('2px');
   await mkdir(this.artifactDirectory, { recursive: true });
   await page.screenshot({ path: `${this.artifactDirectory}/ollama-offline-tabs.png` });
   for (let i = 0; i < 6; i++) await page.getByRole('tab', { selected: true }).press('Delete');
-  await expect(page.getByRole('tab')).toHaveCount(1); await expect(page.getByRole('button', { name: 'Connect', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab')).toHaveCount(1); await expect(page.getByRole('button', { name: 'AI model', exact: true })).toBeVisible();
   expect(await page.evaluate(() => window.ollamaFixture.requests)).toEqual([]);
 });
 
@@ -642,7 +660,7 @@ Then('the Ollama pane receives a real Ornith response', { timeout: 320000 }, asy
   const page = this.page;
   // This opt-in profile is the only scenario allowed to contact the real runtime.
   await this.context.route('http://localhost:11434/**', route => route.continue());
-  await trigger(page).click(); await addChat(page);
+  await trigger(page).click(); await addOllamaConnection(page); await addChat(page);
   await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await expect(page.getByRole('button', { name: 'AI model', exact: true })).toContainText('ornith:9b-q8_0');
   await prompt(page).fill('Reply with exactly ORNITH_LOCAL_OK and nothing else.'); await prompt(page).press('Enter');
@@ -661,6 +679,7 @@ Then('AI session titles can be renamed from their context menus without interrup
   await page.evaluate(() => window.ollamaFixture.mode = 'controlled');
   await send(page, 'keep this reply'); await expect(reply(page)).toHaveText('Reply for keep this reply');
   await addChat(page); await expect(tab(page, 2)).toHaveAttribute('aria-selected', 'true');
+  await page.getByRole('button', { name: 'Connect', exact: true }).click();
   await prompt(page).fill('second draft');
   await tab(page, 1).click({ button: 'right' });
   await page.getByRole('menuitem', { name: 'Rename', exact: true }).click();
@@ -695,7 +714,7 @@ Then('AI session titles can be renamed from their context menus without interrup
   await page.setViewportSize({ width: 600, height: 800 });
   await tab(page, 2).click({ button: 'right' }); await page.getByRole('menuitem', { name: 'Rename', exact: true }).click();
   await page.getByRole('textbox', { name: 'Rename Session 2', exact: true }).press('Escape');
-  await expect(page.getByRole('dialog', { name: 'AI', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'AI', exact: true })).toBeVisible();
   await expect(tab(page, 2)).toBeFocused();
   await expect(prompt(page)).toHaveText('second draft');
   await addChat(page); await expect(tab(page, 3)).toHaveAttribute('aria-selected', 'true');
@@ -718,31 +737,41 @@ Then('AI connection settings prefill existing profiles and persist edits without
       read.onsuccess = () => resolve(read.result); tx.oncomplete = () => db.close(); };
   }));
   await expect(page.getByRole('textbox', { name: /runtime url/i })).toHaveCount(0);
-  await named('Manage AI connections').click();
-  await expect(page.getByRole('heading', { name: 'Edit connection', exact: true })).toBeVisible();
+  await selectPage(page,'Settings','AI');
+  await named('Edit Local Ollama').click();
+  await expect(page.getByRole('heading', { name: 'Remote inference connection', exact: true })).toBeVisible();
   await expect(name).toHaveValue('Local Ollama'); await expect(address).toHaveValue('http://localhost:11434');
   await name.fill('Desk runtime'); await address.fill('http://127.0.0.1:11435'); await named('Save connection').click();
+  await named('Use Desk runtime').click();
   await expect(named('AI connection')).toContainText('Desk runtime');
   await expect(page.getByRole('textbox', { name: /runtime url/i })).toHaveCount(0);
-  expect((await records()).map(record => [record.id, record.label])).toEqual([['local-ollama', 'Desk runtime']]);
-  await page.reload(); await saved(page); await trigger(page).click();
+  const initial = await records();expect(initial).toHaveLength(1);
+  expect(initial[0]).toMatchObject({label:'Desk runtime',provider:'ollama',address:'http://127.0.0.1:11435'});
+  expect(initial[0].id).toMatch(/^[a-f0-9-]{36}$/i);
+  await page.reload(); await saved(page);
+  if (await trigger(page).getAttribute('aria-expanded') !== 'true') await trigger(page).click();
+  await expect(page.getByRole('button',{name:'AI model',exact:true})).toBeVisible();
+  await useLocalConnection(page, 'Desk runtime');
   await expect(named('AI connection')).toContainText('Desk runtime');
   await named('Connect').click(); await expect(named('AI model')).toContainText('another-local:7b');
   expect(await page.evaluate(() => window.ollamaFixture.requests)).toEqual(['http://127.0.0.1:11435/api/tags', 'http://127.0.0.1:11435/api/show']);
-  await named('Manage AI connections').click();
+  await selectPage(page,'Settings','AI');
+  await named('Edit Desk runtime').click();
   await expect(name).toHaveValue('Desk runtime'); await expect(address).toHaveValue('http://127.0.0.1:11435');
-  await expect(page.getByRole('heading', { name: 'Edit connection', exact: true })).toBeVisible();
-  await named('New connection').click(); await expect(name).toHaveValue('');
-  await expect(page.getByRole('heading', { name: 'New connection', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Remote inference connection', exact: true })).toBeVisible();
+  await named('Cancel').click();await named('New connection').click(); await expect(name).toHaveValue('');
+  await expect(page.getByRole('heading', { name: 'Remote inference connection', exact: true })).toBeVisible();
   await name.fill('Second connection'); await named('Save connection').click();
+  await named('Use Second connection').click();
   await expect(named('AI connection')).toContainText('Second connection');
-  await named('Manage AI connections').click(); await expect(name).toHaveValue('Second connection');
-  await expect(page.getByRole('heading', { name: 'Edit connection', exact: true })).toBeVisible();
+  await selectPage(page,'Settings','AI'); await named('Edit Second connection').click(); await expect(name).toHaveValue('Second connection');
+  await expect(page.getByRole('heading', { name: 'Remote inference connection', exact: true })).toBeVisible();
   await name.fill('Renamed connection'); await named('Save connection').click();
+  await named('Use Renamed connection').click();
   await expect(named('AI connection')).toContainText('Renamed connection');
   const updated = await records(); expect(updated).toHaveLength(2);
   expect(updated.map(record => record.label).sort()).toEqual(['Desk runtime', 'Renamed connection']);
-  await named('AI connections').click(); await page.setViewportSize({ width: 600, height: 800 });
+  await selectPage(page,'Settings','AI'); await page.setViewportSize({ width: 600, height: 800 });
   await named('Edit Desk runtime').click();
   await expect(name).toHaveValue('Desk runtime');
   await mkdir(this.artifactDirectory, { recursive: true }); await page.screenshot({ path: `${this.artifactDirectory}/edit-connection.png` });
@@ -807,7 +836,7 @@ Then('AI Markdown resolves repository includes and snippets while sending origin
   await writeFile(`${directory}/docs/a.md`,'## Local document\n\n<!-- @include: b.md -->');
   await writeFile(`${directory}/docs/b.md`,'**Nested repository content**');
   await writeFile(`${directory}/code.ts`,'// #region example\nconst first = 1;\nconst second = 2;\n// #endregion example');
-  await page.getByLabel('Import directory',{exact:true}).setInputFiles(directory); await saved(page);
+  await page.getByLabel('Import repository',{exact:true}).setInputFiles(directory); await saved(page);
   await send(page,source);
   await expect(messages(page).locator('.question h2')).toHaveText('Local document');
   await expect(messages(page).locator('.question strong')).toHaveText('Nested repository content');
@@ -981,16 +1010,19 @@ Then('AI settings configure the Pi tools instructions and per-model context with
   const directory = `${this.artifactDirectory}/pi-repository`;
   await mkdir(directory, { recursive: true });
   await writeFile(`${directory}/README.md`, '# Browser repository\nA verified local project.');
-  await page.getByLabel('Import directory', { exact: true }).setInputFiles(directory); await saved(page);
-  await selectPage(page, 'Settings');
+  await page.getByLabel('Import repository', { exact: true }).setInputFiles(directory); await saved(page);
+  await selectPage(page, 'Settings', 'AI');
   const instruction = page.locator('#setting-aiInstructions');
   await instruction.fill('Read the repository before explaining it.'); await instruction.press('Tab'); await saved(page);
   await expect(page.locator('#setting-ai-tool-list_files')).toBeChecked();
   await page.locator('#setting-ai-tool-search_text').uncheck(); await saved(page);
   await selectPage(page, 'Editor');
-  const limit = page.getByRole('spinbutton', { name: 'Model context limit', exact: true });
+  const context = page.getByRole('button', { name: 'Model context limit', exact: true });
+  const limit = page.getByRole('slider', { name: 'Model context limit', exact: true });
+  await context.click();
   await expect(limit).toHaveValue('262144'); await expect(limit).toHaveAttribute('max', '262144');
-  await limit.fill('8192'); await limit.press('Tab'); await saved(page);
+  await limit.press('Home');for(let step=0;step<6;step++)await limit.press('ArrowUp');
+  await expect(limit).toHaveValue('8192');await limit.press('Escape');await saved(page);
   await page.evaluate(() => window.ollamaFixture.mode = 'tools');
   await send(page, 'Inspect this repository.');
   await expect(reply(page)).toHaveText('The README describes a real browser repository.');
@@ -1006,20 +1038,20 @@ Then('AI settings configure the Pi tools instructions and per-model context with
   const activities = messages(page).locator('.tool-activity'); await expect(activities).toHaveCount(5);
   await activities.nth(1).locator('summary').click(); await expect(activities.nth(1)).toContainText('A verified local project.');
   await expect(page.locator('.context-meter')).toContainText('813 /');
-  await selectDropdown(page, 'AI model', 'another-local:7b'); await expect(limit).toHaveValue('16384');
-  await selectDropdown(page, 'AI model', 'ornith:9b-q8_0'); await expect(limit).toHaveValue('8192');
+  await selectDropdown(page, 'AI model', 'another-local:7b');await context.click();await expect(limit).toHaveValue('16384');await limit.press('Escape');
+  await selectDropdown(page, 'AI model', 'ornith:9b-q8_0');await context.click();await expect(limit).toHaveValue('8192');await limit.press('Escape');
   await addChat(page); await expect(page.getByRole('button', { name: 'AI connection', exact: true })).toBeVisible();
-  await selectDropdown(page, 'AI connection', 'local-ollama'); await expect(prompt(page)).toBeEnabled();
+  await selectDropdown(page, 'AI connection', {label:'Local Ollama'}); await expect(prompt(page)).toBeEnabled();
   await tab(page, 2).click({ button: 'middle' }); await expect(tab(page, 2)).toHaveCount(0);
   await expect(tab(page, 1)).toHaveAttribute('aria-selected', 'true');
   await mkdir(this.artifactDirectory, { recursive: true }); await page.screenshot({ path: `${this.artifactDirectory}/pi-tools-context.png` });
-  await page.reload(); await saved(page); await selectPage(page, 'Settings');
-  await expect(instruction).toHaveValue('Read the repository before explaining it.');
+  await page.reload(); await saved(page); await selectPage(page, 'Settings', 'AI');
+  await expect(instruction).toHaveText('Read the repository before explaining it.');
   await expect(page.locator('#setting-ai-tool-search_text')).not.toBeChecked();
 });
 
 Then('AI skills can be imported edited toggled and loaded through Pi', async function () {
-  const page=this.page;await fixture(this);await selectPage(page,'Settings');
+  const page=this.page;await fixture(this);await selectPage(page, 'Settings', 'AI');
   await page.getByLabel('Import skill file',{exact:true}).setInputFiles({name:'SKILL.md',mimeType:'text/markdown',buffer:Buffer.from('---\nname: review-code\ndescription: Review code using repository evidence.\n---\nRead files first. Skill proof: browser-skill-42')});
   await expect(page.getByRole('textbox',{name:'Skill name',exact:true})).toHaveValue('review-code');
   await page.getByRole('button',{name:'Save skill',exact:true}).click();await saved(page);
@@ -1035,14 +1067,14 @@ Then('AI skills can be imported edited toggled and loaded through Pi', async fun
   expect(calls[0].messages[0].content).toContain('Review implementation with evidence.');expect(calls[0].messages[0].content).not.toContain('browser-skill-42');
   expect(calls[1].messages.at(-1).content).toContain('browser-skill-42');
   await expect(messages(page).locator('.tool-activity')).toContainText('load_skill');
-  await page.reload();await saved(page);await selectPage(page,'Settings');await expect(enabled).toBeChecked();
+  await page.reload();await saved(page);await selectPage(page, 'Settings', 'AI');await expect(enabled).toBeChecked();
   await page.getByRole('button',{name:'Remove skill review-code',exact:true}).click();await saved(page);await expect(enabled).toHaveCount(0);
 });
 
 Then('Git and AI panes can remain open together across reload',async function(){
   const page=this.page;await page.setViewportSize({width:1600,height:900});await fixture(this,false);
   const directory=`${this.artifactDirectory}/both-panes`;await mkdir(directory,{recursive:true});await writeFile(`${directory}/README.md`,'# Both panes');
-  await page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(page);
+  await page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(page);
   const closeGit=()=>page.getByRole('region',{name:/^Git ·/}).getByRole('button',{name:'Close',exact:true});
   await page.getByRole('button',{name:'Git operations',exact:true}).click();
   await expect(page.getByRole('button',{name:'Close AI',exact:true})).toBeVisible();await expect(closeGit()).toBeVisible();
@@ -1050,10 +1082,11 @@ Then('Git and AI panes can remain open together across reload',async function(){
   await page.screenshot({path:`${this.artifactDirectory}/git-ai-desktop.png`});await saved(page);
   await page.reload();await saved(page);await expect(page.getByRole('button',{name:'Close AI',exact:true})).toBeVisible();await expect(closeGit()).toBeVisible();
   await page.setViewportSize({width:600,height:800});
-  await expect(page.getByRole('button',{name:'Close AI',exact:true})).toBeVisible();await expect(closeGit()).toBeVisible();
-  const top=await page.locator('[data-git-panel]').boundingBox(),bottom=await page.locator('[data-ollama-panel]').boundingBox();expect(bottom.y).toBeGreaterThanOrEqual(top.y+top.height-2);
-  await page.screenshot({path:`${this.artifactDirectory}/git-ai-compact.png`});
+  await expect(page.getByRole('button',{name:'Close AI',exact:true})).toHaveCount(0);await expect(closeGit()).toBeVisible();
+  const editor=await page.locator('.workbench').boundingBox(),gitNarrow=await page.locator('[data-git-panel]').boundingBox();expect(gitNarrow.x).toBeGreaterThanOrEqual(editor.x+editor.width-2);expect(gitNarrow.y).toBe(editor.y);
+  await page.screenshot({path:`${this.artifactDirectory}/git-ai-narrow.png`});
   await page.setViewportSize({width:1600,height:900});
+  await page.getByRole('button',{name:'AI chat',exact:true}).click();
   await closeGit().click();await expect(page.getByRole('button',{name:'Close AI',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Git operations',exact:true}).click();await page.getByRole('button',{name:'Close AI',exact:true}).click();await expect(closeGit()).toBeVisible();
 });

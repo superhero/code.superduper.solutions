@@ -84,7 +84,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .conversation-tab { display: flex; flex: 0 0 auto; align-items: center; background: var(--color-hover-background); border-right: 2px solid var(--ollama-divider); }
   .conversation-tab.active { background: var(--color-background); }
   .conversation-tab :global(button) { --color-hover-background: transparent; background: transparent; }
-  .conversation-tab :global(.tab-select), .tab-rename { height: var(--workbench-tabs-content-height, 36px); padding: 6px 8px 6px 11px; border-radius: 0; font-size: .625rem; gap: 6px; }
+  .conversation-tab :global(.tab-select), .tab-rename { height: var(--workbench-tabs-content-height, 32px); padding: 6px 8px 6px 11px; border-radius: 0; font-size: .625rem; gap: 6px; }
   .tab-label { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
   .tab-rename { display: flex; align-items: center; }
   .rename-input { min-width: 0; max-width: 180px; padding: 0; border: 0; outline: none; border-radius: 2px; font: inherit;

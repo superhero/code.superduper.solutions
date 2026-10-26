@@ -13,6 +13,7 @@ import { createApplicationHistory } from "./application-history.ts";
 import { normalizeSettings } from "../editor/settings.ts";
 import { emptyRepositoryWorkspace, normalizeWorkspace } from "../editor/workspace.ts";
 import { repositoryPaths } from "./paths.ts";
+import { planRepositoryDeletion, finishHistoryRetention } from "./history-retention.ts";
 
 const clone = value => structuredClone(value);
 const file = (path, text) => ({ path, data: typeof text === "string" ? new TextEncoder().encode(text) : text });
@@ -73,6 +74,38 @@ Before({ tags: "@application-history" }, async function () {
   this.git = { fs: this.shared.fs, gitdir: `${this.root}/history/application.git` };
 });
 After({ tags: "@application-history" }, async function () { await rm(this.root, { recursive: true, force: true }); });
+Then('deleting repository history removes every restoration path while another repository retains redo',async function(){
+  const a=await this.repository.create('Delete me',[file('main.ts','private initial')]);
+  const b=await this.repository.create('Keep me',[file('main.ts','other initial')]);
+  let state=select(initialState(),a.id);
+  await record(this,initialState(),state,'Open A');
+  await record(this,state,state,'Edit A',{method:'write',args:[a.id,'main.ts','private saved',a.revision]});
+  const settings=clone(state);settings.settings.global.fontSize=17;settings.settings.repositories[a.id]={fontSize:19};
+  Object.assign(settings.settings,{files:{[a.id]:{'main.ts':{indentSize:8}}}});settings.settings.repositories[b.id]={fontSize:21};
+  await record(this,state,settings,'Settings');state=select(settings,b.id);
+  await record(this,settings,state,'Open B');
+  await record(this,state,state,'Edit B',{method:'write',args:[b.id,'main.ts','other saved',b.revision]});
+  await undo(this);
+  const next=await planRepositoryDeletion(this.shared,this.applicationRecord,a.id,select(this.activity.state,a.id),[b.id]);
+  this.applicationRecord=next;this.preferences=next.state.settings;this.records.delete(a.id);
+  const paths=repositoryPaths(a.id,this.root);
+  await rm(paths.dir,{recursive:true,force:true});await rm(paths.historyGitdir,{recursive:true,force:true});
+  await finishHistoryRetention(this.shared,{repositories:[],activity:next,changed:true});
+  this.reopen();this.activity=await this.application.loadActivity();
+  assert.equal(this.activity.state.workspace.repositoryId,b.id);
+  assert.equal(this.activity.state.workspace.repositories[a.id],undefined);
+  assert.equal(this.activity.state.settings.repositories[a.id],undefined);assert.equal(Object.hasOwn(this.activity.state.settings,"files"),false);
+  assert.equal(this.activity.state.settings.global.fontSize,17);assert.equal(this.activity.state.settings.repositories[b.id].fontSize,21);
+  assert.equal(this.activity.canRedo,true);await redo(this);assert.equal(await this.repository.read(b.id,'main.ts'),'other saved');
+  await undo(this);assert.equal(await this.repository.read(b.id,'main.ts'),'other initial');
+  const refs=await git.listRefs({...this.git,filepath:'refs'});
+  for(const ref of refs)for(const {oid} of await git.log({...this.git,ref:`refs/${ref}`})){
+    const blob=await git.readBlob({...this.git,oid,filepath:'activity.json'});
+    assert.equal(new TextDecoder().decode(blob.blob).includes(a.id),false);
+  }
+  while(this.activity.canUndo){await undo(this);assert.equal(this.activity.state.workspace.repositories[a.id],undefined);}
+  await assert.rejects(this.repository.open(a.id),/not found|Unknown|exist/);
+});
 Then('application history uses the private edit subject for grouped edits and formatting',async function(){
   const initial='const timeout = 5000;';let repository=await this.repository.create('Subjects',[file('main.ts',initial)]);
   const state=select(initialState(),repository.id),group={id:'typing',line:1};
@@ -214,7 +247,7 @@ Then("application history restores interleaved workspace settings and repository
   const switched = select(closed, second.id);
   await record(this, closed, switched, "Select second repository");
   second = (await record(this, switched, switched, "Edit second", { method: "write", args: [second.id, "main.ts", "changed second", second.revision] })).repository;
-  const configured = clone(switched); configured.workspace.page = "settings"; configured.settings.global.fontSize = 19;
+  const configured = clone(switched); configured.workspace.rightPanes = ["settings"]; configured.settings.global.fontSize = 19;
   await record(this, switched, configured, "Change settings");
   const source = await this.repository.commit(first.id, "Explicit source commit", { name: "Test", email: "test@example.invalid" }, first.revision);
   const sourceIndex = await readFile(`${repositoryPaths(first.id, this.root).gitdir}/index`);
@@ -502,7 +535,7 @@ Then("only unchanged or rejected actions preserve legacy redo availability", asy
   await record(this, state, state, "Unchanged document", { method: "write", args: [repository.id, "main.ts", "zero", repository.revision] });
   await assert.rejects(record(this, state, state, "Rejected create", { method: "createFile", args: [repository.id, "main.ts", "conflict", repository.revision] }), { name: "ActivityRejectedError" });
   assert.equal(this.activity.legacyRedoAllowed, true); assert.equal((await this.repository.open(repository.id)).canRedo, true);
-  const next = clone(state); next.workspace.page = "settings";
+  const next = clone(state); next.workspace.rightPanes = ["settings"];
   await record(this, state, next, "Open settings");
   assert.equal(this.activity.legacyRedoAllowed, false);
   await undo(this); assert.deepEqual(this.activity.state, state); assert.equal(this.activity.legacyRedoAllowed, false);
@@ -680,31 +713,31 @@ Then('settings scopes retain independent undo and redo paths',async function(){
   const save=async change=>{const next=clone(state);change(next.settings);await record(this,state,next,'Change scoped settings');state=next;};
   await save(value=>{value.global.fontSize=19;});
   await save(value=>{value.repositories[repo.id]={lineWrapping:true};});
-  await save(value=>{value.files[repo.id]={'main.ts':{readOnly:true}};});
   const navigate=async(direction,scope)=>{const result=await this.application[direction==='undo'?'undoActivity':'redoActivity'](this.activity.revision,{repositoryId:repo.id,state,scope});this.activity=result.activity;state=result.activity.state;};
   await navigate('undo',{kind:'settings',scope:'repository',repositoryId:repo.id});
-  assert.equal(state.settings.global.fontSize,19);assert.equal(state.settings.repositories[repo.id],undefined);assert.equal(state.settings.files[repo.id]['main.ts'].readOnly,true);
-  await navigate('undo',{kind:'settings',scope:'file',repositoryId:repo.id,file:'main.ts'});
-  assert.equal(state.settings.files[repo.id],undefined);
+  assert.equal(state.settings.global.fontSize,19);assert.equal(state.settings.repositories[repo.id],undefined);
   await save(value=>{value.global.fontSize=20;});
   this.reopen();this.activity=await this.application.loadActivity();
   await navigate('redo',{kind:'settings',scope:'repository',repositoryId:repo.id});
-  assert.equal(state.settings.repositories[repo.id].lineWrapping,true);assert.equal(state.settings.global.fontSize,20);assert.equal(state.settings.files[repo.id],undefined);
-  await navigate('redo',{kind:'settings',scope:'file',repositoryId:repo.id,file:'main.ts'});
-  assert.equal(state.settings.files[repo.id]['main.ts'].readOnly,true);assert.equal(await this.repository.read(repo.id,'main.ts'),'source');
+  assert.equal(state.settings.repositories[repo.id].lineWrapping,true);assert.equal(state.settings.global.fontSize,20);
+  await navigate('undo',{kind:'settings',scope:'global'});
+  assert.equal(state.settings.global.fontSize,19);assert.equal(state.settings.repositories[repo.id].lineWrapping,true);
+  await navigate('redo',{kind:'settings',scope:'global'});
+  assert.equal(state.settings.global.fontSize,20);assert.equal(Object.hasOwn(state.settings,'files'),false);
+  assert.equal(await this.repository.read(repo.id,'main.ts'),'source');
 });
 
 Then('scoped repository undo recovers its prepared journal independently',async function(){
   const repo=await this.repository.create('Scoped recovery',[file('main.ts','before')]);
   let state=select(initialState(),repo.id);
   await record(this,state,state,'Edit',{method:'write',args:[repo.id,'main.ts','after',repo.revision]});
-  const configured=clone(state);configured.settings.global.fontSize=21;configured.workspace.page='settings';
+  const configured=clone(state);configured.settings.global.fontSize=21;configured.workspace.rightPanes=['settings'];
   await record(this,state,configured,'Settings');state=configured;
   this.failAt='activity-prepared';
   await assert.rejects(this.application.undoActivity(this.activity.revision,{repositoryId:repo.id,state,scope:{kind:'repository',repositoryId:repo.id}}),/interrupted/);
   this.reopen();this.activity=await this.application.loadActivity();
   assert.equal(await this.repository.read(repo.id,'main.ts'),'before');assert.equal(this.activity.state.settings.global.fontSize,21);
-  assert.equal(this.activity.state.workspace.page,'settings');assert.equal(this.preferences.global.fontSize,21);
+  assert.equal(this.activity.state.workspace.page,'editor');assert.deepEqual(this.activity.state.workspace.rightPanes,['settings']);assert.equal(this.preferences.global.fontSize,21);
 });
 
 Then('scoped redo survives startup history retention and reload',async function(){
@@ -790,4 +823,29 @@ Then('private retention preserves pending Git operation checkpoints',async funct
  await act('merge',{target:'feature',mode:'merge'});assert.equal((await this.repository.gitStatus(repository.id)).operation.kind,'merge');
  const plan=await retention(this);assert.equal(plan.changed,true);repository=await this.repository.open(repository.id);
  await act('abort');assert.equal(await this.repository.read(repository.id,'main.ts'),'main');assert.equal(repository.head,head);
+});
+
+Then('legacy file settings cannot return through history reload undo or redo',async function(){
+  const repo=await this.repository.create('Legacy settings',[file('main.ts','source')]);
+  const before=select(initialState(),repo.id);before.settings.repositories[repo.id]={tabSize:4};
+  const after=clone(before);after.settings.global.fontSize=19;after.settings.repositories[repo.id]={tabSize:6};
+  await record(this,before,after,'Legacy scoped settings');
+  const context={fs:this.shared.fs,gitdir:`${this.root}/history/application.git`};
+  const commit=(await git.readCommit({...context,oid:this.applicationRecord.current})).commit;
+  const entry=JSON.parse(new TextDecoder().decode((await git.readBlob({...context,oid:this.applicationRecord.current,filepath:'activity.json'})).blob));
+  for(const state of [entry.before,entry.after])state.settings.files={[repo.id]:{'main.ts':{tabSize:12,readOnly:true}}};
+  const blob=await git.writeBlob({...context,blob:new TextEncoder().encode(JSON.stringify(entry))});
+  const tree=await git.writeTree({...context,tree:[{mode:'100644',path:'activity.json',oid:blob,type:'blob'}]});
+  const oid=await git.writeCommit({...context,commit:{...commit,tree}});
+  this.applicationRecord.current=oid;this.applicationRecord.undo=[oid];delete this.applicationRecord.scoped;
+  this.applicationRecord.state=clone(entry.after);this.reopen();this.activity=await this.application.loadActivity();
+  let state=this.activity.state;assert.equal(Object.hasOwn(state.settings,'files'),false);
+  const navigate=async(direction,scope)=>{const result=await this.application[direction==='undo'?'undoActivity':'redoActivity'](this.activity.revision,{repositoryId:repo.id,state,scope});this.activity=result.activity;state=result.activity.state;assert.equal(Object.hasOwn(state.settings,'files'),false);};
+  await navigate('undo',{kind:'settings',scope:'global'});
+  assert.equal(state.settings.global.fontSize,13);assert.equal(state.settings.repositories[repo.id].tabSize,6);
+  await navigate('redo',{kind:'settings',scope:'global'});
+  assert.equal(state.settings.global.fontSize,19);
+  await navigate('undo',{kind:'settings',scope:'repository',repositoryId:repo.id});
+  assert.equal(state.settings.repositories[repo.id].tabSize,4);assert.equal(state.settings.global.fontSize,19);
+  assert.equal(await this.repository.read(repo.id,'main.ts'),'source');assert.equal((await this.repository.open(repo.id)).head,repo.head);
 });

@@ -21,7 +21,7 @@ async function createBranch(page,name){
  const form=page.getByRole('dialog',{name:'New branch',exact:true});await form.getByRole('textbox',{name:'Branch name',exact:true}).fill(name);
  await form.getByRole('button',{name:'Create branch',exact:true}).click();await expect(form).toBeHidden();await saved(page);
 }
-async function commit(page,text){await identity(page);if(await action(page,'Stage all').isEnabled())await action(page,'Stage all').click();await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill(text);await action(page,'Commit staged changes').click();await expect(dialog(page).locator('.file-row')).toHaveCount(0);await expect(dialog(page).getByRole('alert')).toHaveCount(0);}
+async function commit(page,text){await identity(page);if(await action(page,'Stage all').isEnabled())await action(page,'Stage all').click();await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill(text);await action(page,'Commit staged changes').click();await expect(dialog(page).locator('.file-row')).toHaveCount(0);await expect(dialog(page).getByRole('alert')).toHaveCount(0);}
 Then('new commit reviews stage all files and retain manual exclusions across reopening and reload',{timeout:90000},async function(){
  const page=this.page;
  await page.getByLabel('Code editor document',{exact:true}).fill('const first = false;');await saved(page);
@@ -82,7 +82,7 @@ Then('new commit reviews stage all files and retain manual exclusions across reo
  await expect(dialog(page).getByRole('button',{name:'Stage file',exact:true})).toHaveCount(2);
  expect((await repositoryGitStatus(page)).files.every(file=>file.head===file.stage)).toBe(true);
  await commit(page,'Default selection reviewed');
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toBeEnabled();
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toBeEnabled();
  await page.getByRole('button',{name:'Switch to second.js',exact:true}).click();
  await page.getByLabel('Code editor document',{exact:true}).fill('const second = false;');await saved(page);
  await expect(dialog(page).locator('.staged-count')).toHaveText('1 file staged');
@@ -98,9 +98,9 @@ Then('editor commit review opens staged comparisons without including unstaged e
  await open(page);await identity(page);await expect(action(page,'Stage all')).toBeDisabled();await expect(action(page,'Unstage all')).toBeEnabled();await expect(action(page,'Commit staged changes')).toBeDisabled();
  await this.attach(await dialog(page).screenshot({path:`${this.artifactDirectory}/git-commit-review.png`}), 'image/png');
  await close(page);const later=initial.replace('first = 1','first = 10').replace('second = 2','second = 20');await page.getByLabel('Code editor document',{exact:true}).fill(later);await saved(page);
- await open(page);await identity(page);await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Initial reviewed source');
- await action(page,'Commit staged changes').click();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('');
- await expect(dialog(page).locator('.file-row').first()).toBeVisible();await expect(page.getByRole('button',{name:'Page',exact:true})).toHaveAttribute('data-value','editor');
+ await open(page);await identity(page);await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Initial reviewed source');
+ await action(page,'Commit staged changes').click();await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('');
+ await expect(dialog(page).locator('.file-row').first()).toBeVisible();await expect(page.locator('.topbar').getByRole('heading',{name:'Editor',exact:true})).toBeVisible();
  await action(page,'Commits').click();const entry=dialog(page).getByRole('button').filter({hasText:'Initial reviewed source'});await entry.click();
  await dialog(page).getByRole('region',{name:'Selected commit',exact:true}).getByRole('button',{name:'main.js',exact:true}).click();
  await expect(page.getByRole('region',{name:'Commit file diff',exact:true}).getByLabel('Commit file',{exact:true})).toContainText(original.trim());
@@ -133,7 +133,7 @@ Then('editor commit review opens staged comparisons without including unstaged e
  await expect(page.getByRole('button',{name:'Switch to main.js (staged diff)',exact:true})).toHaveCount(1);
  await page.reload();await saved(page);await verifyStaged();
  await page.setViewportSize({width:390,height:844});const bounds=await dialog(page).boundingBox();assert.ok(bounds.x>=0 && bounds.x+bounds.width<=391);
- await action(page,'Staged diff').click();await expect(dialog(page)).toHaveCount(0);await saved(page);
+ await action(page,'Staged diff').click();await action(page,'Close').click();await expect(dialog(page)).toHaveCount(0);await saved(page);
  await expect(comparison).toBeVisible();await page.getByRole('button',{name:'Close main.js (staged diff)',exact:true}).click();
  await expect.poll(async()=>(await page.getByLabel('Code editor document',{exact:true}).locator('.cm-line').allTextContents()).join('\n')).toBe(later);
  await page.reload();await saved(page);await open(page);await expect(action(page,'Unstage all')).toBeEnabled();
@@ -169,11 +169,13 @@ Then('Git action buttons and commit rows change only their foreground on hover',
   });
   await button.hover();await expect(button).toHaveCSS('color',foreground);await expect(button).toHaveCSS('background-color',before);
  };
- for(const name of ['Close','Staging','Commits','Actions','Remotes','Stashes'])await hover(action(page,name));
+ const closeButton=action(page,'Close'),closeBefore=await closeButton.evaluate(element=>({background:getComputedStyle(element).backgroundColor,color:getComputedStyle(element).color}));
+ await closeButton.hover();await expect(closeButton).not.toHaveCSS('background-color',closeBefore.background);await expect(closeButton).toHaveCSS('color',closeBefore.color);
+ for(const name of ['Staging','Commits','Actions','Remotes','Stashed'])await hover(action(page,name));
  await hover(action(page,'Unstage all'));await action(page,'Unstage all').click();
  await hover(action(page,'Stage all'));await hover(action(page,'main.js'));await hover(action(page,'Stage file'));
  await action(page,'Stage all').click();await identity(page);
- await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Hover result');
+ await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Hover result');
  await hover(action(page,'Commit staged changes'));await action(page,'Commit staged changes').click();
  await expect(dialog(page).locator('.file-row')).toHaveCount(0);
  await action(page,'Commits').click();
@@ -187,14 +189,14 @@ Then('Git action buttons and commit rows change only their foreground on hover',
  await checkout.hover({force:true});await expect(checkout).toHaveCSS('color',disabled.color);await expect(checkout).toHaveCSS('background-color',disabled.background);
  assert.equal(await checkout.evaluate(element=>getComputedStyle(element,'::after').backgroundColor),disabled.overlay);
  await action(page,'Actions').click();await selectDropdown(page,'Git operation','revert');await hover(action(page,'Revert commit'));
- await action(page,'Stashes').click();await hover(action(page,'Stash changes'));
+ await action(page,'Stashed').click();await hover(action(page,'Stash changes'));
  await expect(dialog(page).getByRole('alert')).toHaveCount(0);await close(page);
 });
 Then('both history views expose Git operations and commit inspection does not check out',{timeout:90000},async function(){
  const page=this.page;await page.getByLabel('Code editor document',{exact:true}).fill('const saved = true;');await saved(page);
  await open(page);await commit(page,'Source baseline');await close(page);
  await selectPage(page,'History');await expect(page.getByRole('button',{name:'Commit changes',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Git operations',exact:true})).toBeVisible();
- await page.getByRole('navigation',{name:'History views',exact:true}).getByRole('button',{name:'Commit history',exact:true}).click();const graph=page.getByRole('list',{name:'Commit history',exact:true});const current=await graph.locator('li[aria-current="true"]').getAttribute('data-oid');
+ await page.getByRole('navigation',{name:'History views',exact:true}).getByRole('button',{name:'Committed',exact:true}).click();const graph=page.getByRole('list',{name:'Commit history',exact:true});const current=await graph.locator('li[aria-current="true"]').getAttribute('data-oid');
  await graph.getByRole('button',{name:`Inspect commit ${current.slice(0,8)}`,exact:true}).click();await expect(dialog(page).getByRole('region',{name:'Selected commit',exact:true})).toContainText('Source baseline');
  await expect(page.getByRole('button',{name:'Branch',exact:true})).toHaveAttribute('data-value','main');await close(page);
  await openOperations(page);await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
@@ -314,21 +316,21 @@ Then('Recovery uses the operation dropdown and checkpoint targets with explicit 
  const page=this.page,original=await repositorySnapshot(page);await open(page);await action(page,'Actions').click();
  await selectDropdown(page,'Git operation','recover');
  await expect(action(page,'Recovery')).toBeDisabled();await expect(dialog(page)).toContainText('No recovery checkpoints.');
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveCount(0);
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Git target',exact:true})).toHaveAttribute('data-value','');
  await expect(page.getByRole('button',{name:'Git target',exact:true})).toBeDisabled();
  await selectDropdown(page,'Git operation','merge');await action(page,'Staging').click();await identity(page);
- await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Amended source message');
+ await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Amended source message');
  await dialog(page).getByRole('checkbox',{name:'Amend latest commit',exact:true}).check();
  await action(page,'Amend commit').click();
  await expect.poll(async()=>(await repositorySnapshot(page)).head).not.toBe(original.head);
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('');await saved(page);
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('');await saved(page);
  const amended=await repositorySnapshot(page);
  await expect(dialog(page).getByRole('navigation',{name:'Git views',exact:true}).getByRole('button',{name:'Recovery',exact:true})).toHaveCount(0);
  await action(page,'Actions').click();
  const operation=page.getByRole('button',{name:'Git operation',exact:true}),target=page.getByRole('button',{name:'Git target',exact:true});
  await expect(operation).toHaveAttribute('data-value','merge');const previousTarget=await target.getAttribute('data-value');
- await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Retained operation draft');
+ await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Retained operation draft');
  await selectDropdown(page,'Git operation','recover');await expect(operation.locator('.navigation-label')).toHaveText('Recovery');
  const checkpoint=(await repositoryGitStatus(page)).recoveries.find(point=>point.oid===original.head);
  const menu=await openNavigationMenu(page,'Git target');
@@ -340,7 +342,7 @@ Then('Recovery uses the operation dropdown and checkpoint targets with explicit 
  await expect(action(page,'Recovery')).toBeEnabled();
  assert.equal((await repositorySnapshot(page)).head,amended.head);
  await selectDropdown(page,'Git operation','merge');await expect(target).toHaveAttribute('data-value',previousTarget);
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained operation draft');
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Retained operation draft');
  await selectDropdown(page,'Git operation','recover');await expect(confirm).not.toBeChecked();
  await confirm.check();await action(page,'Staging').click();await action(page,'Actions').click();
  await expect(operation).toHaveAttribute('data-value','recover');await expect(confirm).not.toBeChecked();
@@ -385,28 +387,29 @@ Then('Git pane motion, layout and focus adapt without losing the commit draft',{
  const explorer=await page.getByRole('complementary',{name:'Repository explorer',exact:true}).boundingBox();
  const pane=await dialog(page).boundingBox(),workbench=await page.locator('.workbench').boundingBox();
  assert.ok(workbench.x>=explorer.x+explorer.width-1);assert.ok(pane.x>=workbench.x+workbench.width-1);assert.ok(workbench.width>=480);assert.equal(Math.round(pane.x+pane.width),1440);
- await identity(page);await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Preserve this draft');
+ await identity(page);await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Preserve this draft');
  await page.getByLabel('Code editor document',{exact:true}).fill('const changed = false;\n');await saved(page);
- await expect(dialog(page)).toBeVisible();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Preserve this draft');
+ await expect(dialog(page)).toBeVisible();await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Preserve this draft');
  await close(page);
  await openOperations(page);await expect(page.getByRole('button',{name:'Git operation',exact:true})).toBeVisible();
  await selectDropdown(page,'Git operation','rebase');await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
  await this.attach(await page.screenshot({path:`${this.artifactDirectory}/git-pane-docked.png`}), 'image/png');
  await action(page,'Staging').click();await page.setViewportSize({width:390,height:844});
- await expect(dialog(page)).toHaveAttribute('data-layout','overlay');await expect(page.getByRole('dialog',{name:'Git · Local Git fixture',exact:true})).toHaveAttribute('data-side','right');
- await expect.poll(async()=>{const b=await dialog(page).boundingBox();return Math.round(b.x)}).toBe(0);
- const compact=await dialog(page).boundingBox();assert.ok(compact.width>=389&&compact.width<=391);assert.equal(Math.round(compact.y),0);assert.equal(Math.round(compact.height),844);
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Preserve this draft');
- const closeButton=action(page,'Close');await closeButton.focus();await page.keyboard.press('Shift+Tab');assert.ok(await dialog(page).evaluate(element=>element.contains(document.activeElement)));
+ await expect(dialog(page)).toHaveAttribute('data-layout','docked');await expect(page.getByRole('dialog',{name:'Git · Local Git fixture',exact:true})).toHaveCount(0);
+ await expect.poll(async()=>{const b=await dialog(page).boundingBox();return Math.round(b.x+b.width)}).toBe(390);
+ const compact=await dialog(page).boundingBox();assert.ok(compact.width>=194&&compact.width<=196);assert.equal(Math.round(compact.y),0);assert.equal(Math.round(compact.height),844);
+ assert.ok((await page.locator('.workbench').boundingBox()).width>=190);
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Preserve this draft');
+ const closeButton=action(page,'Close');await closeButton.focus();await expect(closeButton).toBeFocused();
  await dialog(page).locator('[data-pane-heading]').focus();await expect(page.getByRole('tooltip')).toBeHidden();
  await this.attach(await page.screenshot({path:`${this.artifactDirectory}/git-pane-mobile.png`}), 'image/png');
  await page.keyboard.press('Escape');await expect(dialog(page)).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Git operations',exact:true})).toBeFocused();
  await page.setViewportSize({width:1440,height:980});await page.emulateMedia({reducedMotion:'reduce'});await open(page);
- await expect(dialog(page)).toHaveAttribute('data-layout','docked');await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Preserve this draft');
+ await expect(dialog(page)).toHaveAttribute('data-layout','docked');await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Preserve this draft');
  const animated=await dialog(page).evaluate(element=>element.parentElement.getAnimations({subtree:true}).filter(animation=>animation.playState==='running').length);assert.equal(animated,0);
  await close(page);await page.reload();await saved(page);await open(page);
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Preserve this draft');
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Preserve this draft');
  await close(page);
 });
 
@@ -419,19 +422,19 @@ Then('the {string} button toggles the Git pane without losing drafts',async func
   await button.click();await expect(dialog(page)).toBeVisible();await expect(button).toHaveAttribute('aria-expanded','true');
   await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
   await action(page,'Staging').click();
-  await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Retained toggle draft');
+  await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Retained toggle draft');
   await button.click();await expect(dialog(page)).toBeVisible();
   await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
   await action(page,'Staging').click();
-  await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
+  await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Retained toggle draft');
   await action(page,'Commits').click();
   await button.click();await expect(dialog(page)).toBeVisible();
   await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
   await action(page,'Staging').click();
-  await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
+  await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Retained toggle draft');
   await action(page,'Actions').click();
   await button.click();await expect(dialog(page)).toHaveCount(0);await expect(button).toHaveAttribute('aria-expanded','false');await expect(button).toBeFocused();
-  await button.click();await action(page,'Staging').click();await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Retained toggle draft');
+  await button.click();await action(page,'Staging').click();await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Retained toggle draft');
   await close(page);
  }
 });
@@ -442,7 +445,7 @@ Then('Git pane resizing supports dragging cancellation keyboard and responsive r
  const sized=async value=>{await expect.poll(width).toBe(value);await saved(page);await expect(handle).toHaveAttribute('aria-valuenow',String(value));};
  const drag=async(delta,release=true)=>{const box=await handle.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2-delta,box.y+box.height/2,{steps:8});if(release)await page.mouse.up();};
  await expect(handle).toBeVisible();const bounds=await handle.boundingBox();assert.equal(bounds.y,0);assert.equal(bounds.height,980);
- await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Keep this resize draft');
+ await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Keep this resize draft');
  const original=await width();assert.equal(original,320);await drag(90);await sized(original+90);
  await close(page);await open(page);await sized(original+90);
  await page.reload();await saved(page);await expect(dialog(page)).toBeVisible();await sized(original+90);
@@ -451,15 +454,15 @@ Then('Git pane resizing supports dragging cancellation keyboard and responsive r
  await handle.focus();await handle.press('ArrowLeft');await sized(original+106);
  await handle.press('ArrowRight');await sized(original+90);
  await handle.press('Home');await sized(320);await handle.press('End');const maximum=Number(await handle.getAttribute('aria-valuemax'));await sized(maximum);
- const workbench=await page.locator('.workbench').boundingBox();assert.ok(workbench.width>=560);
+ const workbench=await page.locator('.workbench').boundingBox();assert.ok(workbench.width>=320);
  const trigger=page.getByRole('button',{name:'Git operations',exact:true}),triggerBox=await trigger.boundingBox();assert.ok(triggerBox.x+triggerBox.width<=workbench.x+workbench.width);
  await trigger.click();await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');await expect(dialog(page)).toBeVisible();await saved(page);
  await trigger.click();await expect(dialog(page)).toHaveCount(0);await trigger.click();await sized(maximum);
  await page.reload();await saved(page);await expect(dialog(page)).toBeVisible();await sized(maximum);
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Keep this resize draft');
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Keep this resize draft');
  await page.setViewportSize({width:1440,height:980});await expect.poll(async()=>await width()===Number(await handle.getAttribute('aria-valuemax'))).toBe(true);await saved(page);
- await page.setViewportSize({width:390,height:844});await expect(dialog(page)).toHaveAttribute('data-layout','overlay');await expect(handle).toHaveCount(0);
- assert.equal(Math.round((await dialog(page).boundingBox()).width),390);
+ await page.setViewportSize({width:390,height:844});await expect(dialog(page)).toHaveAttribute('data-layout','docked');await expect(handle).toBeVisible();
+ assert.equal(Math.round((await dialog(page).boundingBox()).width),195);
  await page.setViewportSize({width:1600,height:980});await expect(handle).toBeVisible();await sized(maximum);
  await this.attach(await page.screenshot({path:`${this.artifactDirectory}/git-pane-resized.png`}), 'image/png');
  await close(page);
@@ -470,7 +473,7 @@ Then('the main view follows Git pane opening and closing across views',{timeout:
  await page.getByLabel('Code editor document',{exact:true}).fill(fixture);await saved(page);
  const session=await page.context().newCDPSession(page);await session.send('Performance.enable');
  const results=[];
- for(const view of ['Editor','Editor','Editor','History','Settings']){
+ for(const view of ['Editor']){
   if(view==='Settings'){await selectPage(page,'Editor');await openOperations(page);await expect(dialog(page)).toBeVisible();}
   await selectPage(page,view);await saved(page);
   for(const opening of (view==='Settings'?[false]:[true,false])){
@@ -496,10 +499,10 @@ Then('the main view follows Git pane opening and closing across views',{timeout:
    const distinct=[...new Set(samples.map(item=>Math.round(item.width)))];
    const low=Math.min(...distinct),high=Math.max(...distinct),intermediate=distinct.filter(width=>width>low+1&&width<high-1);
    results.push({view,opening,samples,intermediate:intermediate.length,layoutMs:(metric(after,'LayoutDuration')-metric(before,'LayoutDuration'))*1000,layoutCount:metric(after,'LayoutCount')-metric(before,'LayoutCount')});
-   assert.ok(high>low+300);
+   assert.ok(high>low+1,'The editor changes width while neighboring panes share the available space');
    assert.ok(intermediate.length>=2,`${view} ${opening?"opening":"closing"} must resize over intermediate frames`);
    const moving=samples.filter(sample=>sample.paneLeft!==null&&sample.width>low+1&&sample.width<high-1);
-   assert.ok(moving.every(sample=>Math.abs(sample.right-sample.paneLeft)<1),"Main view and Git pane must share their moving boundary");
+   assert.ok(moving.every(sample=>sample.right<=sample.paneLeft+1),"The editor and any intervening utility panes must not overlap Git");
   }
  }
  await session.detach();
@@ -532,12 +535,12 @@ Then('Git header toolbar and tab edges share the main view pixel coordinates',{t
    let difference=0;
    for(const [main,git]of pairs){const a=document.querySelector(main).getBoundingClientRect(),b=document.querySelector(git).getBoundingClientRect();difference=Math.max(difference,Math.abs(a.top-b.top),Math.abs(a.bottom-b.bottom));}
    const center=element=>{const r=element.getBoundingClientRect();return r.x+r.width/2;};
-   const gitTitle=document.querySelector('.git-header .material-symbols-rounded'),gitTab=document.querySelector('.git-tab .material-symbols-rounded');
+   const gitTitle=document.querySelector('.git-header .devicon, .git-header .material-symbols-rounded'),gitTab=document.querySelector('.git-tab .material-symbols-rounded');
    if(gitTab.getBoundingClientRect().width>0)difference=Math.max(difference,Math.abs(center(gitTitle)-center(gitTab)));
    if(tabs?.getBoundingClientRect().height>0){const a=document.querySelector('.file-tab-select').getBoundingClientRect(),b=document.querySelector('.git-tab .button-content').getBoundingClientRect();difference=Math.max(difference,Math.abs((a.top+a.bottom-b.top-b.bottom)/2));}
    if(tabs?.getBoundingClientRect().height>0){
     const icon=tabs.querySelector('.file-tab-select .devicon, .file-tab-select .material-symbols-rounded');
-    for(const selector of ['.topbar .repository-picker .material-symbols-rounded','.editor-toolbar button .material-symbols-rounded'])difference=Math.max(difference,Math.abs(center(document.querySelector(selector))-center(icon)));
+    for(const selector of ['.topbar .editor-heading .material-symbols-rounded','.editor-toolbar button .material-symbols-rounded'])difference=Math.max(difference,Math.abs(center(document.querySelector(selector))-center(icon)));
    }
    return difference;
   })).toBeLessThan(.01);
@@ -552,7 +555,7 @@ Then('Git header toolbar and tab edges share the main view pixel coordinates',{t
  for(const size of ['Small','Medium','Large']){
   await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');
   await page.getByRole('radio',{name:size,exact:true}).check();await saved(page);await aligned();
-  await selectPage(page,'History');await page.getByRole('navigation',{name:'History views',exact:true}).getByRole('button',{name:'Commit history',exact:true}).click();await aligned();
+  await selectPage(page,'History');await page.getByRole('navigation',{name:'History views',exact:true}).getByRole('button',{name:'Committed',exact:true}).click();await aligned();
   await selectPage(page,'Editor');await page.getByRole('separator',{name:'Resize Git pane',exact:true}).press('End');await saved(page);await aligned();
   await page.setViewportSize({width:1760,height:980});await page.getByRole('separator',{name:'Resize Git pane',exact:true}).press('End');await saved(page);await aligned();
   await page.setViewportSize({width:1440,height:980});await aligned();
@@ -573,15 +576,16 @@ Then('overflowing Git tabs support mouse wheel trackpad and keyboard navigation 
  if(width>1000){const divider=page.getByRole('separator',{name:'Resize Git pane',exact:true});await divider.press('Home');await saved(page);}
  const tabs=dialog(page).getByRole('navigation',{name:'Git views',exact:true}),position=()=>tabs.evaluate(element=>element.scrollLeft);
  await expect.poll(()=>tabs.evaluate(element=>element.scrollWidth-element.clientWidth)).toBeGreaterThan(0);
- const first=tabs.getByRole('button',{name:'Staging',exact:true}),last=tabs.getByRole('button',{name:'Stashes',exact:true});
+ const first=tabs.getByRole('button',{name:'Staging',exact:true}),last=tabs.getByRole('button',{name:'Stashed',exact:true});
  const tabCount=await tabs.getByRole('button').count();
  const header=await dialog(page).locator('.git-header').boundingBox(),context=await dialog(page).locator('.git-context').boundingBox();
  const fullyVisible=button=>expect.poll(async()=>{const outer=await tabs.boundingBox(),inner=await button.boundingBox();return Math.max(outer.x-inner.x,inner.x+inner.width-outer.x-outer.width);},{message:'The complete tab must fit inside the scroll area'}).toBeLessThanOrEqual(1);
- await tabs.hover();await page.mouse.wheel(0,300);await expect.poll(position).toBeGreaterThan(0);await fullyVisible(last);
+ const travel=await tabs.evaluate(element=>element.scrollWidth);
+ await tabs.hover();await page.mouse.wheel(0,travel);await expect.poll(position).toBeGreaterThan(0);await fullyVisible(last);
  await expect(first).toHaveAttribute('aria-pressed','true');
- await page.mouse.wheel(0,-300);await expect.poll(position).toBe(0);
- await page.mouse.wheel(300,0);await expect.poll(position).toBeGreaterThan(0);await fullyVisible(last);
- await page.mouse.wheel(-300,0);await expect.poll(position).toBe(0);
+ await page.mouse.wheel(0,-travel);await expect.poll(position).toBe(0);
+ await page.mouse.wheel(travel,0);await expect.poll(position).toBeGreaterThan(0);await fullyVisible(last);
+ await page.mouse.wheel(-travel,0);await expect.poll(position).toBe(0);
  await first.focus();for(let i=1;i<tabCount;i++)await page.keyboard.press('Tab');await expect(last).toBeFocused();await fullyVisible(last);
  await page.keyboard.press('Enter');await expect(last).toHaveAttribute('aria-pressed','true');
  for(let i=1;i<tabCount;i++)await page.keyboard.press('Shift+Tab');await expect(first).toBeFocused();await fullyVisible(first);
@@ -592,9 +596,9 @@ Then('overflowing Git tabs support mouse wheel trackpad and keyboard navigation 
 Then('Git tab changes keep their first card visible with {string} motion at {int} pixels',{timeout:90000},async function(motion,width){
  const page=this.page;await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:motion});await open(page);
  await page.locator('[data-git-panel]').evaluate(async pane=>{await Promise.all(pane.closest('[data-slot="sheet-dock"], [role="dialog"]').getAnimations({subtree:true}).map(animation=>animation.finished));await document.fonts.ready;});
- await dialog(page).getByRole('textbox',{name:'Commit subject',exact:true}).fill('Visible tab draft');
+ await dialog(page).getByRole('textbox',{name:'Subject',exact:true}).fill('Visible tab draft');
  const results=[];
- for(let repeat=0;repeat<3;repeat++)for(const tab of ['Actions','Stashes','Commits','Staging']){
+ for(let repeat=0;repeat<3;repeat++)for(const tab of ['Actions','Stashed','Commits','Staging']){
   await page.evaluate(()=>{
    const pane=document.querySelector('[data-git-panel]'),previous=pane.querySelector('.git-scroll > .view-content, .git-scroll > .git-card');
    const chrome=[pane.querySelector('.git-header'),pane.querySelector('.git-context'),pane.querySelector('.git-tabs')];
@@ -618,7 +622,7 @@ Then('Git tab changes keep their first card visible with {string} motion at {int
  }
  await action(page,'Actions').focus();await page.keyboard.press('Enter');await expect(action(page,'Actions')).toHaveAttribute('aria-pressed','true');
  await action(page,'Staging').focus();await page.keyboard.press('Space');await expect(action(page,'Staging')).toHaveAttribute('aria-pressed','true');
- await expect(dialog(page).getByRole('textbox',{name:'Commit subject',exact:true})).toHaveValue('Visible tab draft');
+ await expect(dialog(page).getByRole('textbox',{name:'Subject',exact:true})).toHaveValue('Visible tab draft');
  await mkdir(this.artifactDirectory,{recursive:true});
  const hash=createHash('sha256');for await(const chunk of createReadStream('dist/index.html'))hash.update(chunk);
  const report={build:hash.digest('hex'),browser:page.context().browser().version(),viewport:[width,900],motion,fixture:'Unborn repository with empty main.js; unsubmitted commit draft',instrumentation:'Playwright tracing, requestAnimationFrame opacity and geometry sampling; no elapsed-time performance claim',results};

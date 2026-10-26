@@ -120,13 +120,17 @@ Then("the compact loading preview shows the pending repository work", async func
   await expect(stage(this.page, "repository")).toBeVisible();
   await expect(stage(this.page, "repository")).toHaveAttribute("data-status", "running");
   await expect(stage(this.page, "files")).toHaveAttribute("data-status", "pending");
+  await stage(this.page, "repository").hover();
+  await stage(this.page, "repository").hover();
   await expect(stage(this.page, "repository").locator("h2")).toBeVisible();
 });
 
 Then("pending loading titles stay hidden until their work starts", async function () {
   this.loadingTitleLayout = await desktopTitleLayout(this.page);
   await expect(stage(this.page, "files").locator("h2")).toBeHidden();
+  await stage(this.page, "repository").hover();
   await expect(stage(this.page, "repository").locator("h2")).toBeVisible();
+  await stage(this.page, "storage").hover();
   await expect(stage(this.page, "storage").locator("h2")).toBeVisible();
   await this.page.setViewportSize({ width: 390, height: 844 });
 });
@@ -140,6 +144,8 @@ Then("the compact loading preview advances to preparing the active file", async 
   await expect(cards(this.page)).toHaveCount(6);
   await expect(stage(this.page, "editor")).toBeVisible();
   await expect(stage(this.page, "editor")).toHaveAttribute("data-status", "running");
+  await stage(this.page, "editor").hover();
+  await stage(this.page, "editor").hover();
   await expect(stage(this.page, "editor").locator("h2")).toBeVisible();
   await expect(stage(this.page, "files")).toHaveAttribute("data-status", "running");
   await expect(stage(this.page, "git")).toHaveAttribute("data-status", "complete");
@@ -149,7 +155,9 @@ Then("the compact loading preview advances to preparing the active file", async 
 Then("started loading titles appear without moving their drawings", async function () {
   assert.deepEqual(await desktopTitleLayout(this.page), this.loadingTitleLayout,
     "Showing a title preserves every card and drawing's position and size");
+  await stage(this.page, "editor").hover();
   await expect(stage(this.page, "editor").locator("h2")).toBeVisible();
+  await stage(this.page, "git").hover();
   await expect(stage(this.page, "git").locator("h2")).toBeVisible();
   await this.page.setViewportSize({ width: 390, height: 844 });
 });
@@ -175,6 +183,7 @@ Then("completed loading stages retain only their titles without changing the lay
   assert.deepEqual(await desktopTitleLayout(this.page), this.loadingTitleLayout,
     "Completed titles preserve the layout reserved while loading was pending");
   for (const id of stages) {
+    await stage(this.page,id).hover();
     await expect(stage(this.page, id).locator("h2")).toBeVisible();
   }
   await expect(gallery(this.page).getByRole("list")).toHaveCount(0);
@@ -324,7 +333,7 @@ Then('the nine loading drawings hold completed actions while retaining movement 
       const sample=time=>{animations.forEach(animation=>{animation.currentTime=time;});return getComputedStyle(element)[property];};
       const held=sample(hold[0])===sample(hold[1]),moves=sample(movement[0])!==sample(movement[1]);
       const actual=element.getAnimations()[0].effect.getTiming().duration;
-      return {id,held,moves,duration:actual===duration};
+      return {id,held,moves,duration:Math.abs(Number(actual)-Number(duration))<.01};
     });
   });
   for(const item of result)expect(item).toEqual({id:item.id,held:true,moves:true,duration:true});
@@ -358,8 +367,8 @@ Then('loading pane hover reveals and drops its title while preserving drawing ge
   await this.page.setViewportSize({width:1280,height:900});
   await this.page.emulateMedia({reducedMotion:'no-preference'});
   const card=stage(this.page,'storage'),caption=card.locator('.caption');
-  await this.page.getByRole('heading',{name:'code.',exact:true}).hover();
-  await card.evaluate(node=>{node.dataset.status='running';});
+  await gallery(this.page).getByRole('heading',{name:'code.',exact:true}).hover();
+  await card.evaluate(node=>{node.dataset.status='running';node.classList.remove('presented');});
   await expect(caption).toBeHidden();
   const before=await card.locator('.drawing-frame').boundingBox();
   await card.hover();
@@ -367,8 +376,8 @@ Then('loading pane hover reveals and drops its title while preserving drawing ge
   await expect(caption).toHaveCSS('opacity','1');await expect(caption).toHaveCSS('transform','matrix(1, 0, 0, 1, 0, 0)');
   await expect(caption.locator('.caption-title')).toHaveText('Opening local storage');
   expect(await card.locator('.drawing-frame').boundingBox()).toEqual(before);
-  await this.page.getByRole('heading',{name:'code.',exact:true}).hover();await expect(caption).toBeHidden();
+  await gallery(this.page).getByRole('heading',{name:'code.',exact:true}).hover();await expect(caption).toBeHidden();
   await expect.poll(()=>card.evaluate(node=>getComputedStyle(node).getPropertyValue('--pane-opacity').trim())).toBe('25%');
-  await card.evaluate(node=>{node.dataset.status='complete';});await card.hover();
+  await card.evaluate(node=>{node.dataset.status='complete';node.classList.add('presented');});await card.hover();
   await expect.poll(()=>card.evaluate(node=>getComputedStyle(node).getPropertyValue('--pane-opacity').trim())).toBe('100%');
 });

@@ -101,12 +101,12 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
         <span class="sr-only" role="status">{pending===managed.id?'Installing…':ready(managed.id)?'Installed':current?`${current.version} installed · Update available`:'Not installed'}</span>
         {#if pending===managed.id && installController}<Button variant="ghost" onclick={()=>installController?.abort()}>Cancel</Button>
         {:else}
-          {#if !ready(managed.id) && (selected!=='none' || current)}<Button variant="ghost" disabled={disabled || Boolean(pending) || Boolean(comparing)} aria-label={`${current?'Update':'Install'} ${managed.name}`} onclick={()=>install(managed.id)}>{current?'Update':'Install'}</Button>{/if}
-          {#if current}<Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${managed.name}`} disabled={disabled || Boolean(pending) || Boolean(comparing)} onclick={()=>uninstall(managed.id)}><MaterialIcon name="delete" size={18} /></Button>{/if}
+          {#if !ready(managed.id) && (selected!=='none' || current)}<Button variant="ghost" size="icon" tooltip={pending===managed.id?'Installing…':current?'Update':'Install'} disabled={disabled || Boolean(pending) || Boolean(comparing)} aria-label={`${current?'Update':'Install'} ${managed.name}`} onclick={()=>install(managed.id)}><MaterialIcon name={current?'downloading':'install_desktop'} size={18}/></Button>{/if}
         {/if}
       {/if}
       {#if format.providers.length>1 && format.providers.some(ready)}<Button variant="ghost" size="icon" tooltip="Compare installed" disabled={disabled || Boolean(pending) || Boolean(comparing) || !format.providers.some(ready)} aria-label={`Compare ${format.label} formatters`} onclick={()=>compare(format)}><MaterialIcon name="speed" size={18} /></Button>{/if}
       {#if comparing===format.id}<Button variant="ghost" onclick={()=>controller?.abort()}>Cancel</Button>{/if}
+      {#if managed && current && !(pending===managed.id && installController)}<Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${managed.name}`} disabled={disabled || Boolean(pending) || Boolean(comparing)} onclick={()=>uninstall(managed.id)}><MaterialIcon name="delete" size={18} /></Button>{/if}
       </div>
       {#each validMeasurements.filter(item=>item.format===format.id) as measurement}
         <small class="measurement">{providers.find(p=>p.id===measurement.provider)?.name}: first use {measurement.coldMs.toFixed(1)} ms · subsequent {measurement.warmMs.toFixed(1)} ms</small>
@@ -117,13 +117,21 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   </div>
 </section>
 <style>
-  .formatter-preferences { margin-top:20px; padding:24px; background:var(--color-surface); border-radius:4px; }
-  .heading{display:flex;gap:12px;margin-bottom:22px;align-items:center}
+  .formatter-preferences { margin-top:var(--pane-gap); padding:var(--pane-padding); background:var(--color-surface); border-radius:4px; }
+  .heading{display:flex;gap:12px;margin-bottom:var(--pane-padding);align-items:center}
   h2{margin:0;font-size:0.9375rem;font-weight:650}p{font-size:0.75rem;line-height:1.6;margin:6px 0 18px}
   input{width:100%;background:var(--color-background);color:var(--color-foreground);border:0;border-radius:4px;padding:8px 11px;font-size:0.6875rem}
   .preferences-list{margin-top:6px}
-  .preference{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;align-items:center;margin-bottom:6px;font-size:0.6875rem;min-width:0}
-  .formatter-controls{display:flex;align-items:center;gap:6px;min-width:0}.formatter-select{flex:1;min-width:0}
-  .format-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;min-height:36px;padding:8px 11px;border-radius:4px;background:var(--palette-8);color:var(--color-background);font-weight:650;overflow-wrap:anywhere}
-  .measurement{grid-column:2;font-family:monospace;font-size:0.625rem;line-height:1.6}
+  .preference{display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr);gap:6px 0;align-items:start;margin-bottom:6px;font-size:0.6875rem;min-width:0}
+  .formatter-controls{display:flex;align-items:center;gap:0;min-width:0;border-radius:0 4px 4px 0;background:var(--color-background);overflow:hidden}.formatter-select{flex:1;min-width:0}
+  .format-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;box-sizing:border-box;height:36px;min-height:36px;padding:1px 8px;border-block:1px solid var(--color-background);border-radius:4px 0 0 4px;background:var(--palette-8);color:var(--color-background);line-height:1.25;font-weight:650;overflow-wrap:anywhere}
+  .formatter-controls :global(button.navigation-trigger){border-block:1px solid var(--color-background);border-radius:0}
+  .formatter-controls :global(button[data-slot="button"]){border-block:1px solid var(--color-background);border-inline-start:1px solid var(--color-background);border-radius:0}
+  .measurement{grid-column:2;min-width:0;font-family:monospace;font-size:0.625rem;line-height:1.6;overflow-wrap:anywhere}
+  @container settings-pane (max-width:550px){
+    .preference{grid-template-columns:minmax(0,1fr);row-gap:0}
+    .format-label{justify-content:flex-start;text-align:left;border-radius:4px 4px 0 0}
+    .formatter-controls{border-radius:0 0 4px 4px}
+    .measurement{grid-column:1;margin-top:6px}
+  }
 </style>

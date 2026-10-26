@@ -7,7 +7,7 @@ import {expect} from '@playwright/test';
 import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const scroller=page=>page.locator('.cm-editor > .cm-scroller');
-async function preferences(page){await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');}
+async function preferences(page){await selectPage(page, 'Settings', 'Editor');await selectDropdown(page,'Settings scope','global');}
 Then('editor wheel distance follows the scroll speed slider',async function(){
   const content=this.page.getByLabel('Code editor document',{exact:true});await content.click();
   await this.page.keyboard.insertText(Array.from({length:300},(_,index)=>`const line${index} = ${index};`).join('\n'));await saved(this.page);

@@ -5,6 +5,36 @@ import assert from "node:assert/strict";
 import { Then } from "@cucumber/cucumber";
 import { activateInstalledPackage, DEFAULT_SETTINGS, PALETTES, LANGUAGES, normalizeOverrides, normalizeSettings, resolveSettings, languageForPath } from "./settings.ts";
 
+Then('retired pane visibility preferences are discarded from saved settings',()=>{
+  const retired={showCommitHistoryButton:false,showGitButton:false,showStagedHistoryButton:false};
+  const store=normalizeSettings({version:1,global:{...retired,showRedoButton:false},repositories:{local:{...retired,showUndoButton:false}},files:{local:{'file.js':{...retired,indentSize:4}}}});
+  for(const key of Object.keys(retired))for(const value of [DEFAULT_SETTINGS,store.global,store.repositories.local,resolveSettings(store,'local','file.js')])assert.equal(Object.hasOwn(value,key),false);
+  assert.deepEqual(normalizeOverrides(retired),{});
+  assert.equal(store.global.showRedoButton,false);assert.equal(store.repositories.local.showUndoButton,false);
+  assert.equal(Object.hasOwn(store,'files'),false);
+});
+
+Then('{word} minimap defaults off independently and preserves scoped preferences', view => {
+  const key = `${view.toLowerCase()}Minimap`;
+  assert.ok(['settingsMinimap', 'historyMinimap'].includes(key));
+  const other = key === 'settingsMinimap' ? 'historyMinimap' : 'settingsMinimap';
+  assert.equal(DEFAULT_SETTINGS.minimap, true);
+  assert.equal(DEFAULT_SETTINGS[key], false);
+  for (const global of [{}, { minimap: true, [other]: true }, { minimap: false, [other]: true }])
+    assert.equal(normalizeSettings({ version: 1, global }).global[key], false);
+  assert.deepEqual(normalizeOverrides({ [key]: 'true' }), {});
+  assert.deepEqual(normalizeOverrides({ [key]: false }), { [key]: false });
+  const store = normalizeSettings({ version: 1, global: { minimap: false, [key]: true, [other]: false },
+    repositories: { local: { [key]: false } },
+    files: { local: { 'file.js': { [key]: true } } } });
+  assert.equal(resolveSettings(store, 'other')[key], true);
+  assert.equal(resolveSettings(store, 'other')[other], false);
+  assert.equal(resolveSettings(store, 'other').minimap, false);
+  assert.equal(resolveSettings(store, 'local', 'file.js')[key], false);
+  assert.equal(Object.hasOwn(store,'files'),false);
+  assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))), store);
+});
+
 Then('AI input settings preserve defaults and repository inheritance', () => {
   const defaults = normalizeSettings({});
   assert.equal(defaults.global.showAISendButton, false); assert.equal(defaults.global.aiEnterAction, 'send');
@@ -13,13 +43,13 @@ Then('AI input settings preserve defaults and repository inheritance', () => {
     repositories:{local:{showAISendButton:false,aiEnterAction:'send'}},files:{local:{'file.ts':{showAISendButton:true,aiEnterAction:'newline'}}}});
   assert.equal(resolveSettings(settings,'other').showAISendButton,true); assert.equal(resolveSettings(settings,'other').aiEnterAction,'newline');
   assert.equal(resolveSettings(settings,'local','file.ts').showAISendButton,false); assert.equal(resolveSettings(settings,'local','file.ts').aiEnterAction,'send');
-  assert.deepEqual(settings.files.local['file.ts'],{});
+  assert.equal(Object.hasOwn(settings,'files'),false);
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(settings))),settings);
 });
 
 Then(/^persisted settings (.+) resolve to clean defaults$/, function (input) {
   const normalized = normalizeSettings(JSON.parse(input));
-  assert.deepEqual(normalized, { version: 1, global: DEFAULT_SETTINGS, repositories: {}, files: {} });
+  assert.deepEqual(normalized, { version: 1, global: DEFAULT_SETTINGS, repositories: {} });
   assert.notEqual(normalized.global, DEFAULT_SETTINGS);
 });
 
@@ -53,9 +83,9 @@ Then("legacy global Tab preferences migrate once while preserving other settings
   assert.equal(store.version, 1);
   assert.deepEqual(store.global, { ...input.global, tabBehavior: "indent" });
   assert.deepEqual(store.repositories, input.repositories);
-  assert.deepEqual(store.files, input.files);
+  assert.equal(Object.hasOwn(store,'files'),false);
   assert.equal(resolveSettings(store, "first").tabBehavior, "focus");
-  assert.equal(resolveSettings(store, "second", "notes.txt").tabBehavior, "focus");
+  assert.equal(resolveSettings(store, "second", "notes.txt").tabBehavior, "indent");
   assert.equal(resolveSettings(store, "second", "other.txt").tabBehavior, "indent");
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))), store);
   assert.deepEqual(input, before);
@@ -67,7 +97,7 @@ Then("versioned Tab focus preferences survive normalization and serialization", 
     files: { first: { "notes.txt": { tabBehavior: "focus" } } } });
   assert.equal(store.global.tabBehavior, "focus");
   assert.equal(resolveSettings(store, "first").tabBehavior, "indent");
-  assert.equal(resolveSettings(store, "first", "notes.txt").tabBehavior, "focus");
+  assert.equal(resolveSettings(store, "first", "notes.txt").tabBehavior, "indent");
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))), store);
 });
 
@@ -123,27 +153,26 @@ Then("prototype-related repository keys are removed from persisted settings", fu
 });
 
 Then(/^file preference collection (.+) is ignored$/, function (input) {
-  assert.deepEqual(normalizeSettings({ files: JSON.parse(input) }).files, {});
+  assert.equal(Object.hasOwn(normalizeSettings({ files: JSON.parse(input) }),"files"),false);
 });
 
-Then("file preferences reject malformed records and unsupported visual overrides", function () {
-  const input = JSON.parse('{"files":{"__proto__":{},"constructor":{},"prototype":{},"nullRecord":null,"arrayRecord":[],"stringRecord":"broken","first":{"notes.txt":{"fontSize":30,"palette":"sunset","language":"text","indentSize":4,"tabSize":6,"indentWithTabs":true,"tabBehavior":"indent","lineWrapping":true,"readOnly":false},"invalid.txt":false,"__proto__":{"language":"markdown"}}}}');
-  const store = normalizeSettings(input);
-  assert.deepEqual(Object.keys(store.files), ["first"]);
-  assert.deepEqual(store.files.first["notes.txt"], { indentSize: 4, tabSize: 6,
-    indentWithTabs: true, tabBehavior: "indent", lineWrapping: true, readOnly: false });
-  assert.deepEqual(store.files.first["invalid.txt"], {});
-  assert.equal(Object.getPrototypeOf(store.files), Object.prototype);
-  assert.equal(Object.getPrototypeOf(store.files.first), Object.prototype);
-  assert.equal(Object.hasOwn(store.files.first, "__proto__"), true, "A literal filename must not modify a record's prototype");
-  assert.equal({}.language, undefined);
+Then("legacy file overrides are discarded while global and repository preferences survive", function () {
+  const input = {version:1,global:{indentSize:2,readOnly:false},repositories:{first:{indentSize:3}},
+    files:JSON.parse('{"__proto__":{},"constructor":{},"first":{"notes.txt":{"indentSize":8,"readOnly":true},"__proto__":{"tabSize":12}}}')};
+  const before=structuredClone(input),store=normalizeSettings(input);
+  assert.equal(Object.hasOwn(store,'files'),false);assert.equal(store.global.indentSize,2);
+  assert.deepEqual(store.repositories.first,{indentSize:3});
+  assert.equal(resolveSettings(store,'first','notes.txt').indentSize,3);
+  assert.equal(resolveSettings(store,'first','notes.txt').readOnly,false);
+  assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))),store);
+  assert.deepEqual(input,before);assert.equal({}.tabSize,undefined);
 });
 
-Then("file preferences inherit through every supported settings layer", function () {
+Then("EditorConfig resolves over repository defaults without legacy file overrides", function () {
   const store = normalizeSettings({ global: { indentSize: 2, fontSize: 16 },
     repositories: { first: { indentSize: 3 } }, files: { first: { "notes.txt": { indentSize: 5 } } } });
   const before = structuredClone(store);
-  assert.equal(resolveSettings(store, "first", "notes.txt", { indentSize: 4 }).indentSize, 5);
+  assert.equal(resolveSettings(store, "first", "notes.txt", { indentSize: 4 }).indentSize, 4);
   assert.equal(resolveSettings(store, "first", "other.txt", { indentSize: 4 }).indentSize, 4);
   assert.equal(resolveSettings(store, "first", "other.txt").indentSize, 3);
   assert.equal(resolveSettings(store, "missing", "notes.txt").indentSize, 2);
@@ -152,7 +181,8 @@ Then("file preferences inherit through every supported settings layer", function
   assert.equal(resolveSettings(store, "first", "", { indentSize: 4 }).indentSize, 3);
   assert.equal(resolveSettings(store, "first", "notes.txt").fontSize, 16);
   assert.deepEqual(store, before);
-  delete store.files.first["notes.txt"].indentSize;
+  const legacy={...store,files:{first:{"notes.txt":{indentSize:8}}}};
+  assert.equal(resolveSettings(legacy,"first","notes.txt").indentSize,3);
   assert.equal(resolveSettings(store, "first", "notes.txt", { indentSize: 4 }).indentSize, 4);
 });
 
@@ -162,7 +192,7 @@ Then("{string} selects the {string} syntax mode automatically", function (path, 
 
 Then("legacy language overrides cannot force a language for unrelated filenames", function () {
   const store=normalizeSettings({global:{language:"python"},repositories:{one:{language:"javascript"}},files:{one:{"test.txt":{language:"markdown"}}}});
-  assert.ok(!Object.hasOwn(store.global,"language"));assert.deepEqual(store.repositories.one,{});assert.deepEqual(store.files.one["test.txt"],{});
+  assert.ok(!Object.hasOwn(store.global,"language"));assert.deepEqual(store.repositories.one,{});assert.equal(Object.hasOwn(store,"files"),false);
   assert.equal(languageForPath("test.txt","auto",resolveSettings(store,"one","test.txt").languageMappings),"text");
 });
 
@@ -268,16 +298,18 @@ Then("compact fonts cannot be selected for the interface or editor", async funct
   assert.equal(normalizeOverrides({interfaceFont:"google:Work Sans"}).interfaceFont,"google:Work Sans");
 });
 
-Then("history limits default to three hundred and support bounded per-file overrides", function () {
+Then("history limits default to three hundred and inherit global and repository bounds", function () {
   assert.equal(normalizeSettings(null).global.historyLimit,300);
   const store=normalizeSettings({global:{historyLimit:2000},repositories:{first:{historyLimit:2500}},
     files:{first:{"one.ts":{historyLimit:0},"two.ts":{historyLimit:10001},"three.ts":{historyLimit:-1}}}});
-  assert.equal(resolveSettings(store,"first","one.ts").historyLimit,0);
-  assert.equal(resolveSettings(store,"first","two.ts").historyLimit,10000);
-  assert.equal(resolveSettings(store,"first","three.ts").historyLimit,0);
+  assert.equal(resolveSettings(store,"first","one.ts").historyLimit,2500);
+  assert.equal(resolveSettings(store,"first","two.ts").historyLimit,2500);
+  assert.equal(resolveSettings(store,"first","three.ts").historyLimit,2500);
   assert.equal(resolveSettings(store,"first","other.ts").historyLimit,2500);
   assert.equal(resolveSettings(store,"second","other.ts").historyLimit,2000);
   assert.equal(normalizeSettings({global:{historyLimit:NaN}}).global.historyLimit,300);
+  assert.equal(normalizeSettings({global:{historyLimit:10001}}).global.historyLimit,10000);
+  assert.equal(resolveSettings(normalizeSettings({repositories:{first:{historyLimit:-1}}}),"first").historyLimit,0);
   assert.equal(normalizeSettings({global:{historyLimit:12.7}}).global.historyLimit,13);
 });
 Then('keybinding choices preserve disabled commands and repository overrides',async function(){
@@ -335,14 +367,14 @@ Then('zoom wheel shortcuts are restricted to zoom actions and preserve modifiers
 });
 
 Then('toolbar button preference {string} is validated and inherited without file overrides',function(key){
-  assert.equal(normalizeSettings({}).global[key],!['showSettingsResetButton','showSettingsKeybindingsResetButton'].includes(key));
+  assert.equal(normalizeSettings({}).global[key],!['showSettingsResetButton','showSettingsKeybindingsResetButton','showAIConnectionsButton'].includes(key));
   for(const invalid of [null,0,'false',[],{}])assert.deepEqual(normalizeOverrides({[key]:invalid}),{});
   const settings=normalizeSettings({global:{[key]:false},repositories:{repo:{[key]:true}},files:{repo:{'main.js':{[key]:false}}}});
   assert.equal(resolveSettings(settings)[key],false);
   assert.equal(resolveSettings(settings,'other')[key],false);
   assert.equal(resolveSettings(settings,'repo')[key],true);
   assert.equal(resolveSettings(settings,'repo','main.js')[key],true);
-  assert.deepEqual(settings.files.repo['main.js'],{});
+  assert.equal(Object.hasOwn(settings,'files'),false);
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(settings))),settings);
 });
 

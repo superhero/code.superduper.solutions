@@ -13,9 +13,15 @@ No application backend is required.
 
 The AI pane uses Pi's browser agent harness for local Ollama conversations and
 [installable browser models](src/lib/assistant/browser/README.md): Bonsai 2
-2B/4B/9B/27B on WebML and Ornith 1.5 9B Q4/Q8 on pinned Wllama/llama.cpp.
-AI → Connections → Browser models installs weights explicitly on this device;
+2B/4B/9B/27B on WebML, Ornith 1.5 9B Q4/Q8 and MiniCPM5 2.52B on pinned
+Wllama/llama.cpp, and Gemma 4 E2B on LiteRT-LM. Gemma/MiniCPM can inspect
+images through a separate LFM2.5-VL 1.6B tool. Nine native decision profiles
+are available for later editor/workflow features.
+Settings → AI groups LLM, Vision, Decision models and Speech input installations;
 opening the pane does not download them.
+Optional [Parakeet speech input](src/lib/assistant/speech/README.md) adds local
+dictation to the same AI draft. Install it in Settings → AI → Speech input;
+audio remains transient and model inference stays in this browser.
 Settings → AI configures system instructions and read-only repository tools;
 the model row shows context usage and remembers each model's context budget.
 Tool calls and results are visible in the conversation. Saved OpenAI connections
@@ -102,7 +108,7 @@ development and preview have separate IndexedDB storage.
   Binary/non-UTF-8 bytes are retained but cannot be edited as text.
 - **History:** Undo/Redo in the editor restore only the active repository's files,
   keeping tabs, split panes and the selected view in place. Settings Undo/Redo
-  affect only the selected Global, Repository, or File settings scope. Navigation
+  affect only the selected Global or Repository settings scope. Navigation
   does not become an undo step or clear another scope's redo. Cursor and selection
   remain restoration context for file changes. Histories and redo survive reload;
   editing within a scope after Undo retains its old future in private Git refs. Selecting a `Staged changes` graph entry restores that revision as an undoable
@@ -140,17 +146,17 @@ development and preview have separate IndexedDB storage.
   record counts. Page memory is measured on request where supported. Monitoring
   pauses outside the view or when the page is hidden; samples are not persisted
   or sent anywhere. Unsupported values stay unavailable.
-- **Settings:** personal defaults, repository overrides, and selected-file overrides
-  apply live. Theme, typography, indentation, wrapping, gutters, editing aids,
+- **Settings:** personal defaults and repository overrides apply live. Theme,
+  typography, indentation, wrapping, gutters, editing aids,
   completion and filename-to-language suffix mappings are configurable.
   Syntax highlighting supports 148 included local language modes, automatic filename
   detection, personal/repository suffix mappings, and fenced code in Markdown. Handlebars uses the
   stable parser by default, with a separately installed Gentrace beta alternative. Each theme has twelve
   color slots: six interface colors and six syntax accents with light/dark variants.
   Common `.editorconfig` glob sections, nested roots and `unset` apply indentation
-  and tab width between repository settings and explicit file overrides. Other
-  EditorConfig properties do not automatically transform imported files. File
-  overrides belong to their paths; renaming a file does not move its overrides.
+  and tab width over repository settings. Other EditorConfig properties do not
+  automatically transform imported files. Legacy selected-file preference overrides
+  are ignored, including when restoring settings history.
 
 Keyboard Undo/Redo and the toolbar use the same application history. Tab normally
 indents code; press Escape then Tab to leave the editor. Settings can instead make
@@ -288,6 +294,9 @@ refresh is a separate scheduled automation operation, disabled by default.
 
 <a href="https://www.npmjs.com/package/@octokit/rest"><img src=".github/badges/version-dependency-octokit--rest.svg" alt="@octokit/rest declared version"></a>
 <a href="https://www.npmjs.com/package/@gitbeaker/rest"><img src=".github/badges/version-dependency-gitbeaker--rest.svg" alt="@gitbeaker/rest declared version"></a>
+<a href="https://www.npmjs.com/package/@huggingface/jinja"><img src=".github/badges/version-dependency-huggingface--jinja.svg" alt="@huggingface/jinja declared version"></a>
+<a href="https://www.npmjs.com/package/@huggingface/tokenizers"><img src=".github/badges/version-dependency-huggingface--tokenizers.svg" alt="@huggingface/tokenizers declared version"></a>
+<a href="https://www.npmjs.com/package/@huggingface/transformers"><img src=".github/badges/version-dependency-huggingface--transformers.svg" alt="@huggingface/transformers declared version"></a>
 <a href="https://www.npmjs.com/package/bitbucket"><img src=".github/badges/version-dependency-bitbucket.svg" alt="bitbucket declared version"></a>
 
 <a href="https://www.npmjs.com/package/@cucumber/cucumber"><img src=".github/badges/version-dependency-cucumber--cucumber.svg" alt="@cucumber/cucumber declared version"></a>
@@ -302,6 +311,7 @@ refresh is a separate scheduled automation operation, disabled by default.
 <a href="https://www.npmjs.com/package/c8"><img src=".github/badges/version-dependency-c8.svg" alt="c8 declared version"></a>
 <a href="https://www.npmjs.com/package/cn"><img src=".github/badges/version-dependency-cn.svg" alt="cn declared version"></a>
 <a href="https://www.npmjs.com/package/multiple-cucumber-html-reporter"><img src=".github/badges/version-dependency-multiple-cucumber-html-reporter.svg" alt="multiple-cucumber-html-reporter declared version"></a>
+<a href="https://www.npmjs.com/package/quickpickle"><img src=".github/badges/version-dependency-quickpickle.svg" alt="quickpickle declared version"></a>
 <a href="https://www.npmjs.com/package/rolldown"><img src=".github/badges/version-dependency-rolldown.svg" alt="rolldown declared version"></a>
 <a href="https://www.npmjs.com/package/sharp"><img src=".github/badges/version-dependency-sharp.svg" alt="sharp declared version"></a>
 <a href="https://www.npmjs.com/package/svelte"><img src=".github/badges/version-dependency-svelte.svg" alt="svelte declared version"></a>
@@ -318,6 +328,7 @@ upgrade, review the [Svelte language-tools compatibility issue](https://github.c
 
 <a href="https://www.npmjs.com/package/vite"><img src=".github/badges/version-dependency-vite.svg" alt="vite declared version"></a>
 <a href="https://www.npmjs.com/package/vite-plugin-singlefile"><img src=".github/badges/version-dependency-vite-plugin-singlefile.svg" alt="vite-plugin-singlefile declared version"></a>
+<a href="https://www.npmjs.com/package/vitest"><img src=".github/badges/version-dependency-vitest.svg" alt="vitest declared version"></a>
 <a href="https://www.npmjs.com/package/yaml"><img src=".github/badges/version-dependency-yaml.svg" alt="yaml declared version"></a>
 
 <a href="https://www.npmjs.com/package/@codemirror/autocomplete"><img src=".github/badges/version-dependency-codemirror--autocomplete.svg" alt="@codemirror/autocomplete declared version"></a>
@@ -340,6 +351,7 @@ upgrade, review the [Svelte language-tools compatibility issue](https://github.c
 <a href="https://www.npmjs.com/package/idb"><img src=".github/badges/version-dependency-idb.svg" alt="idb declared version"></a>
 <a href="https://www.npmjs.com/package/isomorphic-git"><img src=".github/badges/version-dependency-isomorphic-git.svg" alt="isomorphic-git declared version"></a>
 <a href="https://www.npmjs.com/package/@lezer/markdown"><img src=".github/badges/version-dependency-lezer--markdown.svg" alt="@lezer/markdown declared version"></a>
+<a href="https://www.npmjs.com/package/@litert-lm/core"><img src=".github/badges/version-dependency-litert-lm--core.svg" alt="@litert-lm/core declared version"></a>
 <a href="https://www.npmjs.com/package/@mathjax/mathjax-tex-font"><img src=".github/badges/version-dependency-mathjax--mathjax-tex-font.svg" alt="@mathjax/mathjax-tex-font declared version"></a>
 <a href="https://www.npmjs.com/package/@mathjax/src"><img src=".github/badges/version-dependency-mathjax--src.svg" alt="@mathjax/src declared version"></a>
 <a href="https://www.npmjs.com/package/markdown-it"><img src=".github/badges/version-dependency-markdown-it.svg" alt="markdown-it declared version"></a>
@@ -437,6 +449,8 @@ upgrade, review the [Svelte language-tools compatibility issue](https://github.c
 <a href="https://www.npmjs.com/package/lax-sql"><img src=".github/badges/version-dependency-lax-sql.svg" alt="lax-sql declared version"></a>
 <a href="https://www.npmjs.com/package/node-html-parser"><img src=".github/badges/version-dependency-node-html-parser.svg" alt="node-html-parser declared version"></a>
 <a href="https://www.npmjs.com/package/path-browserify"><img src=".github/badges/version-dependency-path-browserify.svg" alt="path-browserify declared version"></a>
+<a href="https://www.npmjs.com/package/onnxruntime-web"><img src=".github/badges/version-dependency-onnxruntime-web.svg" alt="onnxruntime-web declared version"></a>
+<a href="https://www.npmjs.com/package/parakeet.js"><img src=".github/badges/version-dependency-parakeet.js.svg" alt="parakeet.js declared version"></a>
 <a href="https://www.npmjs.com/package/prettier"><img src=".github/badges/version-dependency-prettier.svg" alt="prettier declared version"></a>
 <a href="https://www.npmjs.com/package/prettier-plugin-svelte"><img src=".github/badges/version-dependency-prettier-plugin-svelte.svg" alt="prettier-plugin-svelte declared version"></a>
 <a href="https://www.npmjs.com/package/semver"><img src=".github/badges/version-dependency-semver.svg" alt="semver declared version"></a>

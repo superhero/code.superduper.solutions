@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { pageSelector, selectPage } from "./navigation.helpers.mjs";
+import { editorHeading, selectPage } from "./navigation.helpers.mjs";
 
 const luminance = channels => channels.slice(0, 3).map(value => value / 255)
   .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
@@ -61,45 +61,44 @@ Then("every editor text role has at least four and a half to one contrast", asyn
   }
 });
 
-Then("the disabled page dropdown keeps readable selected text", async function () {
+Then("the Editor heading keeps readable text", async function () {
   await selectPage(this.page, "Settings");
-  const colors = await pageSelector(this.page).evaluate(element => {
-    const disabled = element.disabled;
-    element.disabled = true;
-    try {
-      const styles = getComputedStyle(element);
-      const canvas = document.createElement("canvas");
-      canvas.width = canvas.height = 1;
-      const drawing = canvas.getContext("2d", { willReadFrequently: true });
-      const read = color => {
-        drawing.clearRect(0, 0, 1, 1);
-        drawing.fillStyle = color;
-        drawing.fillRect(0, 0, 1, 1);
-        return [...drawing.getImageData(0, 0, 1, 1).data];
-      };
-      // Header triggers inherit their visible background from their ancestors.
-      // Composite those layers before measuring the text's actual contrast.
-      const ancestors = [];
-      for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) ancestors.unshift(ancestor);
+  const colors = await editorHeading(this.page).evaluate(element => {
+    const styles = getComputedStyle(element);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const drawing = canvas.getContext("2d", { willReadFrequently: true });
+    const read = color => {
       drawing.clearRect(0, 0, 1, 1);
-      for (const ancestor of ancestors) {
-        drawing.fillStyle = getComputedStyle(ancestor).backgroundColor;
-        drawing.fillRect(0, 0, 1, 1);
-      }
-      const bg = [...drawing.getImageData(0, 0, 1, 1).data];
-      return { bg, fg: read(styles.color), opacity: styles.opacity,
-        palette: document.documentElement.dataset.palette, mode: document.documentElement.dataset.theme };
-    } finally { element.disabled = disabled; }
+      drawing.fillStyle = color;
+      drawing.fillRect(0, 0, 1, 1);
+      return [...drawing.getImageData(0, 0, 1, 1).data];
+    };
+    // Header labels inherit their visible background from their ancestors.
+    // Composite those layers before measuring the text's actual contrast.
+    const ancestors = [];
+    for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) ancestors.unshift(ancestor);
+    drawing.clearRect(0, 0, 1, 1);
+    for (const ancestor of ancestors) {
+      drawing.fillStyle = getComputedStyle(ancestor).backgroundColor;
+      drawing.fillRect(0, 0, 1, 1);
+    }
+    const bg = [...drawing.getImageData(0, 0, 1, 1).data];
+    return { bg, fg: read(styles.color), opacity: styles.opacity,
+      palette: document.documentElement.dataset.palette, mode: document.documentElement.dataset.theme };
   });
-  assert.equal(colors.opacity, "1", "The disabled page dropdown must not fade its text contrast");
-  assertReadable(colors.bg, colors.fg, `${colors.palette}/${colors.mode}: disabled page dropdown with Settings selected`);
+  assert.equal(colors.opacity, "1", "The Editor heading must not fade its text contrast");
+  assertReadable(colors.bg, colors.fg, `${colors.palette}/${colors.mode}: Editor heading beside Settings`);
 });
 
 Then("the palette selector offers every shipped palette exactly once", async function () {
   await selectPage(this.page, "Settings");
   const source = await readFile("src/palette.css", "utf8");
   const names = [...source.matchAll(/\[data-palette-preview="([^"]+)"\]/g)].map(match => match[1]);
-  const options = await this.page.getByLabel("Palette", { exact: true }).locator("option").evaluateAll(elements => elements.map(element => element.value));
+  await this.page.getByRole('button',{name:'Palette',exact:true}).click();
+  const menu=this.page.getByRole('menu',{name:'Palette',exact:true});
+  const options = await menu.getByRole('menuitemradio').evaluateAll(elements => elements.map(element => element.dataset.value));
+  await this.page.keyboard.press('Escape');
   assert.deepEqual(options.sort(), names.sort());
   assert.equal(new Set(options).size, options.length);
 });

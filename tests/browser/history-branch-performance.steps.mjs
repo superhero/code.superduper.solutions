@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import {Given,Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
+import {selectPage} from './navigation.helpers.mjs';
 import {installHistoryRenderingFixture} from './history-rendering.helpers.mjs';
 import {repositorySnapshot} from './repository-snapshot.helpers.mjs';
 
@@ -14,7 +15,11 @@ Given('a long History rendering fixture with {int} mainline changes',{timeout:60
 });
 
 Then('long branch motion reuses unchanged minimap geometry and preserves its pixels',{timeout:90_000},async function(){
-  const page=this.page,data=this.longHistoryFixture,before=await repositorySnapshot(page);
+  const page=this.page,data=this.longHistoryFixture;
+  await selectPage(page, 'Settings', 'Editor');await page.getByRole('switch',{name:'History minimap',exact:true}).check();
+  await expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
+  await selectPage(page,'Editor');
+  const before=await repositorySnapshot(page);
   const graph=page.getByRole('list',{name:'Staged changes',exact:true});
   const tag=graph.locator(`[data-branch-id="${data.junction}"]`);
   await expect(tag).toHaveText('102');

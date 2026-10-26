@@ -44,10 +44,11 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .skills-settings { display:grid;gap:12px; }
   .skill-toolbar,.skill-row,.skill-actions { display:flex;align-items:center;gap:8px; }
   .skill-toolbar,.skill-actions { flex-wrap:wrap; }
+  .skill-toolbar :global(.button-content) { height:100%;align-items:center;line-height:1; }
   .skill-row { min-width:0; }
   .skill-name { flex:1;min-width:0;overflow-wrap:anywhere; }
   .skill-name p { margin:3px 0 0;opacity:.7;font-size:.6875rem; }
-  .skill-form { display:grid;gap:12px;padding:14px;border-radius:4px;background:var(--color-background); }
+  .skill-form { display:grid;gap:12px;padding:var(--pane-padding);border-radius:4px;background:var(--color-background); }
   label { display:grid;gap:5px;font-size:.6875rem; }
   input:not([type="checkbox"]),textarea { width:100%;padding:8px;border:0;border-radius:4px;background:var(--color-surface);color:inherit;font:inherit; }
   textarea { resize:vertical; }

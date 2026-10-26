@@ -1,5 +1,16 @@
 # Build adapters
 
+## Optional speech runtime
+
+`speech-runtime.mjs` builds isolated Parakeet inference/features workers and
+publishes matching ONNX Runtime MJS/Wasm, capture worklet and complete notices
+under `speech/`. Models and TEN-VAD's engine are explicit upstream downloads;
+they never enter the core HTML or static model payloads. Files above 20 MiB use
+the existing verified-part transport to meet Pages' 25 MiB limit. The build
+asserts exact runtime versions and the local serial initialization patch.
+The [speech guide](../src/lib/assistant/speech/README.md) owns runtime/data
+boundaries, reference provenance, licensing and verification commands.
+
 ## First-paint loading screen
 
 `startup-preview.mjs` renders the owned Svelte loading gallery into the initial
@@ -208,3 +219,22 @@ stay outside the core HTML and install only on explicit user action. The WebML
 runtime is not redistributed; pinned upstream bytes are fetched and verified by
 the browser installer. Model weights never enter the build. See the [source build
 guide](browser-models/README.md) and [installation contract](../src/lib/assistant/browser/README.md).
+
+
+`model-runtimes.mjs` builds optional LiteRT-LM 0.18.0, Transformers.js 4.3.1
+(its own ORT 1.31.0 development pin), the separate original CPU/custom-device GPU
+Strands adapters, and native decision prompt/readout helpers. Assets live under
+`browser-models/runtimes/`; SDK files over 16 MiB are split on database-block
+boundaries. The D3 exact-preflight, Elephant and Perplexity native builds retain
+separate source-build receipts under `browser-models/wllama-*`.
+`npm run models:generate` refreshes `runtime-artifacts.json` after an owned adapter
+change; production builds verify those generated hashes before emitting bytes.
+Development invalidates generated SDK bytes when their adapter sources change;
+regenerate the pins before testing the updated runtime. The reviewed ORT engines
+use matching Asyncify JS/Wasm pairs, including Transformers' 1.31 development
+version whose legacy JSEP factory does not expose WebGPU initialization.
+The guarded LiteRT patch changes only JS/Wasm asset resolution to verified Blob
+URLs in a classic worker. Model files, backend, sampler and native templates stay
+pinned. Model/tokenizer/config/head/license files are user-installed independently;
+no model weights enter the build. Package license fallbacks are documented under
+[`licenses/`](licenses/README.md).

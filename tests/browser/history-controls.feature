@@ -21,5 +21,5 @@ Feature: Stable controls while Git history is restored
 
     Examples:
       | operation | contents               |
-      | Undo      | Second root file\nab   |
+      | Undo      | Second root file\n     |
       | Redo      | Second root file\nabc  |

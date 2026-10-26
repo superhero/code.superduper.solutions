@@ -10,7 +10,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import type { VaultArguments, VaultMethod, VaultResult } from "$lib/secrets/protocol";
   import { enrollPasskey, unlockPasskey } from "$lib/secrets/passkeys";
   import { defaultVaultPreferences, safeVaultError, vaultLimits, type VaultStatus, type VaultKey, type UnlockProof } from "$lib/secrets/types";
-  let { onchange = () => {} }: { onchange?: () => void } = $props();
+  let { onchange = () => {}, embedded = false }: { onchange?: () => void; embedded?: boolean } = $props();
   let status = $state<VaultStatus>({ exists: false, unlocked: false, revision: 0, epoch: 0, methods: [] });
   let entries = $state.raw<VaultKey[]>([]), busy = $state(false), failure = $state(""), notice = $state("");
   let panel = $state<HTMLDivElement>(), recoveryOutput = $state<HTMLPreElement>();
@@ -115,8 +115,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </script>
 
 <div id="panel-vault" class="vault-view" bind:this={panel} role="region" aria-label="Vault" tabindex="-1">
-  <div class="view-heading"><h3><MaterialIcon name="lock" size={18} />Vault</h3>
-    {#if status.unlocked || recoveryMode}<Button size="sm" variant="ghost" onclick={() => void lockVault().catch(error => failure = safeVaultError(error).message)}><MaterialIcon name="lock" size={16} />Lock vault</Button>{/if}</div>
+  {#if !embedded || status.unlocked || recoveryMode}<div class="view-heading">{#if !embedded}<h3><MaterialIcon name="shield_locked" size={18} />Vault</h3>{/if}
+    {#if status.unlocked || recoveryMode}<Button size="sm" variant="ghost" onclick={() => void lockVault().catch(error => failure = safeVaultError(error).message)}><MaterialIcon name="lock" size={16} />Lock vault</Button>{/if}</div>{/if}
   {#if failure}<p class="failure" role="alert">{failure}</p>{/if}
   {#if notice}<p role="status">{notice}</p>{/if}
   {#if recoveryMode}
@@ -130,7 +130,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     <form class="card" onsubmit={event => { event.preventDefault(); void run(create); }}><h4>Create vault</h4>
       <label>Password<input name="create-password" aria-label="Vault password" type="password" autocomplete="new-password" required minlength="3" data-vault-sensitive /></label>
       <label>Confirm password<input name="confirm-password" aria-label="Confirm vault password" type="password" autocomplete="new-password" required minlength="3" data-vault-sensitive /></label>
-      <Button type="submit" disabled={busy}>Create vault</Button>
+      <Button type="submit" variant="secondary" size="sm" disabled={busy}>Create vault</Button>
     </form>
   {:else if !status.unlocked}
     <form class="card" onsubmit={event => { event.preventDefault(); void run(unlock); }}><h4>Unlock vault</h4>
@@ -190,15 +190,19 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </div>
 
 <style>
-  .vault-view { flex: 1; min-height: 0; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; overscroll-behavior: contain; font-size: .75rem; }.card { flex-shrink: 0; }
+  .vault-view { flex: 1; min-width:0; min-height: 0; overflow: auto; padding: var(--pane-gap); display: flex; flex-direction: column; gap: var(--pane-gap); overscroll-behavior: contain; font-size: .75rem; }.card { flex-shrink: 0; }
   .view-heading, .actions, .entry { display: flex; align-items: center; gap: 8px; }.view-heading { justify-content: space-between; }h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .875rem; }h4 { margin: 0; font-size: .75rem; }h3, h4 { font-weight: 700; }
-  .card { background: var(--color-surface); padding: 16px; border-radius: 4px; display: grid; gap: 12px; }.details-content, form { display: grid; gap: 12px; }.details-content { margin-top: 14px; }.value-form { margin-top: 8px; }p { margin: 0; line-height: 1.6; }label { display: grid; gap: 6px; font-size: .6875rem; }
+  .card { min-width:0; background: var(--color-surface); padding: var(--pane-padding); border-radius: 4px; display: grid; gap: 12px; }.details-content, form { display: grid; gap: 12px; }.details-content { margin-top: var(--pane-padding); }.value-form { margin-top: 8px; }p { margin: 0; line-height: 1.6; }label { display: grid; gap: 6px; font-size: .6875rem; }
   input:not([type="checkbox"]) { min-width: 0; width: 100%; padding: 9px 11px; border: 0; border-radius: 4px; background: var(--color-background); color: inherit; font: inherit; }input[type="file"] { font-size: .6875rem; }input[type="checkbox"] { accent-color: var(--color-primary); }.check { display: flex; align-items: center; gap: 8px; }
+  input[type="file"]::file-selector-button { padding:0; margin-right:8px; border:0; background:transparent; color:inherit; font:inherit; cursor:pointer; }
+  input[type="file"]:disabled::file-selector-button { cursor:not-allowed; }
+  @media (hover:hover) { input[type="file"]:hover:not(:disabled) { color:var(--color-hover-foreground); } }
   .entry-name { display: grid; gap: 5px; flex: 1; min-width: 0; overflow-wrap: anywhere; }.entry-name span, .hint { font-size: .6875rem; opacity: .65; }.entry { gap: 3px; }.actions { flex-wrap: wrap; }.actions > span { flex: 1; }.recovery { white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; background: var(--color-background); border-radius: 4px; font: .6875rem/1.6 "JetBrains Mono", monospace; user-select: all; }
   .count { opacity: .6; margin-left: 8px; }.failure { margin: 0; padding: 12px; background: var(--color-error-background); color: var(--color-error-foreground); border-radius: 4px; }.card :global(.navigation-trigger) { padding: 8px 10px; background: var(--color-background); }summary { cursor: pointer; font-weight: 650; }
   .check input { appearance: none; position: relative; width: 32px; flex: 0 0 32px; height: 19px; border: 0; border-radius: 20px; background: var(--color-background); cursor: pointer; }
   .check input::before { content: ""; position: absolute; width: 11px; height: 11px; top: 4px; left: 4px; background: var(--color-foreground); border-radius: 50%; transition: transform 100ms ease-in; }
   .check input:checked { background: var(--color-foreground); }.check input:checked::before { transform: translateX(13px); background: var(--color-background); }
   .check:has(:focus-visible) { background: var(--color-focus-background); color: var(--color-focus-foreground); border-radius: 4px; }
+  @container vault-pane (max-width:360px) { .entry { flex-wrap:wrap; }.entry-name { flex-basis:100%; } }
   @media (prefers-reduced-motion: reduce) { .check input::before { transition: none; } }
 </style>

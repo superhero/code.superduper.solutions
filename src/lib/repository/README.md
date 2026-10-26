@@ -15,6 +15,16 @@ service, so Git and filesystem work do not run on the rendering thread.
 metadata store, durability flush and serialized lock. `browser.ts` supplies
 LightningFS (`v1/repositories`), IndexedDB metadata
 (`v1/repositories/index`) and Web Locks. Missing locks fail explicitly.
+
+Repository rename updates its catalog name under the application/repository
+locks without changing file or source Git history. Permanent deletion first
+removes the repository from every application-history restoration state and
+settings scope. One metadata transaction publishes that rewritten timeline,
+removes the catalog entry and records a cleanup journal. Cleanup removes its
+working tree, source `.git`, private history and obsolete application objects;
+reopening finishes interrupted cleanup. Other repositories retain their files,
+settings and Undo/Redo. Deletion does not become an undoable application action.
+
 `application-history.ts` orders deliberate workspace actions and repository
 changes in one durable application timeline. Its private Git directory is
 `/history/application.git`; it does not put workspace state or settings into an
@@ -168,9 +178,11 @@ the exact private repository Git endpoints for file changes. Tabs, repository
 and view selection, folder expansion and settings actions create application
 entries without touching either repository Git history. Passive cursor and
 scroll observations remain the workspace cache's responsibility. Scoped undo restores only file state for the selected repository or only the
-selected Global, Repository, or File settings scope. Live navigation remains in
+selected Global or Repository settings scope. Live navigation remains in
 place. Separate durable indexes keep undo/redo paths independent; navigation and
-changes in other scopes do not discard redo. Older entries are indexed lazily. Branch-checkout entries retain the existing content-only undo contract:
+changes in other scopes do not discard redo. Older entries are indexed lazily. Legacy file preference overrides are discarded
+when normalizing loaded or restored settings; existing global/repository scope
+keys remain stable. Branch-checkout entries retain the existing content-only undo contract:
 they do not rewind ordinary source HEAD or its staging index.
 
 The application cursor, per-scope undo/redo indexes and pending journal use the metadata
@@ -251,8 +263,8 @@ failures remain errors. The editor uses this for Git line-change gutter baseline
 
 `history-retention.ts` compacts automatic history when the browser service first
 loads application state. `historyLimit` counts recent mutations independently per
-repository/file across all source-version graphs (default 300; 0–10,000). File
-overrides follow personal and repository defaults. Current state, divergent tips,
+repository/file across all source-version graphs (default 300; 0–10,000), using
+personal defaults and repository overrides. Current state, divergent tips,
 redo tips, fork junctions and scope baselines are protected checkpoints. Multi-file
 transactions are retained atomically when any path needs them. Prefix edits fold
 into the baseline; other omitted edits fold into subsequent retained snapshots.

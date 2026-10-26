@@ -190,7 +190,7 @@ async function codeGeometry(page) {
 When("the editor displays a repeated wrapped token", async function () {
   this.wrappedMatchToken = "repeatedIdentifierThatContinuesAcrossSeveralVisualLinesWithoutChangingTheOriginalTextGeometry".repeat(2);
   await this.page.setViewportSize({ width: 500, height: 900 });
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Editor");
   await selectDropdown(this.page, "Settings scope", "global");
   await this.page.getByRole("switch", { name: "Line wrapping", exact: true }).check();
   await expect(this.page.getByRole("status", { name: "Persistence status", exact: true })).toHaveText("All changes saved");

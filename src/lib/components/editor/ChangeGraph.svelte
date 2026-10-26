@@ -433,12 +433,13 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .change-graph { position:relative; list-style: none; padding: 0; margin: 0; }
   .graph-row { position: relative; display: grid; grid-template-columns: var(--graph-width) minmax(0, 1fr); column-gap: 12px; min-height: 32px; --node-y:14.25px; transition:background-color 120ms ease; }
   .graph-row { width: 100%; padding-inline: 8px; border-radius: 4px; }
-  .change-load { position: absolute; inset:0 4px 0 calc(4px + var(--branch-tag-width)); z-index: 1; width:auto; height: 100%; border: 0; border-radius: inherit; padding: 0; background: transparent; --color-hover-background: transparent; }
-  li.selectable::before { content:""; position:absolute; inset:0 4px 0 calc(4px + var(--branch-tag-width)); border-radius:4px; pointer-events:none; transition:background-color 120ms ease; }
+  .change-load { position: absolute; inset:0 4px 0 calc(8px + var(--branch-tag-width)); z-index: 1; width:auto; height: 100%; border: 0; border-radius: inherit; padding: 0; background: transparent; --color-hover-background: transparent; }
+  li.selectable::before { content:""; position:absolute; inset:0 4px 0 calc(8px + var(--branch-tag-width)); border-radius:4px; pointer-events:none; transition:background-color 120ms ease; }
   li:has(> .change-load:focus-visible)::before { background: color-mix(in srgb, var(--color-surface) 50%, transparent); }
   li[aria-current="true"]:has(> .change-load:focus)::before { background: var(--color-surface); }
   @media (hover: hover) {
     li.selectable:has(> .change-load:hover)::before { background: color-mix(in srgb, var(--color-surface) 50%, transparent); }
+    .branch-tags :global(.branch-tag:hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *)) { background-color:var(--color-hover-background); }
   }
   @media (prefers-reduced-motion: reduce) { li, li.selectable::before { transition: none; } }
   .branch-group { list-style:none; margin:0; padding:0; --branch-block-height:initial; }

@@ -26,7 +26,7 @@ Feature: Repository file icons follow filenames
     When I open the repository file "main.ts"
     Then the tree and open tab for "main.ts" share the Devicon glyph "typescript-plain"
     And the file icons are captured
-    When I right-click the open file tab "main.ts"
+    When I right-click the tree filename "main.ts"
     And I choose Change name for "main.ts"
     And I enter the filename "main.py" and press "Enter"
     Then the filename editor is closed

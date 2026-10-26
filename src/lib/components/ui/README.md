@@ -1,17 +1,20 @@
 # Owned UI primitives
 
 This directory owns adapted shadcn-svelte source for [Button](button/README.md)
-and [Sheet](sheet/README.md). Bits UI provides headless behavior; local source
+and [Sheet](sheet/README.md), plus a centered [Dialog](dialog/README.md).
+Bits UI provides headless behavior; local source
 provides composition and semantic styling.
 
 `menu.css` owns the shared appearance of Bits UI navigation dropdowns and file
 context menus: semantic menu colors, focus and hover states, and reduced-motion
 compatible entry transitions. Menu interaction stays in the Svelte components.
 Menus fit their contents within the viewport instead of imposing a minimum width.
-All interface controls are borderless, including focus, invalid and selected
-states. Use palette fills and foreground colors for keyboard focus; never add
-outline or ring utilities outside CodeMirror. Shared rules in `src/app.css`
-also cover controls rendered through portals.
+Interface controls use borderless surfaces, including focus, invalid and selected
+states. Square checkboxes are an explicit exception: `data-slot="checkbox"`
+and Markdown task-list checkboxes share a primary background fill, 2px secondary
+background border and 2px primary background outline. Pill switches retain their
+own shape. Use palette fills and foreground colors for keyboard focus. Shared
+rules in `src/app.css` also cover controls rendered through portals.
 
 ## Provenance and licenses
 

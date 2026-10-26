@@ -86,10 +86,8 @@ Feature: Folder actions preserve their complete repository subtree
     When I choose the open file tab "dir20/keep.txt"
     Then the code document contains "Neighbor stays\n" after persistence
     When I undo the latest editor transaction
-    Then the open file tab "file2.txt" is selected
-    And the repository file "dir2" is absent
-    When I undo the latest editor transaction
-    And I open the repository file "dir2/nested/extra.txt"
+    Then the open file tab "dir20/keep.txt" is selected
+    When I open the repository file "dir2/nested/extra.txt"
     Then the code document contains "Nested child\n" after persistence
     When I open the repository file "dir2/index.ts"
     Then the code document contains "First directory\n" after persistence

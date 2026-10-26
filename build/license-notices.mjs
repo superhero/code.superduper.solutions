@@ -29,6 +29,12 @@ const wasmNoticePackages = new Set(["@dprint/typescript", "@dprint/json", "@dpri
   "@dprint/toml", "@dprint/dockerfile", "@dprint/ruff", "@dprint/mago", "@dprint/roslyn", "@dprint/jupyter"]);
 const wasmNotices = new Map();
 const packageLicenseFallbacks = new Map([
+  ["onnxruntime-common@1.31.0-dev.20260911-2a43ec07e", {identifier:"MIT",path:"build/licenses/onnxruntime-1.31.0-dev.txt",sources:[["package.json","815c646c7462cb55bc57016cd69c1d9952bb1d2464a9892a09b6ed875a70dad2"]]}],
+  ["onnxruntime-web@1.31.0-dev.20260914-8d85527a0", {identifier:"MIT",path:"build/licenses/onnxruntime-1.31.0-dev.txt",sources:[["package.json","ce2ce78732a15ddcaf52fe5f26c801a05ff149abda4e875dc2837d8a99e455b2"]]}],
+  ["@litert-lm/core@0.18.0", {identifier:"Apache-2.0",path:"build/licenses/litert-lm-0.18.0.txt",sources:[["package.json","13c1b8e6582e4752aff38a97828fb37c98a12b60ff23f230acc36789f74fc37a"],["dist/load.js","f5471b9c94e38fcc0a984111e0b0216e5fb38df6460e588b0d13a8d39fc56f71"]]}],
+  ["@litertjs/wasm-utils@2.6.0", {identifier:"Apache-2.0",path:"build/licenses/litert-lm-0.18.0.txt",sources:[["package.json","2e36593c3081d1df3957dd09fecad5de9fd308fd5834efad291e30b382151093"]]}],
+  ["onnxruntime-web@1.30.0", { identifier: "MIT", path: "build/licenses/onnxruntime-1.30.0-LICENSE.txt", sources: [["package.json", "16f69f755509990539aeb1c8445884960e91adcacab2e8dca8e44ee43601df5c"]] }],
+  ["onnxruntime-common@1.30.0", { identifier: "MIT", path: "build/licenses/onnxruntime-1.30.0-LICENSE.txt", sources: [["package.json", "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722"]] }],
   ["@earendil-works/pi-agent-core@1.3.0", { identifier: "MIT", path: "build/licenses/pi-1.3.0.txt", sources: [["package.json", "67728d06e96459b7fe96c490b563865fb78f7eafcecb708e7ae43e6dd857a324"]] }],
   ["@earendil-works/pi-ai@1.3.0", { identifier: "MIT", path: "build/licenses/pi-1.3.0.txt", sources: [["package.json", "4e9ed07b06a91d844485874c251f312b610d015a4a4fd32c78cde58a7862a3f1"]] }],
   ["@earendil-works/pi-telemetry@1.3.0", { identifier: "MIT", path: "build/licenses/pi-1.3.0.txt", sources: [["package.json", "386479e7767a2aff572fea6339558405b1b23e9e7951504731515fc71b7db6ae"]] }],

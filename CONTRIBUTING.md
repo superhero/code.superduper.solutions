@@ -74,5 +74,6 @@ For new first-party comment-capable source files, include copyright/year/author,
 - [Resource monitoring preserves measurement boundaries and privacy](docs/adr/resource-monitoring.md).
 - [Runtime secrets stay outside source, bundles, logs, and reports](docs/adr/runtime-secrets.md).
 - [Simple solutions completely meet the agreed requirement](docs/adr/simplicity.md).
+- [Speech input stays local and augments AI drafts](docs/adr/browser-speech-input.md).
 - [Svelte controls share semantic themes, assets, and interaction rules](docs/adr/svelte-interface.md).
 - [Test reports cover every scenario and coverage has an explicit scope](docs/adr/test-suite-reports.md).

@@ -9,7 +9,7 @@ Feature: Readable editor palettes
   Scenario Outline: The <palette> palette preserves readable roles in <mode> mode
     When the editor palette is "<palette>" in "<mode>" mode
     Then every editor text role has at least four and a half to one contrast
-    And the disabled page dropdown keeps readable selected text
+    And the Editor heading keeps readable text
     Examples:
       | palette | mode |
       | default | light |

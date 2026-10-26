@@ -6,24 +6,24 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { openNavigationMenu } from "./navigation.helpers.mjs";
+import { openStagedHistory } from "./navigation.helpers.mjs";
 
 const graphSelector = page => page.getByRole("navigation", {name:"History views",exact:true});
 const graphList = (page, name) => page.getByRole("list", { name, exact: true, includeHidden: true });
-const graphValues = { "Staged changes": "changes", "Commit history": "versions" };
+const graphValues = { "Staged changes": "Staged", "Commit history": "Committed" };
 const saved = page => expect(page.getByRole("status", { name: "Persistence status", exact: true })).toHaveText("All changes saved");
 
 When("I select the history graph {string}", async function (name) {
   assert.ok(name in graphValues);
   await saved(this.page);
-  await graphSelector(this.page).getByRole("button",{name,exact:true}).click();
+  await graphSelector(this.page).getByRole("button",{name:graphValues[name],exact:true}).click();
   await saved(this.page);
 });
 
 Then("the selected history graph is {string}", async function (name) {
   assert.ok(name in graphValues);
   await saved(this.page);
-  await expect(graphSelector(this.page).getByRole("button",{name,exact:true})).toHaveAttribute("aria-pressed","true");
+  await expect(graphSelector(this.page).getByRole("button",{name:graphValues[name],exact:true})).toHaveAttribute("aria-pressed","true");
   await expect(graphSelector(this.page).locator('[aria-pressed="true"]')).toHaveCount(1);
   const changes = graphList(this.page, "Staged changes");
   const versions = graphList(this.page, "Commit history");
@@ -100,14 +100,12 @@ Then('Tab continues from the restored staged revision',async function () {
 Then('History slides beside the editor with independent resizing and restoration', {timeout:90000}, async function () {
   const page=this.page;
   await page.setViewportSize({width:2000,height:980});
-  const pageMenu=await openNavigationMenu(page,"Page");
-  await expect(pageMenu.getByRole("menuitemradio",{name:"History",exact:true})).toHaveCount(0);
-  await page.keyboard.press("Escape");
-  await page.getByRole('button',{name:'Open staged history',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Page',exact:true})).toHaveCount(0);
+  await openStagedHistory(page);
   const history=()=>page.locator('[data-history-panel]');
   const editor=()=>page.getByRole('region',{name:'Editor',exact:true});
   await expect(history()).toBeVisible();await expect(editor()).toBeVisible();
-  await expect(page.getByRole('button',{name:'Page',exact:true})).toHaveAttribute('data-value','editor');
+  await expect(page.locator('.topbar').getByRole('heading',{name:'Editor',exact:true})).toBeVisible();
   const divider=page.getByRole('separator',{name:'Resize History pane',exact:true});
   await expect(divider).toBeVisible();
   await expect(divider).toHaveAttribute('aria-disabled','false');
@@ -117,7 +115,7 @@ Then('History slides beside the editor with independent resizing and restoration
   await page.reload();await saved(page);
   await expect(history()).toBeVisible();await expect(editor()).toBeVisible();
   await expect.poll(async()=>Math.round((await history().boundingBox()).width)).toBe(initial+16);
-  const versionTab=graphSelector(page).getByRole("button",{name:"Commit history",exact:true});await versionTab.focus();await versionTab.press("Enter");await saved(page);
+  const versionTab=graphSelector(page).getByRole("button",{name:"Committed",exact:true});await versionTab.focus();await versionTab.press("Enter");await saved(page);
   await page.getByRole('button',{name:'Git operations',exact:true}).click();
   await page.getByRole('button',{name:'AI chat',exact:true}).click();
   const git=()=>page.locator('[data-git-panel]');
@@ -139,14 +137,12 @@ Then('History slides beside the editor with independent resizing and restoration
   assert.ok(g.x>=h.x+h.width-2);assert.ok(a.x>=g.x+g.width-2);
   await saved(page);await page.reload();await saved(page);
   await expect(history()).toBeVisible();await expect(git()).toBeVisible();await expect(ai()).toBeVisible();
-  await expect(graphSelector(page).getByRole('button',{name:'Commit history',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(graphSelector(page).getByRole('button',{name:'Committed',exact:true})).toHaveAttribute('aria-pressed','true');
   await this.attach(await page.screenshot({path:join(this.artifactDirectory,'history-git-ai-desktop.png')}),'image/png');
   await page.setViewportSize({width:600,height:980});
-  await expect(history()).toHaveAttribute('data-layout','docked');
-  await expect(git()).toHaveAttribute('data-layout','docked');await expect(ai()).toBeVisible();
+  await expect(history()).toHaveCount(0);await expect(git()).toHaveCount(0);await expect(ai()).toBeVisible();
+  await expect(editor()).toBeVisible();
   await this.attach(await page.screenshot({path:join(this.artifactDirectory,'history-git-ai-compact.png')}),'image/png');
-  await page.getByRole('button',{name:'Close History',exact:true}).click();
-  await expect(history()).toHaveCount(0);await expect(git()).toBeVisible();await expect(ai()).toBeVisible();
-  await ai().click();await git().getByRole('button',{name:'Close',exact:true}).click();
+  await ai().click();
   await expect(editor()).toBeVisible();await expect(page.getByLabel('Code editor document',{exact:true})).toContainText('history fixture');
 });

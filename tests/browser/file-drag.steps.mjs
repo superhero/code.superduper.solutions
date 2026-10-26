@@ -14,6 +14,14 @@ const saved = page => expect(page.getByRole("status", { name: "Persistence statu
 Given("native repository dragging is observed", async function () {
   await this.page.evaluate(() => {
     globalThis.__repositoryDragEvents = [];
+    globalThis.__repositoryDropEvents = [];
+    for(const type of ['dragstart','dragover','drop','dragend'])document.addEventListener(type,event=>{
+      if(type==='dragover'&&globalThis.__repositoryDropEvents.length>25)return;
+      const row=event.target.closest('[data-file-path]');
+      const record={type,path:row?.dataset.filePath,target:event.target.className,x:event.clientX,y:event.clientY,disabled:document.querySelector('.file-tree')?.getAttribute('aria-disabled')};
+      globalThis.__repositoryDropEvents.push(record);
+      setTimeout(()=>{record.effect=event.dataTransfer?.dropEffect;record.prevented=event.defaultPrevented;},0);
+    },true);
     for (const type of ["dragstart", "dragend"]) document.addEventListener(type, event => {
       if (event.isTrusted) globalThis.__repositoryDragEvents.push({ type,
         path: event.target.closest("[data-file-path]")?.getAttribute("data-file-path"),
@@ -118,15 +126,22 @@ When("the file navigator finishes hot replacement", async function () {
 });
 
 When("I drag {string} into folder {string} after it slides open", async function (source, target) {
-  if (await treeItem(this.page, target).getAttribute("aria-expanded") === "true") await row(this.page, target).click();
-  const from = await row(this.page, source).locator(".file-name-text").boundingBox();
-  const to = await row(this.page, target).boundingBox();
-  assert.ok(from && to);
-  await this.page.mouse.move(from.x + 10, from.y + from.height / 2);
+  if (await treeItem(this.page, target).getAttribute("aria-expanded") === "true") {
+    await row(this.page, target).click();
+    await treeItem(this.page, target).evaluate(async item => { await Promise.all(item.getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{}))); });
+  }
+  await saved(this.page);
+  await expect(row(this.page, source)).toHaveAttribute("draggable", "true");
+  const label=row(this.page, source).locator(".file-name-text");
+  await label.hover();
+  const from=await label.boundingBox();assert.ok(from);
+  const x=from.x+from.width/2,y=from.y+from.height/2;
   await this.page.mouse.down();
-  await this.page.mouse.move(from.x + 18, from.y + from.height / 2 + 8, { steps: 3 });
-  await this.page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 5 });
-  await this.page.mouse.move(to.x + to.width / 2 + 1, to.y + to.height / 2);
+  await this.page.mouse.move(x+24,y+8,{steps:4});
+  await this.page.mouse.move(x+26,y+8);
+  await row(this.page,target).hover();
+  const to=await row(this.page,target).boundingBox();assert.ok(to);
+  await this.page.mouse.move(to.x+to.width/2+1,to.y+to.height/2);
   await expect(row(this.page, target)).toHaveClass(/\bdrop-target\b/);
   await expect(treeItem(this.page, target)).toHaveAttribute("aria-expanded", "true");
   await treeItem(this.page, target).evaluate(async item => {
@@ -154,7 +169,10 @@ When("I drag repository entry {string} to blank navigator space", async function
 });
 
 When("I cancel dragging {string} after hovering over folder {string}", async function (source, target) {
-  if (await treeItem(this.page, target).getAttribute("aria-expanded") === "true") await row(this.page, target).click();
+  if (await treeItem(this.page, target).getAttribute("aria-expanded") === "true") {
+    await row(this.page, target).click();
+    await treeItem(this.page, target).evaluate(async item => { await Promise.all(item.getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{}))); });
+  }
   const from = await row(this.page, source).boundingBox();
   const to = await row(this.page, target).boundingBox();
   assert.ok(from && to);

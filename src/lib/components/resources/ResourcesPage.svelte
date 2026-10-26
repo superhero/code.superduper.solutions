@@ -14,8 +14,8 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
   import { inspectDatabases, type DatabaseReport } from "$lib/resources/databases";
   import type { RepositorySnapshot } from "$lib/repository/types";
 
-  let { repository, repositoryCount }: { repository: RepositorySnapshot | null; repositoryCount: number } = $props();
-  let samples = $state.raw<ResourceSample[]>([]);
+  let { repository, repositoryCount, samples = $bindable<ResourceSample[]>([]), paused = $bindable(false), refreshing = $bindable(false) }:
+    { repository: RepositorySnapshot | null; repositoryCount: number; samples?: ResourceSample[]; paused?: boolean; refreshing?: boolean } = $props();
   const latest = $derived(samples.at(-1));
   let inspecting = $state(false), measuring = $state(false);
   let databases = $state.raw<DatabaseReport>();
@@ -28,6 +28,9 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
   const databaseStores = $derived(databases?.databases.reduce((total, database) => total + database.stores.length, 0) ?? null);
   const readableDatabases = $derived(databases?.databases.some(database => !database.error || database.stores.length));
   let measureMemory = () => {};
+  let refreshResources = () => {}, synchronizeMonitoring = () => {};
+  export function refresh() { refreshResources(); }
+  export function toggleMonitoring() { paused = !paused; synchronizeMonitoring(); }
 
   onMount(() => {
     void requestPersistentStorage();
@@ -37,7 +40,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     async function sample() {
       if (disposed || document.hidden || cycle) return;
       clearTimeout(timer);
-      const current = new AbortController(); cycle = current;
+      const current = new AbortController(); cycle = current; refreshing = true;
       try {
         const storage = await collectStorage(current.signal);
         if (!disposed && cycle === current && !current.signal.aborted) samples = appendSample(samples,
@@ -45,8 +48,8 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
       } catch { /* A hidden or unmounted view discards its unfinished sample. */ }
       finally {
         if (cycle === current) {
-          cycle = undefined;
-          if (!disposed && !document.hidden) timer = setTimeout(() => void sample(), SAMPLE_INTERVAL);
+          cycle = undefined; refreshing = false;
+          if (!disposed && !document.hidden && !paused) timer = setTimeout(() => void sample(), SAMPLE_INTERVAL);
         }
       }
     }
@@ -60,8 +63,8 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
       finally { if (inspection === current) { inspection = undefined; inspecting = false; } }
     }
     function synchronize() {
-      clearTimeout(timer); cycle?.abort(); cycle = undefined;
-      processing.stop(); const visible = !document.hidden;
+      clearTimeout(timer); cycle?.abort(); cycle = undefined; refreshing = false;
+      processing.stop(); const visible = !document.hidden && !paused;
       if (!visible) {
         inspection?.abort(); inspection = undefined; inspecting = false;
         measurement?.abort(); measurement = undefined; measuring = false;
@@ -76,6 +79,8 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
         if (!disposed && !current.signal.aborted) { pageMemory = report; }
       }).catch(() => {}).finally(() => { if (measurement === current) { measurement = undefined; measuring = false; } });
     };
+    refreshResources = () => { void sample(); void inspect(); };
+    synchronizeMonitoring = synchronize;
     document.addEventListener("visibilitychange", synchronize);
     synchronize();
     return () => {
@@ -92,7 +97,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     <section class="resource-card wide" aria-label="Live resource history"><ResourceChart {samples} /></section>
 
     <section class="resource-card" aria-label="Processing">
-      <h2><MaterialIcon name="speed" size={21} />Processing</h2>
+      <h2><MaterialIcon name="speed" size={20} />Processing</h2>
       <dl class="metrics">
         <div><dt>Long tasks</dt><dd>{formatNumber(latest?.processing.longTasks ?? null)}</dd></div>
         <div><dt>Longest task</dt><dd>{formatTime(latest?.processing.longestTask ?? null)}</dd></div>
@@ -103,7 +108,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     </section>
 
     <section class="resource-card" aria-label="Memory">
-      <h2><MaterialIcon name="memory_alt" size={21} />Memory</h2>
+      <h2><MaterialIcon name="memory_alt" size={20} />Memory</h2>
       <dl class="metrics">
         <div><dt>Used heap</dt><dd>{formatBytes(latest?.heap.used ?? null)}</dd></div>
         <div><dt>Allocated heap</dt><dd>{formatBytes(latest?.heap.allocated ?? null)}</dd></div>
@@ -120,7 +125,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     </section>
 
     <section class="resource-card" aria-label="Storage">
-      <h2><MaterialIcon name="database" size={21} />Storage</h2>
+      <h2><MaterialIcon name="database" size={20} />Storage</h2>
       <dl class="metrics">
         <div><dt>Used storage</dt><dd>{formatBytes(latest?.storage.usage ?? null)}</dd></div>
         <div><dt>Estimated quota</dt><dd>{formatBytes(latest?.storage.quota ?? null)}</dd></div>
@@ -136,7 +141,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     </section>
 
     <section class="resource-card" aria-label="Repositories">
-      <h2><MaterialIcon name="folder_data" size={21} />Repositories</h2>
+      <h2><MaterialIcon name="folder_data" size={20} />Repositories</h2>
       <dl class="metrics">
         <div><dt>Local repositories</dt><dd>{formatNumber(repositoryCount)}</dd></div>
         <div><dt>Files in current repository</dt><dd>{formatNumber(repository?.files.length ?? null)}</dd></div>
@@ -147,7 +152,7 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
     </section>
 
     <section class="resource-card wide" aria-label="IndexedDB records" aria-busy={inspecting}>
-      <div class="database-heading"><h2><MaterialIcon name="storage" size={21} />IndexedDB records</h2></div>
+      <div class="database-heading"><h2><MaterialIcon name="storage" size={20} />IndexedDB records</h2></div>
       {#if databases?.error}<p class="notice">{databases.error}</p>{/if}
       <dl class="metrics database-summary">
         <div><dt>Inspected databases</dt><dd>{formatNumber(databases && (!databases.error || databases.databases.length) ? databases.databases.length : null)}</dd></div>
@@ -168,17 +173,16 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
 </section>
 
 <style>
-  .resources-page { max-width: 1180px; padding: 20px 20px 40px; margin: 0; }
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 650; }
-  h2 { font-size: .9375rem; }
+  .resources-page { max-width: 1180px; padding: var(--pane-gap); margin: 0; }
+  h2 { display: flex; align-items: center; gap: .5rem; margin: 0; font-size: .875rem; font-weight: 650; line-height:1.4; }
   .note { font-size: .6875rem; line-height: 1.65; color: var(--color-muted-foreground); }
   p { margin: 6px 0 0; }
   .memory-action :global(button) { font-size: .6875rem; }
-  .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 20px; }
-  .resource-card { min-width: 0; padding: 22px; background: var(--color-surface); border-radius: 4px; }
+  .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: var(--pane-gap); }
+  .resource-card { min-width: 0; padding: var(--pane-padding); background: var(--color-surface); border-radius: 4px; }
   .wide { grid-column: 1 / -1; }
-  .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 20px 0 14px; }
-  .metrics > div { min-width: 0; padding: 10px 12px; background: var(--color-background); border-radius: 4px; }
+  .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pane-gap); margin: 20px 0 14px; }
+  .metrics > div { min-width: 0; padding: var(--pane-padding); background: var(--color-background); border-radius: 4px; }
   dt { font-size: .6875rem; color: var(--color-muted-foreground); } dd { margin: 4px 0 0; overflow-wrap: anywhere; font-size: clamp(.875rem, 1.7vw, 1.25rem); font-weight: 650; font-variant-numeric: tabular-nums; }
   .text-value { font-size: 1rem; }
   .meter-heading { margin-bottom: 6px; font-size: .6875rem; }
@@ -196,12 +200,14 @@ Browser resource cards adapted from Operations' settings/StorageSettings.svelte.
   .store-list { margin: 12px 0 0; }.store-list > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; }.store-list dd { margin: 0; font-size: .6875rem; }
   .database-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
   .database-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .databases { display: grid; gap: 8px; }
-  .database { min-width: 0; background: var(--color-background); border-radius: 4px; padding: 10px 12px; }
+  .databases { display: grid; gap: var(--pane-gap); }
+  .database { min-width: 0; background: var(--color-background); border-radius: 4px; padding: var(--pane-padding); }
   summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; cursor: pointer; font-size: .6875rem; border-radius: 4px; outline: none; }
   summary span { overflow-wrap: anywhere; min-width: 0; }summary strong { flex-shrink: 0; font-variant-numeric: tabular-nums; }
   summary::before { content: "›"; flex-shrink: 0; }details[open] summary::before { content: "⌄"; }summary span { flex: 1; }
-  summary:is(:hover, :focus-visible) { background: var(--color-hover-background); color: var(--color-foreground); }
+  summary:focus-visible { background: var(--color-hover-background); color: var(--color-foreground); }
+  @container resources-pane (max-width: 850px) { .resource-grid { grid-template-columns: minmax(0, 1fr); } }
+  @container resources-pane (max-width: 500px) { .database-summary { grid-template-columns: minmax(0, 1fr); }.database summary { flex-wrap: wrap; } }
   @media (max-width: 850px) { .resource-grid { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 500px) { .resources-page { padding: 16px 12px 32px; }.resource-card { padding: 16px; }.database-summary { grid-template-columns: minmax(0, 1fr); }.database summary { flex-wrap: wrap; } }
+  @media (max-width: 500px) { .resources-page { padding: var(--pane-gap); }.resource-card { padding: var(--pane-padding); }.database-summary { grid-template-columns: minmax(0, 1fr); }.database summary { flex-wrap: wrap; } }
 </style>

@@ -127,7 +127,7 @@ When("I replace the syntax sample with:", async function (source) {
 });
 
 When("I set JavaScript syntax highlighting to {string}", async function (value) {
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Languages");
   await selectDropdown(this.page, "Settings scope", "global");
   await this.page.getByLabel("Filter syntax highlighting", { exact: true }).fill("JavaScript");
   await selectDropdown(this.page, "JavaScript syntax highlighting", value);
@@ -150,7 +150,7 @@ Then("the palette includes thirteen swatches with a separate operator color", as
   const expected = this.initialSyntaxColors.mixSources.function;
   const operator = (await syntaxColors(this.page, [{ token: "+", role: "operator" }])).rows[0];
   assert.deepEqual(operator.actual, operator.expected);
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Languages");
   await selectDropdown(this.page, "Settings scope", "global");
   const preview = this.page.locator(".palette-preview");
   await expect(preview.locator("span")).toHaveCount(13);
@@ -210,7 +210,7 @@ Then("the minimap paints all three scope colors and the operator color", async f
 
 When("I set the editor color mode to {string}", async function (mode) {
   await saved(this.page);
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Languages");
   await selectDropdown(this.page, "Settings scope", "global");
   await selectDropdown(this.page, "Color mode", mode);
   await saved(this.page);
@@ -238,7 +238,7 @@ Then("the syntax tokens keep distinct readable colors", async function () {
 
 Then("these syntax tokens follow the palette in every color mode:", async function (table) {
   this.syntaxTokens = table.hashes();
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Appearance");
   await selectDropdown(this.page, "Settings scope", "global");
   await this.page.getByRole("button", { name: "Palette", exact: true }).click();
   const paletteMenu = this.page.getByRole("menu", { name: "Palette", exact: true });

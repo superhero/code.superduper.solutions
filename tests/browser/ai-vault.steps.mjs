@@ -4,13 +4,17 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
-import { selectDropdown, selectPage, pageSelector } from './navigation.helpers.mjs';
+import { selectDropdown, selectPage, editorHeading } from './navigation.helpers.mjs';
 const password='synthetic-vault-password', key='sk-fixture-only-NOT-A-REAL-API-KEY-490710';
 const vault=page=>page.getByRole('region',{name:'Vault',exact:true});
 const button=(page,name)=>page.getByRole('button',{name,exact:true});
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const prompt=page=>page.getByRole('textbox',{name:'Message AI',exact:true});
-async function openVault(page){if(await pageSelector(page).getAttribute('data-value')!=='vault')await selectPage(page,'Vault');await expect(vault(page)).toBeVisible();}
+async function openVault(page){await selectPage(page,'Vault');await expect(vault(page)).toBeVisible();}
+async function openAI(page){
+  if(await button(page,'AI chat').getAttribute('aria-expanded')!=='true')await button(page,'AI chat').click();
+  await expect(page.locator('[data-ollama-panel]')).toBeVisible();
+}
 async function create(world){
   const page=world.page;
   await page.addInitScript(()=>{
@@ -37,12 +41,13 @@ async function create(world){
   await expect(page.getByLabel('Secret value',{exact:true})).toHaveValue('');
 }
 async function profile(world){
-  const page=world.page;await selectPage(page,'Editor');await button(page,'AI chat').click();await button(page,'AI connections').click();
+  const page=world.page;await selectPage(page,'Editor');await openAI(page);await selectPage(page,'Settings','AI');
   await button(page,'New connection').click();
   await page.getByRole('textbox',{name:'Connection name',exact:true}).fill('OpenAI fixture');
   await selectDropdown(page,'Connection provider','openai');
   await selectDropdown(page,'Saved vault key',{label:'OpenAI fixture key'});
   await button(page,'Save connection').click();
+  await button(page,'Use OpenAI fixture').click();
   await expect(button(page,'AI connection')).toContainText('OpenAI fixture');
 }
 async function snapshot(page){return page.evaluate(async()=>{
@@ -69,17 +74,19 @@ async function apiFixture(world){
     return route.fulfill({headers,contentType:'text/event-stream',body:events.map(event=>`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`).join('')});
   });
 }
-Then('the header opens the shared vault independently of AI and clears drafts on navigation',async function(){
+Then('the header opens the shared vault beside AI and clears drafts on closing',async function(){
   const page=this.page;
-  await button(page,'AI chat').click();
+  await openAI(page);
   await expect(button(page,'AI vault')).toHaveCount(0);await expect(button(page,'Unlock AI vault')).toHaveCount(0);
-  await openVault(page);await expect(pageSelector(page)).toHaveAttribute('data-value','vault');
-  await expect(button(page,'Close AI')).toHaveCount(0);await expect(button(page,'Undo')).toHaveCount(0);
+  await openVault(page);await expect(editorHeading(page)).toBeVisible();
+  await expect(button(page,'Close AI')).toBeVisible();await expect(button(page,'Undo')).toBeVisible();
+  const vaultBox=await page.locator('[data-vault-panel]').boundingBox(),aiBox=await page.locator('[data-ollama-panel]').boundingBox();
+  expect(vaultBox.x).toBeGreaterThanOrEqual(aiBox.x+aiBox.width-1);
   await page.getByLabel('Vault password',{exact:true}).fill('synthetic-unsaved-draft');
-  await selectPage(page,'Editor');await expect(vault(page)).toHaveCount(0);
+  await button(page,'Close Vault').click();await expect(vault(page)).toHaveCount(0);
   await openVault(page);await expect(page.getByLabel('Vault password',{exact:true})).toHaveValue('');
   await saved(page);await page.reload();await saved(page);
-  await expect(pageSelector(page)).toHaveAttribute('data-value','vault');await expect(vault(page)).toBeVisible();
+  await expect(editorHeading(page)).toBeVisible();await expect(vault(page)).toBeVisible();
   await page.setViewportSize({width:600,height:800});await expect(vault(page)).toBeVisible();
   await expect(page.getByRole('dialog',{name:'AI',exact:true})).toHaveCount(0);
   await mkdir(this.artifactDirectory,{recursive:true});await page.screenshot({path:`${this.artifactDirectory}/global-vault.png`});
@@ -90,7 +97,7 @@ Then('the AI vault and saved OpenAI connection preserve ciphertext across reload
   expect(state.connections[0].credentialId).toBeTruthy();expect(state.connections[0].provider).toBe('openai');
   await page.reload();await saved(page);
   await expect(button(page,'AI chat')).toHaveAttribute('aria-expanded','true');
-  await selectDropdown(page,'AI connection',{label:'OpenAI fixture'});
+  await selectPage(page,'Settings','AI');await button(page,'Use OpenAI fixture').click();
   await expect(button(page,'AI connection')).toContainText('OpenAI fixture');
   await button(page,'Connect').click();await expect(page.getByRole('alert')).toContainText('Unlock');
   await openVault(page);await expect(vault(page).getByText('OpenAI fixture key',{exact:true})).toBeVisible();await expect(button(page,'Copy OpenAI fixture key')).toBeDisabled();
@@ -119,7 +126,9 @@ Then('locking the AI vault invalidates another tab without affecting local chat'
   const companion=await this.context.newPage();this.observePage(companion);await companion.goto(this.baseURL);await saved(companion);await openVault(companion);
   await companion.getByLabel('Vault password or recovery key',{exact:true}).fill(password);await button(companion,'Unlock vault').click();await expect(button(companion,'Copy OpenAI fixture key')).toBeEnabled();
   await button(page,'Lock vault').click();await expect(button(companion,'Copy OpenAI fixture key')).toBeDisabled();await expect(button(companion,'Unlock vault')).toBeVisible();
-  await selectPage(page,'Editor');await button(page,'AI chat').click();await page.getByRole('tab',{name:'Session 1',exact:true}).click();await expect(button(page,'AI connection')).toBeEnabled();await expect(button(page,'Connect')).toBeEnabled();
+  await selectPage(page,'Editor');await openAI(page);await page.getByRole('tab',{name:'Session 1',exact:true}).click();
+  await expect(prompt(page)).toBeVisible();await expect(button(page,'AI model')).toBeEnabled();
+  await expect(button(page,'AI connection')).toHaveCount(0);await expect(button(page,'Connect')).toHaveCount(0);
   await companion.close();
 });
 Then('the AI vault supports a native virtual PRF passkey',{timeout:90000},async function(){

@@ -9,7 +9,7 @@ import {expect} from '@playwright/test';
 import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const packages=page=>page.getByRole('region',{name:'Syntax highlighting',exact:true});
-async function personal(page){await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');}
+async function personal(page){await selectPage(page, 'Settings', 'Languages');await selectDropdown(page,'Settings scope','global');}
 async function open(page,path){await selectPage(page,'Editor');await page.getByRole('treeitem',{name:path,exact:true}).locator(':scope > .tree-row').click();await saved(page);}
 const tokens=page=>page.locator('.cm-content .cm-line span');
 Given('a repository with GraphQL WGSL and Terraform files is imported',async function(){
@@ -20,7 +20,7 @@ Given('a repository with GraphQL WGSL and Terraform files is imported',async fun
     'example.md':'```terraform\nresource "null_resource" "example" {\n  triggers = { answer = "42" }\n}\n```',
     'main.tf':'resource "null_resource" "example" {\n  triggers = { answer = "42" }\n}\n'
   }))await writeFile(join(directory,path),source);
-  await this.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(this.page);
+  await this.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(this.page);
 });
 Then('GraphQL and WGSL highlight without package downloads',async function(){
   for(const path of ['query.graphql','shader.wgsl']){await open(this.page,path);await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(4);}
@@ -53,21 +53,24 @@ Then('Terraform has structured syntax highlighting',async function(){
   await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(3);
 });
 When('I disable HCL syntax for this repository',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','repository');
+  await selectPage(this.page, 'Settings', 'Languages');await selectDropdown(this.page,'Settings scope','repository');
   await selectDropdown(this.page,'HCL / Terraform syntax highlighting','disabled');await saved(this.page);
 });
 Then('Terraform is plain text and undo restores its highlighting',async function(){
   // Inspect the mounted editor without recording another navigation action.
   await expect(tokens(this.page)).toHaveCount(0);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(3);
 });
 Then('the syntax pane supports shared notices uninstall and reinstallation',async function(){
+  await this.context.setOffline(false);
   await personal(this.page);
   await expect(this.page.getByRole('region',{name:'Syntax packages',exact:true})).toHaveCount(0);
+  await selectPage(this.page, 'Settings', 'Licenses');
   const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
   await notices.locator(':scope > details > summary').click();
   await expect(notices.locator('summary').filter({hasText:/^codemirror-lang-hcl/})).toHaveCount(1);
+  await selectPage(this.page, 'Settings', 'Languages');
   await packages(this.page).getByRole('button',{name:'Uninstall HCL / Terraform syntax package',exact:true}).click();
   await expect(packages(this.page).getByRole('button',{name:'Install HCL / Terraform syntax package',exact:true})).toBeVisible();
   await expect(tokens(this.page)).toHaveCount(0);
@@ -87,7 +90,7 @@ Given('a repository with Handlebars templates is imported',async function(){
     'examples.md':'```hbs\n<p>{{items.[0].name}}</p>\n```'
   };
   for(const [path,source]of Object.entries(files))await writeFile(join(directory,path),source);
-  await this.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(this.page);
+  await this.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(this.page);
   await open(this.page,'page.hbs');
 });
 Then('stable Handlebars highlights HTML and templates and folds its blocks without downloads',async function(){
@@ -119,10 +122,10 @@ When('I select the Handlebars beta and reload offline',async function(){
 });
 Then('the Handlebars beta remains selected and repository overrides are undoable',async function(){
   await expect(bracketNumber(this.page)).toHaveCount(1);
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','repository');
+  await selectPage(this.page, 'Settings', 'Languages');await selectDropdown(this.page,'Settings scope','repository');
   await selectDropdown(this.page,'Handlebars syntax provider','stable');await saved(this.page);
   await expect(bracketNumber(this.page)).toHaveCount(0);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(bracketNumber(this.page)).toHaveCount(1);
 });
 Then('removing the Handlebars beta restores stable highlighting',async function(){
@@ -152,6 +155,6 @@ Then('included syntax settings list all languages and disabling GraphQL persists
   await selectDropdown(this.page,'Settings scope','repository');
   await selectDropdown(this.page,'GraphQL syntax highlighting','enabled');await saved(this.page);
   await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(4);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(tokens(this.page)).toHaveCount(0);
 });

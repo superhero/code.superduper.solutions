@@ -3,6 +3,9 @@
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 @application-history
 Feature: Durable application-wide undo and redo
+  @repository-lifecycle
+  Scenario: Permanent repository deletion preserves unrelated undo, redo and settings
+    Then deleting repository history removes every restoration path while another repository retains redo
   @auto-stash
   Scenario: History retention preserves automatic checkout stashes and their staging
     Then automatic checkout stashes survive history retention and application reload
@@ -151,7 +154,7 @@ Feature: Durable application-wide undo and redo
   Scenario: Repository and settings undo preserve navigation and each other's redo across reload
     Then scoped history independently restores files and settings without replaying navigation
 
-  Scenario: Global repository and file settings have independent durable undo scopes
+  Scenario: Global and repository settings have independent durable undo scopes
     Then settings scopes retain independent undo and redo paths
 
   Scenario: Scoped file undo recovers without changing settings or navigation
@@ -172,3 +175,6 @@ Feature: Durable application-wide undo and redo
   @local-git
   Scenario: Pending Git conflicts retain Abort through private history compaction
     Then private retention preserves pending Git operation checkpoints
+
+  Scenario: Retired file overrides stay discarded when saved settings history is replayed
+    Then legacy file settings cannot return through history reload undo or redo

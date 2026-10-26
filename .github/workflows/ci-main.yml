@@ -203,6 +203,8 @@ jobs:
         id: browser
         timeout-minutes: 30
         run: npm --loglevel=error run test:browser
+      - name: Speech scenarios (Vitest and QuickPickle)
+        run: npm --loglevel=error run test:speech
 
       - name: Upload browser results and diagnostics
         if: ${{ !cancelled() && (steps.browser.outcome == 'success' || steps.browser.outcome == 'failure') }}
@@ -211,6 +213,7 @@ jobs:
           name: browser-test-report
           path: |
             tmp/test/cucumber-browser.json
+            tmp/test/cucumber-speech.json
             tmp/test/browser
           if-no-files-found: error
           overwrite: true
@@ -225,6 +228,7 @@ jobs:
             tmp/test/cucumber-source.json
             tmp/test/cucumber-test.json
             tmp/test/cucumber-browser.json
+            tmp/test/cucumber-speech.json
           if-no-files-found: error
           overwrite: true
           retention-days: 7
@@ -275,7 +279,7 @@ jobs:
         run: |
           reports=()
           missing=()
-          for suite in source:source acceptance:test browser:browser automation:automation; do
+          for suite in source:source acceptance:test browser:browser automation:automation speech:speech; do
             file="tmp/test/cucumber-${suite#*:}.json"
             if [[ -f "$file" ]]; then
               reports+=("$file")

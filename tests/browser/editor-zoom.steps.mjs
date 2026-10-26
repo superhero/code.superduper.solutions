@@ -25,14 +25,14 @@ Then('zoom buttons and Shift wheel change editor font size and persist it',async
   await expect(input(this.page)).toContainText('const zoom = true;');
 });
 Then('editor zoom bindings can be recorded as keyboard and Shift wheel shortcuts',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Controls');await selectDropdown(this.page,'Settings scope','global');
   const pane=this.page.getByRole('region',{name:'Keybindings',exact:true});
   await pane.getByLabel('Filter keybindings').fill('Zoom in');
   const binding=pane.getByRole('textbox',{name:'Zoom in shortcut 1',exact:true});
   await expect(binding).toHaveValue('Shift + Wheel up');await binding.click();await binding.press('F10');await saved(this.page);
   await selectPage(this.page,'Editor');await input(this.page).focus();await this.page.keyboard.press('F10');await font(this.page,14);
   await wheel(this.page,-100);await font(this.page,14);
-  await selectPage(this.page,'Settings');await binding.click();await this.page.keyboard.down('Shift');await this.page.mouse.wheel(0,-100);await this.page.keyboard.up('Shift');await saved(this.page);
+  await selectPage(this.page, 'Settings', 'Controls');await binding.click();await this.page.keyboard.down('Shift');await this.page.mouse.wheel(0,-100);await this.page.keyboard.up('Shift');await saved(this.page);
   await expect(binding).toHaveValue('Shift + Wheel up');
   await selectPage(this.page,'Editor');await wheel(this.page,-100);await font(this.page,15);
 });

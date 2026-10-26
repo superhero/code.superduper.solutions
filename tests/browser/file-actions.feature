@@ -45,7 +45,7 @@ Feature: File actions belong to their filenames
     And I open the repository file "file10.txt"
     And I open the repository file "file2.txt"
     Given the current edit and source Git histories are recorded
-    When I right-click the open file tab "file2.txt"
+    When I right-click the tree filename "file2.txt"
     And I choose Change name for "file2.txt"
     And I enter the filename "renamed2.txt" and press "Enter"
     Then the filename editor is closed

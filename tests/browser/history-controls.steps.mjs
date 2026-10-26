@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 
-const controls = "aside button, .topbar button, .file-tabs button";
+const controls = 'button[aria-label="Repository"], aside button[aria-label="Branch"], .editor-toolbar button[aria-label="Format file"], .file-tabs button';
 const editor = page => page.getByLabel("Code editor document", { exact: true });
 const saved = page => expect(page.getByRole("status", { name: "Persistence status", exact: true }))
   .toHaveText("All changes saved");
@@ -23,6 +23,7 @@ Given("the next toolbar {string} is held at the repository worker", async functi
   await this.page.mouse.move(0, 0);
   await this.page.evaluate(({ selector, method }) => {
     const elements = [...document.querySelectorAll(selector)];
+    const availability=elements.map(element=>element.disabled);
     const appearance = element => {
       const style = getComputedStyle(element);
       return { background: style.backgroundColor, foreground: style.color, opacity: style.opacity };
@@ -36,7 +37,7 @@ Given("the next toolbar {string} is held at the repository worker", async functi
         before: baseline[index], after: current,
       });
     });
-    const state = { elements, changes, sample, frames: 0, frame: 0 };
+    const state = { availability, elements, changes, sample, frames: 0, frame: 0 };
     const animate = () => {
       state.frames += 1;
       sample();
@@ -67,14 +68,14 @@ When("I start the observed toolbar history operation", async function () {
 Then("pending history blocks conflicting controls and document edits", async function () {
   await expect(editor(this.page)).toHaveAttribute("aria-readonly", "true");
   const count = await this.page.locator(controls).count();
-  assert.ok(count >= 7, "Observe branch, repository, page, file selection, and close buttons");
+  assert.ok(count >= 7, "Observe branch, repository, history, formatting, file selection, and close buttons");
   assert.equal(await this.page.locator(controls).evaluateAll(elements => elements.every(element => element.disabled)), true,
     "Conflicting controls must stay disabled until Git history finishes");
   await expect(this.page.locator('[role="treeitem"][aria-label="file10.txt"]')).toHaveAttribute("aria-disabled", "true");
 
   // Actual pointer events avoid bypassing disabled behavior with dispatchEvent.
   for (const selector of [
-    '.topbar button[aria-label="Page"]', '.topbar button[aria-label="Repository"]',
+    'button[aria-label="Repository"]',
     'aside button[aria-label="Branch"]', '.file-tabs button[aria-label="Switch to file10.txt"]',
     '.file-tabs button[aria-label="Close file2.txt"]', '[data-file-path="file10.txt"]',
   ]) {
@@ -90,7 +91,7 @@ Then("pending history blocks conflicting controls and document edits", async fun
   await expect(this.page.getByRole("menu")).toHaveCount(0);
   await expect(this.page.getByRole("dialog")).toHaveCount(0);
   await expect(this.page.getByRole("textbox", { name: /^Change name of/ })).toHaveCount(0);
-  await expect(this.page.locator('.topbar button[aria-label="Page"]')).toHaveAttribute("data-value", "editor");
+  await expect(this.page.locator('.topbar').getByRole('heading',{name:'Editor',exact:true})).toBeVisible();
   await expect(this.page.locator(".file-tabs button.active")).toHaveAttribute("aria-label", "Switch to file2.txt");
   await expect(this.page.locator('.file-tabs button[aria-label^="Switch to "]')).toHaveCount(2);
   await editor(this.page).click();
@@ -116,7 +117,7 @@ Then("unrelated controls kept their colors throughout the history operation", as
     cancelAnimationFrame(state.frame);
     delete globalThis.__historyControlObservation;
     return { count: state.elements.length, frames: state.frames, changes: [...state.changes.values()],
-      enabled: state.elements.every(element => !element.disabled) };
+      enabled: state.elements.every((element,index) => element.disabled === state.availability[index]) };
   });
   assert.ok(result.count >= 7 && result.frames > 0);
   assert.equal(result.enabled, true, "Normal control availability resumes after history finishes");

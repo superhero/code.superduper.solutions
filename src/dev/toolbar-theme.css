@@ -93,8 +93,14 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS.
 }
 
 :host, :host * {
+  scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
 }
+@supports selector(::-webkit-scrollbar) {
+  :host, :host * { scrollbar-width: auto; scrollbar-color: auto; }
+}
+:host *::-webkit-scrollbar { width: var(--native-scrollbar-size, 2px); height: var(--native-scrollbar-size, 2px); }
+:host *::-webkit-scrollbar-thumb { background: var(--color-border); border: 0; border-radius: var(--native-scrollbar-size, 2px); }
 :host *::-webkit-scrollbar,
 :host *::-webkit-scrollbar-track,
 :host *::-webkit-scrollbar-track-piece,

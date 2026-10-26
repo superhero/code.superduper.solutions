@@ -11,7 +11,7 @@ export function filePath(value: string, importing = false): string {
     if (!importing) throw new Error("Git metadata cannot be edited, moved, or nested inside a repository.");
     if (parts[gitIndex] !== ".git") throw new Error(`Cannot import "${value}": Git metadata must use the exact name .git.`);
     if (gitIndex > 0) throw new Error(`Cannot import "${value}": it belongs to a nested Git repository. Select that repository's directory separately to preserve its history.`);
-    if (parts.length === 1) throw new Error('Cannot import ".git" as a working file: it is a Git directory link. Use Import directory and select its Git metadata when prompted.');
+    if (parts.length === 1) throw new Error('Cannot import ".git" as a working file: it is a Git directory link. Use Import repository and select its Git metadata when prompted.');
     if (parts.slice(1).some(part => part.toLowerCase() === ".git")) throw new Error(`Cannot import "${value}": Git metadata cannot contain another .git path.`);
   }
   return value;

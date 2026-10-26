@@ -366,7 +366,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 <span class="move-announcement" role="status">{moveAnnouncement}</span>
 
 <style>
-  .file-tree { --tree-row-height: calc(1.03125rem + 12px); --tree-row-pitch: calc(var(--tree-row-height) + 2px); position: relative; min-width: 0; width: 100%; color: var(--color-foreground); }
+  .file-tree { --tree-row-height: var(--workbench-tabs-content-height, 32px); --tree-row-pitch: calc(var(--tree-row-height) + 2px); position: relative; min-width: 0; width: 100%; color: var(--color-foreground); }
   .file-tree:not(:empty)::before { content: ""; position: absolute; z-index: 1; left: calc(0.5rem - 0.5px); top: -7px; height: 7px; width: 1px; background: var(--color-tree-guide); pointer-events: none; }
   :global([data-file-drop-root]) { background-color: var(--color-drop-background); border-radius: 4px; }
   .move-error { padding: 6px 8px; margin: 8px 0 0; border-radius: 4px; overflow-wrap: anywhere;

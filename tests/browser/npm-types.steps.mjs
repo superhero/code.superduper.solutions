@@ -70,7 +70,8 @@ Then('the {string} declarations provide an offline editor completion',async func
   await expect(this.page.locator('.intelligence-notice')).toHaveCount(0);
 });
 Then('installed npm declaration licenses appear in shared notices',async function(){
-  await selectPage(this.page,'Settings');const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
+  await this.context.setOffline(false);
+  await selectPage(this.page, 'Settings', 'Licenses');const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
   await notices.locator(':scope > details > summary').click();
   const item=notices.locator('summary').filter({hasText:/^@types\/express · LICENSE/});await expect(item).toHaveCount(1);await item.click();
   await expect(item.locator('..').locator('pre')).toContainText('Fixture authors');

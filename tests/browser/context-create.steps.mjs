@@ -34,7 +34,7 @@ When("I append the new filename {string} and submit it", async function (filenam
 Then("the new file {string} is open in the editor", async function (path) {
   await expect(fileDialog(this.page)).toBeHidden();
   await saved(this.page);
-  await expect(this.page.getByRole("button", { name: "Page", exact: true })).toHaveAttribute("data-value", "editor");
+  await expect(this.page.locator(".topbar").getByRole("heading", { name: "Editor", exact: true })).toBeVisible();
   await expect(this.page.getByRole("region", { name: "Editor", exact: true })).toBeVisible();
   await expect(this.page.getByRole("button", { name: `Switch to ${path}`, exact: true })).toHaveClass(/\bactive\b/);
   await expect(this.page.getByRole("treeitem", { name: path, exact: true })).toHaveAttribute("aria-selected", "true");

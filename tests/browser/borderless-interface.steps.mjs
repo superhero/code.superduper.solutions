@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { Then } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { openNavigationMenu, selectDropdown } from "./navigation.helpers.mjs";
+import { openNavigationMenu, selectDropdown, selectSettingsTab } from "./navigation.helpers.mjs";
 
 async function expectBorderless(locator, label) {
   await expect(locator).toBeVisible();
@@ -63,9 +63,9 @@ Then("the focused filename editor for {string} is borderless", async function (p
   await expectBorderless(input, "Focused filename editor");
 });
 
-Then("the deletion dialog and its focused buttons are borderless", async function () {
+Then("the deletion dialog has the shared frame and borderless focused buttons", async function () {
   const dialog = this.page.getByRole("dialog", { name: "Delete file", exact: true });
-  await expectBorderless(dialog, "Deletion dialog");
+  await expect(dialog).toHaveCSS('border-top-width','2px');await expect(dialog).toHaveCSS('box-shadow','none');
   await this.page.keyboard.press("Tab");
   for (const name of ["Cancel", "Delete", "Close"]) {
     await expectFocusedBorderless(dialog.getByRole("button", { name, exact: true }), `Focused dialog ${name} button`);
@@ -77,19 +77,22 @@ Then("the deletion dialog and its focused buttons are borderless", async functio
 Then("Settings surfaces and focused form controls are borderless", async function () {
   const settings = this.page.getByRole("region", { name: "Settings", exact: true });
   for (const selector of [".settings-page", ".settings-fields", ".settings-card"]) {
-    const surfaces = settings.locator(selector);
+    const surfaces = settings.locator(`${selector}:visible`);
     assert.ok(await surfaces.count() > 0, `${selector} is rendered`);
     for (const surface of await surfaces.all()) await expectBorderless(surface, selector);
   }
   await this.page.keyboard.press("Tab");
   await expectFocusedBorderless(this.page.getByRole("button", { name: "Settings scope", exact: true }), "Focused Settings scope dropdown");
-  for (const name of ["Color mode", "Font size", "Line wrapping"]) {
+  for (const name of ["Color mode", "Font size"]) {
     await expectFocusedBorderless(settings.getByLabel(name, { exact: true }), `Focused ${name} control`);
   }
-  await expectFocusedBorderless(settings.getByRole("button", { name: "Reset Font size", exact: true }), "Focused Reset Font size button");
-  const reset = this.page.locator(".editor-toolbar").getByRole("button", { name: "Reset global defaults", exact: true });
+  await selectSettingsTab(this.page, "Editor");
+  await expectFocusedBorderless(settings.getByLabel("Line wrapping", { exact: true }), "Focused Line wrapping control");
+  await selectSettingsTab(this.page, "Controls");
+  await settings.getByRole('switch',{name:'Reset settings',exact:true}).check();
+  const reset = this.page.locator(".settings-toolbar").getByRole("button", { name: "Reset global defaults", exact: true });
   await expectFocusedBorderless(reset, "Focused Reset global defaults button");
-  await expect(reset.locator(".material-symbols-rounded")).toHaveText("settings_backup_restore");
+  await expect(reset.locator(".material-symbols-rounded")).toHaveText("reset_settings");
 });
 
 Then("CodeMirror retains a visible matching-token outline", async function () {
@@ -114,6 +117,7 @@ Then("Settings choices match header menus and support keyboard selection", async
   const settings = page.getByRole("region", { name: "Settings", exact: true });
   await expect(settings.getByRole("combobox")).toHaveCount(0);
   for (const name of ["Color mode", "Palette", "Editor font", "Indentation"]) {
+    await selectSettingsTab(page,name === "Indentation" ? "Editor" : "Appearance");
     const trigger = settings.getByRole("button", { name, exact: true });
     await expect(trigger).toHaveCSS("font-weight", "700");
     const selected = await trigger.getAttribute("data-value");
@@ -131,6 +135,7 @@ Then("Settings choices match header menus and support keyboard selection", async
     await expect(menu).toBeHidden();
     await expect(trigger).toBeFocused();
   }
+  await selectSettingsTab(page,"Appearance");
   const mode = settings.getByRole("button", { name: "Color mode", exact: true });
   await mode.press("Enter");
   await page.keyboard.press("Home");
@@ -138,6 +143,7 @@ Then("Settings choices match header menus and support keyboard selection", async
   await page.keyboard.press("Enter");
   await expect(mode).toHaveAttribute("data-value", "dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await selectSettingsTab(page,"Editor");
   await selectDropdown(page, "Indentation", "tabs");
   await expect(settings.getByRole("button", { name: "Indentation", exact: true })).toHaveAttribute("data-value", "tabs");
   await expect(page.getByRole("status", { name: "Persistence status", exact: true })).toHaveText("All changes saved");

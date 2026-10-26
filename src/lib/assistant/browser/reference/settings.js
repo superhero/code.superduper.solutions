@@ -78,7 +78,7 @@ export function samplingOptions(settings, engine) {
 
 export function webmlLoadOptions(profile, onProgress) {
   const s = profile.settings;
-  return {file: profile.file, revision: profile.revision, mmproj: profile.projector.file,
+  return {file: profile.file, revision: profile.revision, mmproj: profile.projector?.file ?? null,
     max_pixels: s.image_max_pixels, maxLength: s.context_tokens,
     cache: false, prefixSnapshotStore: null, chatTemplateArgs: {enable_thinking: !!s.thinking}, onProgress};
 }

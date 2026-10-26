@@ -1,8 +1,8 @@
 # Assistant connections
 
 The AI pane supports saved Ollama and OpenAI connections and a credential-free
-[Browser models connection](browser/README.md) for six explicit on-device
-installations. Browser models use the same Pi tool and skill loop as Ollama. `ollama.ts` calls the
+[WebML, Wllama and LiteRT-LM engines](browser/README.md) for eight explicit on-device
+installations. Browser inference uses the same Pi tool and skill loop as Ollama. `ollama.ts` calls the
 user's runtime for local discovery. `harness.ts` connects its native chat stream
 to Pi's browser agent loop through a `BrowserConnectionPlugin`. `openai.ts` runs inside the
 [secrets worker](../secrets/README.md), resolving an opaque vault entry ID before
@@ -14,13 +14,30 @@ can use the explicitly enabled read-only repository tools. Language services rem
 
 ## Connections and credentials
 
+Settings → AI owns saved connections, browser model installation and configuration,
+and speech setup. The AI pane's connection button opens that Settings tab. Add Link
+and profile Edit buttons open a shared connection dialog; closing it discards
+unsaved changes. Saving refreshes affected conversations;
+choosing Use returns to chat without discarding its draft or messages.
+
 `connections.ts` persists public profiles in `code-ai-connections`, outside
 repository/settings history. Records contain a name, provider, endpoint and vault
-entry ID, never a key. The initial Local Ollama profile needs no vault; its name
-and settings can be edited and persist under the same ID. It remains the default
-profile after reload and cannot be removed. OpenAI
+entry ID, never a key. WebML, Wllama and LiteRT-LM are separate built-in engines, with WebML
+selected initially. The browser composer lists the complete eight-model language catalog
+across those engines. Choosing a model explicitly installs missing files and
+requests its runtime; opening chat never downloads a model.
+The LLM pane contains a joined unit for each model with its own installation
+controls and expandable compatibility checks, settings and detailed information.
+Separate Vision and Decision models panes provide LFM2.5-VL 1.6B and nine native decision profiles. Gemma/MiniCPM use the separate image tool; decision models are available for later workflow integration. Existing model installations are retained.
+The built-in engine profiles cannot be removed. Browser chat needs no separate
+connection step. Model changes and prompts wait for active Pi turns to finish,
+then automatically unload and load the requested model. Each queued prompt keeps
+its model selection, and waiting requests can be cancelled independently.
+Ollama and OpenAI profiles must be added explicitly; saved
+profiles can be edited or removed. Previously saved Ollama profiles are preserved.
+OpenAI
 is pinned to `https://api.openai.com`; save its API key under Page → Vault, select
-that guarded value in Connections, then connect a conversation. Key names can be
+that guarded value in Settings → AI, then connect a conversation. Key names can be
 selected while locked; using the value requires unlocking. Each thread owns its
 connection, model, transcript, draft, scroll context and requests independently.
 Reconnection and model changes preserve messages. New threads suggest the current profile but start disconnected so the user can
@@ -120,8 +137,14 @@ Source-editor shortcuts and wheel zoom ignore this draft field.
 
 ## Instructions and read-only tools
 
-Settings → AI exposes system instructions and individual tool switches with
-personal defaults and repository overrides. Instructions are captured at send
+Settings → AI separates System instructions, Skills, Tools and Message controls
+into four cards alongside connection, browser model and speech setup. Editor
+preferences use personal defaults and repository overrides; connection profiles
+and installed model data remain separate browser-wide records.
+System instructions reuse the Markdown
+composer's source highlighting, expand with the text, and insert newlines with
+Enter. The original Markdown is saved with settings and remains limited to
+16,000 characters. Instructions are captured at send
 and applied on the next request, including vault-backed OpenAI requests. Tool
 execution in this slice is Ollama-only; OpenAI still has no tool declarations
 or tool execution. Repository file tools are absent when no repository is selected;
@@ -141,7 +164,7 @@ different repository. File contents remain untrusted data in the instructions.
 `settings-tool.ts` adds `read_settings` as a separate Pi tool, controlled by its
 own Settings → AI switch. It captures editor preferences at send time: personal
 defaults, the selected repository's explicit overrides, and effective values
-without file overrides. Omit `keys` to list names, or request up to 16 keys with
+using global defaults and repository overrides. Omit `keys` to list names, or request up to 16 keys with
 `scope: "effective" | "personal" | "repository"`. Effective values include their
 personal/repository source; repository reads identify inherited keys. Unknown
 fields are excluded through the settings normalizer and requested unknown keys
@@ -195,7 +218,7 @@ settings change. Import opens an editable draft; Save is explicit.
 Skills live in application settings, with personal defaults and per-repository
 overrides/history. A null repository entry hides an inherited skill without
 deleting the personal version. Resetting the Skills override restores inherited
-entries. File settings do not contain skills. Disabling/removing a skill applies
+entries. Disabling/removing a skill applies
 to the next request and does not rewrite earlier conversation results.
 
 Pi's `BrowserAgentHarness` appends enabled names/descriptions to its system

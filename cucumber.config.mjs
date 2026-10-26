@@ -25,6 +25,7 @@ export const browser = {
 };
 
 export const ollamaLive = { ...profile("ollama-live", ["tests/browser/live/ollama.feature"], ["tests/browser/support.mjs", "tests/browser/*.steps.mjs"]), parallel: 0 };
+export const modelsLive = { ...profile('models-live', ['tests/browser/live/browser-models.feature'], ['tests/browser/live/browser-models.steps.mjs']), parallel: 0, failFast: true, tags: process.env.MODEL_LIVE_SPEECH_FIXTURE ? '' : 'not @browser-speech-live' };
 export const npmTypesLive = { ...profile("npm-types-live", ["tests/browser/live/npm-types.feature"], ["tests/browser/support.mjs", "tests/browser/*.steps.mjs"]), parallel: 0 };
 
 export const harnessLive = profile("ai-harness-live", ["src/lib/assistant/harness.live.feature"], ["src/lib/assistant/harness.live.test.mjs"]);

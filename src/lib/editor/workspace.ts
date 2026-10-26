@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import { filePath } from "../repository/paths.ts";
+import { SETTINGS_TABS, isSettingsTab, type SettingsTab } from "./settings-tabs.ts";
 
 /** Small UI snapshots contain positions and paths, never repository content. */
 export const WORKSPACE_KEY = "code.workspace.v1";
 export type WorkspacePage = "editor" | "history" | "resources" | "vault" | "settings";
 export type HistoryView = "changes" | "versions";
-export type RightPane = "history" | "git" | "ai";
+export type RightPane = "history" | "git" | "ai" | "vault" | "resources" | "settings";
+export type SidePane = "explorer" | RightPane;
 // Empty path segments cannot occur in repository filenames.
 const diffPrefix='diff://';
 const stagedDiffPrefix='staged-diff://';
@@ -67,12 +69,19 @@ export interface RepositoryWorkspace {
   treeFocus: string;
   scroll: { explorer: number; tabs: number; history: number; settings: number; resources?: number };
   focus: "editor" | "tree" | "none";
+  settingsScroll?: Partial<Record<SettingsTab, number>>;
 }
 export interface WorkspaceState {
+  explorerOpen?: boolean;
+  paneOrder?: SidePane[];
   explorerWidth?:number;
   gitPaneWidth?:number;
   aiPaneWidth?:number;
   historyPaneWidth?:number;
+  vaultPaneWidth?:number;
+  resourcesPaneWidth?:number;
+  settingsPaneWidth?:number;
+  settingsTab?: SettingsTab;
   rightPane?:"git" | "ai";
   rightPanes?: RightPane[];
   version: 1;
@@ -167,6 +176,11 @@ export function emptyRepositoryWorkspace(): RepositoryWorkspace {
     scroll: { explorer: 0, tabs: 0, history: 0, settings: 0 }, focus: "none" };
 }
 
+/** The former long Settings page becomes the initial Appearance tab. */
+export function settingsScrollTop(workspace: RepositoryWorkspace, tab: SettingsTab): number {
+  return workspace.settingsScroll?.[tab] ?? (tab === "appearance" ? workspace.scroll.settings : 0);
+}
+
 function normalizeRepository(value: unknown): RepositoryWorkspace {
   const input = record(value);
   const tabs = tabKeys(own(input, "tabs"));
@@ -178,6 +192,9 @@ function normalizeRepository(value: unknown): RepositoryWorkspace {
   if(requestedDiff&&!requestedStaged&&!requestedCommit&&active&&tabs.includes(active)&&!tabs.includes(diffTab(active)))tabs.splice(tabs.indexOf(active)+1,0,diffTab(active));
   const selected=selectedTab(tabs,active,requestedDiff,requestedStaged,requestedCommit);
   const scroll = record(own(input, "scroll"));
+  const storedSettingsScroll = record(own(input, "settingsScroll"));
+  const settingsScroll = Object.fromEntries(SETTINGS_TABS.filter(tab => Object.hasOwn(storedSettingsScroll, tab.id))
+    .map(tab => [tab.id, coordinate(own(storedSettingsScroll, tab.id))]));
   const focus = own(input, "focus");
   const storedViews=own(input,'splitViews');
   const legacyFile=path(own(input,'splitFile'));
@@ -207,6 +224,7 @@ function normalizeRepository(value: unknown): RepositoryWorkspace {
     documents: normalizeDocuments(own(input,'documents')),
     expandedDirectories: paths(own(input, "expandedDirectories")),
     treeFocus: path(own(input, "treeFocus")),
+    ...(Object.keys(settingsScroll).length ? { settingsScroll } : {}),
     scroll: { explorer: coordinate(own(scroll, "explorer")), tabs: coordinate(own(scroll, "tabs")),
       history: coordinate(own(scroll, "history")), settings: coordinate(own(scroll, "settings")),
       ...(Object.hasOwn(scroll, "resources") ? { resources: coordinate(own(scroll, "resources")) } : {}) },
@@ -222,24 +240,39 @@ export function normalizeWorkspace(value: unknown): WorkspaceState {
   const repositoryId = own(input, "repositoryId");
   const page = own(input, "page");
   const explorerWidth=own(input,"explorerWidth");
+  const explorerOpen=own(input,"explorerOpen");
+  const paneOrder=own(input,"paneOrder");
   const gitPaneWidth=own(input,"gitPaneWidth");
   const aiPaneWidth=own(input,"aiPaneWidth");
   const historyPaneWidth=own(input,"historyPaneWidth");
+  const vaultPaneWidth=own(input,"vaultPaneWidth");
+  const resourcesPaneWidth=own(input,"resourcesPaneWidth");
+  const settingsPaneWidth=own(input,"settingsPaneWidth");
+  const settingsTab=own(input,"settingsTab");
   const rightPane=own(input,"rightPane");
   const rightPanes=own(input,"rightPanes");
   const selectedPanes: RightPane[] = Array.isArray(rightPanes)
-    ? rightPanes.filter((pane): pane is RightPane => pane === "history" || pane === "git" || pane === "ai")
+    ? rightPanes.filter((pane): pane is RightPane => pane === "history" || pane === "git" || pane === "ai" || pane === "vault" || pane === "resources" || pane === "settings")
     : rightPane === "git" || rightPane === "ai" ? [rightPane] : [];
   if (page === "history") selectedPanes.push("history");
+  if (page === "vault") selectedPanes.push("vault");
+  if (page === "resources") selectedPanes.push("resources");
+  if (page === "settings") selectedPanes.push("settings");
   return {
+    ...(typeof explorerOpen === 'boolean' ? { explorerOpen } : {}),
+    ...(Array.isArray(paneOrder) ? { paneOrder: [...new Set(paneOrder.filter((pane): pane is SidePane => pane === 'explorer' || pane === 'history' || pane === 'git' || pane === 'ai' || pane === 'vault' || pane === 'resources' || pane === 'settings'))] } : {}),
     ...(typeof explorerWidth==="number"&&Number.isFinite(explorerWidth)?{explorerWidth:Math.max(160,Math.min(600,Math.round(explorerWidth)))}:{}),
     ...(typeof gitPaneWidth==="number"&&Number.isFinite(gitPaneWidth)?{gitPaneWidth:Math.max(320,Math.min(1600,Math.round(gitPaneWidth)))}:{}),
     ...(typeof aiPaneWidth === "number" && Number.isFinite(aiPaneWidth) ? {aiPaneWidth: Math.max(320, Math.min(640, Math.round(aiPaneWidth)))} : {}),
     ...(typeof historyPaneWidth === "number" && Number.isFinite(historyPaneWidth) ? {historyPaneWidth: Math.max(320, Math.min(1600, Math.round(historyPaneWidth)))} : {}),
-    ...(Array.isArray(rightPanes) || page === "history" ? { rightPanes: [...new Set(selectedPanes)] } : rightPane === "git" || rightPane === "ai" ? {rightPane} : {}),
+    ...(typeof vaultPaneWidth === "number" && Number.isFinite(vaultPaneWidth) ? {vaultPaneWidth: Math.max(320, Math.min(640, Math.round(vaultPaneWidth)))} : {}),
+    ...(typeof resourcesPaneWidth === "number" && Number.isFinite(resourcesPaneWidth) ? {resourcesPaneWidth: Math.max(320, Math.min(1600, Math.round(resourcesPaneWidth)))} : {}),
+    ...(typeof settingsPaneWidth === "number" && Number.isFinite(settingsPaneWidth) ? {settingsPaneWidth: Math.max(320, Math.min(1600, Math.round(settingsPaneWidth)))} : {}),
+    ...(isSettingsTab(settingsTab) ? { settingsTab } : {}),
+    ...(Array.isArray(rightPanes) || page === "history" || page === "vault" || page === "resources" || page === "settings" ? { rightPanes: [...new Set(selectedPanes)] } : rightPane === "git" || rightPane === "ai" ? {rightPane} : {}),
     version: 1,
     repositoryId: safeId(repositoryId) ? repositoryId : "",
-    page: page === "settings" || page === "resources" || page === "vault" ? page : "editor",
+    page: "editor",
     repositories: Object.fromEntries(Object.entries(record(own(input, "repositories")))
       .filter(([id]) => safeId(id)).map(([id, value]) => [id, normalizeRepository(value)])),
   };
@@ -376,15 +409,50 @@ export function moveWorkspaceTab(workspace:RepositoryWorkspace,fromPane:string,t
 }
 
 /** Share the dock without overwriting each pane's preferred width. */
-export function rightDockWidths(available: number, preferred: Partial<Record<RightPane, number>>): Record<RightPane, number> {
-  const widths = { history: 0, git: 0, ai: 0 };
+export function rightDockWidths(available: number, preferred: Partial<Record<RightPane, number>>, resizing?: RightPane): Record<RightPane, number> {
+  const widths = { history: 0, git: 0, ai: 0, vault: 0, resources: 0, settings: 0 };
   const panes = (Object.keys(preferred) as RightPane[]).filter(pane => preferred[pane] !== undefined);
-  for (const pane of panes) widths[pane] = Math.max(320, Math.min(pane === "ai" ? 640 : 1600, preferred[pane]!));
+  const paneMinimum = Math.min(320, Math.max(0, available / (panes.length + 1)));
+  for (const pane of panes) widths[pane] = Math.max(paneMinimum, Math.min(pane === "ai" || pane === "vault" ? 640 : 1600, preferred[pane]!));
   if (!panes.length) return widths;
-  const minimum = 320 * panes.length;
-  const extra = panes.reduce((sum, pane) => sum + widths[pane] - 320, 0);
-  const room = Math.max(0, available - (panes.length === 1 ? 560 : 320) - minimum);
+  const editorMinimum = Math.min(320, Math.max(0, available / 2));
+  // Honour the dragged width first. Only shrink neighbours when the editor
+  // has no spare space, and never take them below their minimums.
+  const priority = resizing && panes.includes(resizing) ? resizing : undefined;
+  if (priority) widths[priority] = Math.min(widths[priority], Math.max(paneMinimum, available - editorMinimum - paneMinimum * (panes.length - 1)));
+  const flexible = panes.filter(pane => pane !== priority);
+  const minimum = paneMinimum * flexible.length + (priority ? widths[priority] : 0);
+  const extra = flexible.reduce((sum, pane) => sum + widths[pane] - paneMinimum, 0);
+  const room = Math.max(0, available - editorMinimum - minimum);
   const ratio = extra ? Math.min(1, room / extra) : 1;
-  for (const pane of panes) widths[pane] = Math.floor(320 + (widths[pane] - 320) * ratio);
+  for (const pane of flexible) widths[pane] = Math.floor(paneMinimum + (widths[pane] - paneMinimum) * ratio);
   return widths;
+}
+
+/** Keep the editor and most recently opened side pane; evict older panes to fit. */
+export function fitWorkspacePanes(available: number, state: WorkspaceState, opened?: SidePane): WorkspaceState {
+  if (!Number.isFinite(available) || available <= 0) return state;
+  const right = state.rightPanes ?? (state.rightPane ? [state.rightPane] : []);
+  const visible: SidePane[] = [...(state.explorerOpen === false ? [] : ['explorer' as const]), ...right];
+  const order = [...new Set([...(state.paneOrder ?? []), ...visible])].filter(pane => visible.includes(pane));
+  if (opened && order.includes(opened)) { order.splice(order.indexOf(opened), 1); order.push(opened); }
+  const newest = order.at(-1), editorMinimum = Math.min(320, available / 2);
+  const minimum = (pane: SidePane) => Math.min(pane === 'explorer' ? 160 : 320, available / 2);
+  while (order.reduce((sum, pane) => sum + minimum(pane), editorMinimum) > available) {
+    const oldest = order.findIndex(pane => pane !== newest);
+    if (oldest < 0) break;
+    order.splice(oldest, 1);
+  }
+  const rightPanes = right.filter(pane => order.includes(pane)), explorerOpen = order.includes('explorer');
+  if (state.rightPane === undefined && state.explorerOpen === explorerOpen &&
+    state.rightPanes?.join() === rightPanes.join() && state.paneOrder?.join() === order.join()) return state;
+  const next = { ...state, explorerOpen, rightPanes, paneOrder: order };
+  delete next.rightPane;
+  return next;
+}
+
+/** Shrink the explorer before discarding its saved preferred width. */
+export function explorerDockWidth(available: number, rightPaneCount: number, preferred = 245): number {
+  const editorMinimum = Math.min(320, Math.max(0, available / 2));
+  return Math.max(0, Math.min(preferred, available - editorMinimum * (rightPaneCount + 1)));
 }

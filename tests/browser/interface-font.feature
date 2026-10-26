@@ -16,7 +16,7 @@ Feature: Interface typography is independent of editor typography
 
   Scenario: Middle-click closes tabs by default and can be disabled
     Given a browser repository named "Middle tabs" with an empty file "notes.js"
-    Then middle-click tab closing supports undo and a persisted disabled setting
+    Then middle-click tab closing preserves source and a persisted disabled setting
 
   Scenario: Google editor fonts load on selection and can be installed for offline use
     Given a browser repository named "Google fonts" with an empty file "notes.js"

@@ -7,9 +7,12 @@ import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 Then('startup retains two automatic changes for each edited file',async function(){
   const page=this.page;
-  await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');
-  const slider=page.getByRole('slider',{name:'Retained history changes per file',exact:true});
-  await expect(slider).toHaveValue(String(Math.log1p(300)));await expect(slider).toHaveAttribute('min','0');await expect(slider).toHaveAttribute('max',String(Math.log1p(10000)));
+  await selectPage(page, 'Settings', 'Git');await selectDropdown(page,'Settings scope','global');
+  await expect(page.getByRole('tabpanel',{name:'Git',exact:true}).getByRole('heading',{name:'Staging history',exact:true})).toBeVisible();
+  const slider=page.getByRole('slider',{name:'Changes retained per file',exact:true});
+  await expect(slider).toHaveAttribute('aria-valuetext','300 changes');
+  await expect.poll(async()=>Number(await slider.inputValue())).toBeCloseTo(Math.log1p(300),12);
+  await expect(slider).toHaveAttribute('min','0');await expect(slider).toHaveAttribute('max',String(Math.log1p(10000)));
   await slider.evaluate(e=>{e.value=String(Math.log1p(2));e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));});
   await expect(page.locator('output[for="setting-historyLimit"]')).toHaveText('2 changes');await saved(page);
   await selectPage(page,'Editor');

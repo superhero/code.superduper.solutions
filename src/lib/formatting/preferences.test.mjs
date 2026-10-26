@@ -15,7 +15,7 @@ Then('formatter selections reject incompatible unknown and unsafe entries',()=>{
 Then('repository formatter overrides merge by language and can disable formatting',()=>{
   const settings=normalizeSettings({version:1,global:{formatters:{yaml:'dprint-pretty-yaml',css:'dprint-malva'}},repositories:{r:{formatters:{yaml:'prettier-yaml',sql:'none'}}},files:{r:{'main.yaml':{formatters:{yaml:'none'}}}}});
   assert.deepEqual(resolveSettings(settings,'r','main.yaml').formatters,{...DEFAULT_SETTINGS.formatters,yaml:'prettier-yaml',css:'dprint-malva',sql:'none'});
-  assert.deepEqual(settings.files.r['main.yaml'],{});
+  assert.equal(Object.hasOwn(settings,'files'),false);
   assert.equal(formatterFor('main.sql','auto',resolveSettings(settings,'r').formatters),undefined);
   assert.equal(formatterFor('main.yaml','auto',resolveSettings(settings,'other').formatters).plugin,'pretty-yaml');
   assert.deepEqual(normalizeSettings(null).global.formatters,DEFAULT_SETTINGS.formatters);

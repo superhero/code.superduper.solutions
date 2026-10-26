@@ -48,11 +48,11 @@ Reuse the editor's pane, divider, tabs, dropdowns, controls, semantic palettes a
 reduced motion. Conversation tabs are available before connecting and own their
 connection, model, draft, transcript and requests independently. Git and AI may
 remain open together, with independent persisted visibility and widths. Share
-the desktop dock while reserving editor space; stack both views on compact
-screens instead of layering two modal sheets. Keep transcripts
+the desktop dock while reserving editor space; close older panes on compact
+screens to retain columns. Keep transcripts
 and drafts in memory. Persist saved profiles and encrypted vault data separately.
 The Connections viewport retains conversation tabs. Guarded values are managed
-in the separate Vault main page, selected from the header's Page dropdown.
+in the separate far-right Vault pane, opened from the toolbar or header's Page menu.
 Batch visible streamed text per animation frame, retaining completed messages.
 Render only the selected transcript; background replies remain in their own tab.
 Render messages with markdown-it and the complete mdit catalog, with source HTML

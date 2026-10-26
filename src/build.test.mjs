@@ -39,15 +39,20 @@ Then('every static download fits Pages and large optional packages retain verifi
 
 Given("the production build has completed", async function () { this.html = await readFile("dist/index.html", "utf8"); });
 Then('optional browser inference files retain pinned runtime bytes and publisher notices', async function () {
-  const { BROWSER_PROFILES, artifactsFor } = await import('./lib/assistant/browser/catalog.ts');
-  const assets = new Map(BROWSER_PROFILES.flatMap(profile => artifactsFor(profile).filter(file => file.url.startsWith('browser-models/')).map(file => [file.url,file])));
+  const { ALL_MODEL_PROFILES, artifactsFor } = await import('./lib/assistant/browser/catalog.ts');
+  const assets = new Map(ALL_MODEL_PROFILES.flatMap(profile => artifactsFor(profile).filter(file => file.url.startsWith('browser-models/')).map(file => [file.url,file])));
   for (const file of assets.values()) {
-    const bytes = await readFile('dist/' + file.url);
+    const bytes = file.parts ? Buffer.concat(await Promise.all(file.parts.map(part => readFile('dist/' + part.url)))) : await readFile('dist/' + file.url);
     assert.equal(bytes.length,file.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256);
     if(file.kind==='runtime') assert.equal(this.html.includes(bytes.toString('base64')),false,'Optional runtime payload must stay outside core HTML');
   }
-  assert.deepEqual((await readdir('dist/browser-models')).sort(),['notices','wllama']);
+  assert.deepEqual((await readdir('dist/browser-models')).sort(),['notices','runtimes','wllama','wllama-d3','wllama-elephant','wllama-pplx-v3']);
   assert.deepEqual((await readdir('dist/browser-models/wllama')).sort(),['LICENCE','build-receipt.json','index.js','wllama.wasm']);
+  const runtimes=JSON.parse(await readFile('src/lib/assistant/browser/runtime-artifacts.json'));
+  for(const group of ['vision','strands-cpu','strands-gpu']){
+    const file=runtimes[group].find(file=>file.id==='ort-mjs');
+    assert.match(await readFile('dist/'+file.url,'utf8'),/webgpuInit/,`${group} requires the WebGPU-capable ORT factory`);
+  }
 });
 Then('upstream integrations are self-contained verified packages with complete notices',async function(){
  const {catalog}=await(await import('../build/remote-packages.mjs')).createRemotePackages();assert.equal(catalog.length,3);
@@ -174,7 +179,7 @@ Then("an unaccounted worker inventory fails the build", async function () {
 });
 Then("the distribution contains only the page hosting headers and favicon assets", async function () {
   const files = await readdir('dist');
-  assert.deepEqual(files.sort(), ["_headers", "index.html", "formatters", "languages", "syntax", "remotes", "types", "browser-models", ...faviconFiles,
+  assert.deepEqual(files.sort(), ["_headers", "index.html", "formatters", "languages", "syntax", "remotes", "types", "browser-models", "speech", ...faviconFiles,
     ...(files.includes('source.tar.gz') ? ['source.tar.gz'] : [])].sort());
 });
 Then("the hosting headers enable cross-origin isolation", async function () {

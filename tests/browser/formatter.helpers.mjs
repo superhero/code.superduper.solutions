@@ -4,11 +4,12 @@
 import assert from 'node:assert/strict';
 import {expect} from '@playwright/test';
 import {formats,providers} from '../../src/lib/formatting/formats.ts';
-import {selectDropdown} from './navigation.helpers.mjs';
+import {selectDropdown,selectPage} from './navigation.helpers.mjs';
 export const formatterPane=page=>page.getByRole('region',{name:'Formatters',exact:true});
 export function formatterProvider(name){const provider=providers.find(item=>item.id===name || item.name===name);assert.ok(provider,name);return provider;}
 export function formatterRow(page,name){const provider=formatterProvider(name),format=formats.find(item=>item.providers.includes(provider.id));assert.ok(format);return formatterPane(page).locator(`[data-format="${format.id}"]`);}
 export async function selectFormatterPackage(page,name){
+  await selectPage(page, 'Settings', 'Formatting');
   const provider=formatterProvider(name),format=formats.find(item=>item.providers.includes(provider.id));assert.ok(format);
   await formatterPane(page).getByLabel('Find a formatter preference',{exact:true}).fill(format.label);
   const trigger=page.getByRole('button',{name:`${format.label} formatter`,exact:true});

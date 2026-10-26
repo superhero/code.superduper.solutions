@@ -25,7 +25,7 @@ Then('language engine preferences merge by language and preserve explicit disabl
   const settings=normalizeSettings({version:1,global:{languageEngines:{typescript:'typescript',css:'css'}},repositories:{r:{languageEngines:{typescript:'none',json:'json'}}},files:{r:{'main.ts':{languageEngines:{typescript:'typescript'}}}}});
   assert.deepEqual(resolveSettings(settings,'r','main.ts').languageEngines,{...DEFAULT_SETTINGS.languageEngines,typescript:'none',css:'css',json:'json'});
   assert.deepEqual(resolveSettings(settings,'other').languageEngines,{...DEFAULT_SETTINGS.languageEngines,typescript:'typescript',css:'css'});
-  assert.deepEqual(settings.files.r['main.ts'],{});
+  assert.equal(Object.hasOwn(settings,'files'),false);
 });
 Then('type library settings default off and merge without leaking into file overrides',()=>{
   assert.deepEqual(DEFAULT_SETTINGS.typeLibraries,{});
@@ -36,7 +36,7 @@ Then('type library settings default off and merge without leaking into file over
   const store=normalizeSettings({version:1,global:{typeLibraries:{node:true,browser:false}},repositories:{r:{typeLibraries:{node:false,webworker:true}}},files:{r:{'main.ts':{typeLibraries:{node:true}}}}});
   assert.deepEqual(resolveSettings(store,'r','main.ts').typeLibraries,{node:false,browser:false,webworker:true});
   assert.deepEqual(resolveSettings(store,'other').typeLibraries,{node:true,browser:false});
-  assert.deepEqual(store.files.r['main.ts'],{});
+  assert.equal(Object.hasOwn(store,'files'),false);
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))),store);
   assert.notEqual(store.global.typeLibraries,DEFAULT_SETTINGS.typeLibraries);
 });

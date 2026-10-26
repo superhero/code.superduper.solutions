@@ -6,15 +6,23 @@ and conversation labels independent of the inference provider; provider-specific
 connection guidance still names the current adapter. Application composition
 opens it from the toolbar's right end and permits AI and Git to remain open side by side. Their open states and saved
 widths are independent; the shared dock reserves space for the editor.
-Shared `Sheet.Pane` owns the right dock/overlay, synchronized main-view motion,
+Shared `Sheet.Pane` owns the right dock, synchronized main-view motion,
 focus restoration, Escape and reduced motion. `WidthDivider` supplies resizing;
 Button and NavigationDropdown retain the editor's shared control behavior.
+AI uses the same application-owned resize preview, neighbour allocation,
+cancellation and persistence callbacks as History, Git, Vault and Resources.
 
 Use semantic palette roles and workbench header/toolbar/tab geometry. Do not
 import the reference demo's layout. Tabs are available before connecting; each
 `Conversation` owns a selected connection, model, transcript, draft, scroll context and
 request lifecycle. New chat creates an independent tab using the current
-profile suggested but disconnected. Reconnection and model selection retain the thread.
+profile suggested. Browser sessions open directly in the composer; remote
+profiles retain their explicit connection step. Reconnection and model selection retain the thread.
+Browser sessions keep the model menu and draft editable during generation.
+Each submitted prompt captures its model and configuration, appears as a
+cancellable queued prompt while waiting, and enters the transcript after the
+previous reply finishes. The shared runtime queue loads that model before its
+whole Pi turn. Cancelling or closing a waiting chat leaves other chats running.
 Sent user messages align right and show the local date and time captured when
 sent. Assistant messages have no speaker header. Timestamps belong only to presentation and are
 excluded from provider payloads.
@@ -30,9 +38,11 @@ Only a model's trailing standalone `Generated on YYYY-MM-DD` paragraph after a
 horizontal rule is hidden from AI document presentation; user messages, quoted
 examples, code and the original provider conversation remain intact.
 Connection, conversations and width remain in memory across pane close/open.
-Compact viewports use the shared full-view overlay. The model row also exposes
-used/context tokens and an editable per-model context budget; the containing
-application saves that preference through normal settings history. Tool calls
+Narrow viewports keep AI beside the editor, closing older panes when needed. The model row also exposes
+used/context tokens. Clicking that meter slides open a vertical context slider
+above it, with 1,024-token steps within the selected model's configured capacity.
+Each change saves automatically through normal settings history. Keyboard arrows,
+Home and End adjust the slider; Escape or clicking outside closes it. Tool calls
 from Pi, including settings and ordinary Git reads, appear as bounded expandable
 arguments/results below their user message.
 The composer model label uses normal weight without changing menu options.
@@ -112,20 +122,37 @@ Status and errors remain announced to screen readers. Starting a new turn clears
 the previous result indicator; an enabled
 Send button stays on the right without moving the indicator.
 
-The second toolbar opens `ConnectionsView.svelte` while retaining conversation
-tabs. Vault management is a separate [main page](../vault/README.md), selected
-from the first header's second (Page) dropdown. AI has no vault buttons.
-The Connections toolbar opens the selected profile with its
-saved name under Edit connection. New connection explicitly starts a blank form.
-All profiles, including the initial Local Ollama connection, can be renamed.
+The AI toolbar’s optional connection shortcut opens Settings → AI while retaining
+conversation tabs and drafts. It defaults off; Settings → Controls → AI toolbar
+can enable Connection settings. `ConnectionsView.svelte` lives in Settings → AI,
+including saved profiles, browser
+model installation/configuration, speech setup and the connection form. Speech
+settings are available in Settings → AI. All speech
+variants appear in the model menu beside Dictate, including uninstalled ones.
+Selecting a model installs missing files and queues its load. The separate
+Dictate button starts or stops recording and cancels preparation; the arrow
+opens model selection. Closing or switching the conversation cancels a pending
+speech startup before it can request the microphone. Vault management is a separate [sliding pane](../vault/README.md), opened
+from the editor toolbar or first header's Page menu. AI has no vault buttons.
+The Add Link button opens a blank New connection dialog. Each editable profile's
+Edit button opens the same dialog with its saved values. Save applies changes;
+Cancel, Escape and Close dismiss drafts and return focus to the action button.
+WebML, Wllama and LiteRT-LM are separate built-in entries, with WebML selected initially.
+The browser composer lists the complete eight-model language catalog, including unloaded
+and uninstalled models. Menu entries show installation state and download size.
+Selecting a model installs missing files and loads it through its pinned engine;
+opening chat only reads local metadata. Loading can be cancelled without losing
+the draft. Re-selecting the current menu entry also prepares that model.
+Ollama and OpenAI profiles are added explicitly and can be renamed or removed.
 Runtime URLs appear only in connection settings, never in the chat selector.
-Saved connections contain
-only public configuration and an opaque vault entry ID. The local Ollama default
+Vision and Decision models have separate Settings sections; they are excluded from the LLM selector. Gemma/MiniCPM image requests use the transient LFM image tool while retaining the same conversation.
+Inference engine profiles contain
+only public configuration and an opaque vault entry ID. An Ollama profile
 needs no key. OpenAI resolves its selected key inside the secret worker; no
 decrypted API key belongs to conversation state or a connection form. Editing or
 removing a profile disconnects affected conversations without discarding their
 messages. Application composition refreshes the public key metadata when the
-global Vault page changes guarded entries; secret values never enter AI UI state.
+global Vault pane changes guarded entries; secret values never enter AI UI state.
 
 `SkillsSettings.svelte` owns skill drafts and the create/import/edit/toggle/remove
 controls. SettingsPage supplies personal or repository override values; it does
@@ -135,20 +162,31 @@ body text through the visible `load_skill` tool, as described in the assistant
 service guide.
 
 Git and AI have independent persisted visibility in `workspace.rightPanes`.
-Legacy single `rightPane` snapshots still restore. At desktop dock widths both
-panes share the work area while retaining at least 320px for the editor; saved
-width preferences remain intact when the viewport temporarily constrains them.
-When both are open in a compact viewport, they stack vertically and the editor
-is hidden until one closes. Both stay interactive without competing modal
-overlays; horizontal resize handles are disabled for the compact stack.
+Legacy single `rightPane` snapshots still restore. Panes share the work area
+in columns while preserving the editor; saved width preferences remain intact
+when the viewport temporarily constrains them. `workspace.paneOrder` records
+opening order, including the optional file explorer. Older panes close when
+their minimum widths no longer fit. The newly opened pane takes priority.
+Closed panes remain closed on expansion, and the toolbar's File explorer button
+can restore the tree. At widths below 640px the editor and remaining side pane
+share the available width; AI stays docked instead of covering the editor.
 
 `BrowserModels.svelte` reuses the shared secondary Button and NavigationDropdown
 controls inside Connections. Installation, runtime and generation controls remain
 independent of chat transcripts. Browser conversations place Attach image beneath
-the message draft; model management stays in Connections. Model-specific image limitations and compatibility
+the message draft; model management stays in Settings → AI. Model-specific image limitations and compatibility
 checks are visible before installing/loading. Downloads group their Cancel control,
 palette progress bar, byte count and percentage in one status area. Compatibility
 rows keep passed checks compact; failed checks, limitations and unmeasurable values
 show their explanations, with all other details available by keyboard or pointer.
 The [browser model guide](../../assistant/browser/README.md)
 owns the catalog, storage, source pins and verification scope.
+
+`ModelOperation.svelte` shares status icons, spacing, transfer counters and
+`ModelProgress.svelte` between language and speech model cards. Dictation
+preparation uses the same measured/indeterminate bar below its toolbar, with
+reduced-motion handling. Compact cards keep size/actions in their own wrapping
+row so added Load/Remove controls do not squeeze model names. Settings summaries
+span the available width and paired fields keep their inputs aligned when labels
+wrap. Fixed vision/decision profiles expose their verified summary without LLM
+execution controls; Strands rows name their CPU or WebGPU backend explicitly.

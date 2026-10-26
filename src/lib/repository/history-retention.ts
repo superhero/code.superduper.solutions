@@ -6,6 +6,8 @@ import {normalizeSettings,resolveSettings} from '../editor/settings.ts';
 import {repositoryPaths} from './paths.ts';
 import type {EngineOptions,RepositoryRecord} from './core.ts';
 import type {ActivityRecord,Entry} from './application-history.ts';
+import type {ActivityState} from './types.ts';
+import {normalizeWorkspace} from '../editor/workspace.ts';
 
 type Context={fs:git.PromiseFsClient;gitdir:string};
 type Commit=Awaited<ReturnType<typeof git.readCommit>>['commit'];
@@ -34,6 +36,40 @@ const repositoryRoots=(record:RepositoryRecord)=>unique([record.current,...recor
   ...Object.values(record.changeGraphs??{}).flatMap(scope=>[scope.baseline,...scope.revisions])]);
 const activityRoots=(record:ActivityRecord)=>unique([...(record.current?[record.current]:[]),...record.undo,...record.redo,...record.futures,
   ...Object.values(record.scoped??{}).flatMap(history=>[...history.undo,...history.redo])]);
+
+/** Remove every restoration path to a permanently deleted repository, preserving other histories. */
+export async function planRepositoryDeletion(options:Pick<EngineOptions,'fs'|'root'>,activity:ActivityRecord,id:string,state:ActivityState,remaining:string[]):Promise<ActivityRecord>{
+  const forget=(value:ActivityState):ActivityState=>{
+    const next={workspace:normalizeWorkspace(value.workspace),settings:normalizeSettings(value.settings)};
+    delete next.workspace.repositories[id];
+    delete next.settings.repositories[id];
+    if(next.workspace.repositoryId===id)next.workspace.repositoryId=remaining[0]??'';
+    return next;
+  };
+  const context={fs:options.fs,gitdir:`${options.root??''}/history/application.git`};
+  const data=await graph(context,activityRoots(activity)),mapped=new Map<string,string|null>(),kept=new Set<string>();
+  for(const oid of data.order){
+    const commit=data.commits.get(oid)!;
+    const entry=JSON.parse(new TextDecoder().decode((await git.readBlob({...context,oid,filepath:'activity.json'})).blob)) as Entry;
+    entry.before=forget(entry.before);entry.after=forget(entry.after);
+    if(entry.repository?.id===id){delete entry.repository;delete entry.editGroup;}
+    const parent=commit.parent[0]?mapped.get(commit.parent[0])??null:null;
+    if(!entry.repository&&JSON.stringify(entry.before)===JSON.stringify(entry.after)){mapped.set(oid,parent);continue;}
+    const blob=await git.writeBlob({...context,blob:new TextEncoder().encode(JSON.stringify(entry))});
+    const tree=await git.writeTree({...context,tree:[{path:'activity.json',type:'blob',mode:'100644',oid:blob}]});
+    mapped.set(oid,await git.writeCommit({...context,commit:{...commit,tree,parent:parent?[parent]:[]}}));kept.add(oid);
+  }
+  const stack=(items:string[])=>unique(items.filter(oid=>kept.has(oid)).map(oid=>mapped.get(oid)!));
+  const next:ActivityRecord={...activity,revision:crypto.randomUUID(),state:forget(state),
+    current:activity.current?mapped.get(activity.current)??null:null,undo:stack(activity.undo),redo:stack(activity.redo),
+    futures:unique(activity.futures.map(oid=>mapped.get(oid)).filter((oid):oid is string=>Boolean(oid)))};
+  if(activity.scoped)next.scoped=Object.fromEntries(Object.entries(activity.scoped).filter(([key])=>{
+    const scope=JSON.parse(key) as string[];
+    return !(scope[0]==='files'&&scope[1]===id||scope[0]==='settings'&&scope[2]===id);
+  }).map(([key,history])=>[key,{...history,undo:stack(history.undo),redo:stack(history.redo)}]));
+  delete next.lastAction;
+  return next;
+}
 
 /** Plan immutable replacement objects only. The caller publishes all metadata atomically. */
 export async function planHistoryRetention(options:Pick<EngineOptions,'fs'|'root'>,records:RepositoryRecord[],activity:ActivityRecord,preferences:unknown):Promise<RetentionPlan>{

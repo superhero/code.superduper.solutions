@@ -29,14 +29,14 @@ const samples={
 };
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const preferences=page=>page.getByRole('region',{name:'Language engines',exact:true});
-async function personal(page){await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');}
+async function personal(page){await selectPage(page, 'Settings', 'Languages');await selectDropdown(page,'Settings scope','global');}
 async function openEditor(world){await selectPage(world.page,'Editor');await world.page.getByRole('treeitem',{name:world.languageSample.path,exact:true}).locator(':scope > .tree-row').click();await saved(world.page);}
 async function histories(page){return (await repositoryHistories(page)).edits;}
 Given('the {string} language intelligence repository is imported',async function(id){
   this.languageSample=samples[id];this.languageId=this.languageSample?.engine??id;assert.ok(this.languageSample);
   const directory=join(this.artifactDirectory,'language-repository');await mkdir(directory,{recursive:true});
   for(const [path,source]of Object.entries({[this.languageSample.path]:this.languageSample.source,...this.languageSample.files,...this.extraLanguageFiles})){await mkdir(join(directory,path,'..'),{recursive:true});await writeFile(join(directory,path),source);}
-  await this.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(this.page);await openEditor(this);
+  await this.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(this.page);await openEditor(this);
   this.languageHistory=await histories(this.page);this.languageWorkerCount=this.page.workers().length;
 });
 When('I install and activate its language engine',async function(){
@@ -130,7 +130,7 @@ When('I reload and use the installed language engine offline',async function(){
   await this.page.getByLabel('Code editor document',{exact:true}).click();
 });
 When('I disable its language engine for this repository',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','repository');await selectDropdown(this.page,`${this.languageSample.label} language engine`,'none');await saved(this.page);await openEditor(this);
+  await selectPage(this.page, 'Settings', 'Languages');await selectDropdown(this.page,'Settings scope','repository');await selectDropdown(this.page,`${this.languageSample.label} language engine`,'none');await saved(this.page);await openEditor(this);
 });
 Then('its language feedback clears without removing its installation',async function(){
   await expect(this.page.locator('.cm-lintRange')).toHaveCount(0);await expect(this.page.locator('.cm-language-hover')).toHaveCount(0);
@@ -139,6 +139,7 @@ Then('its language feedback clears without removing its installation',async func
 });
 Then('engine rows provide notices updates uninstall and reinstallation',async function(){
   await expect(this.page.getByRole('region',{name:'Language engine packages',exact:true})).toHaveCount(0);
+  await selectPage(this.page,'Settings','Licenses');
   const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
   await notices.locator(':scope > details > summary').click();
   await expect(notices.getByRole('status')).toHaveCount(0);
@@ -149,6 +150,7 @@ Then('engine rows provide notices updates uninstall and reinstallation',async fu
     request.onsuccess=()=>store.put({...request.result,version:'older',sha256:'previous-reviewed-digest'});
     await new Promise((resolve,reject)=>{transaction.oncomplete=resolve;transaction.onerror=()=>reject(transaction.error);});db.close();
   });
+  await selectPage(this.page,'Settings','Languages');await saved(this.page);
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
   await preferences(this.page).getByRole('button',{name:'Update JSON / JSONC language engine',exact:true}).first().click();
   await expect(preferences(this.page).getByRole('button',{name:'Update JSON / JSONC language engine',exact:true})).toHaveCount(0);
@@ -158,6 +160,7 @@ Then('engine rows provide notices updates uninstall and reinstallation',async fu
   await expect(preferences(this.page).getByRole('button',{name:'Uninstall JSON / JSONC language engine',exact:true}).first()).toBeVisible();
 });
 Then('TypeScript supplemental attribution is available in shared notices',async function(){
+  await selectPage(this.page, 'Settings', 'Licenses');
   const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
   await notices.locator(':scope > details > summary').click();
   const summary=notices.locator('summary').filter({hasText:/^TypeScript third-party notices/});
@@ -190,6 +193,8 @@ Then('Dockerfile completion is undoable and registry lookups stay offline',async
   const document=this.page.getByLabel('Code editor document',{exact:true});
   await document.click();await this.page.keyboard.press('Control+a');await this.page.keyboard.insertText('FROM alpine\nCO');await saved(this.page);
   await this.page.keyboard.press('Control+Space');
+  await expect(this.page.locator('.cm-tooltip-autocomplete [aria-selected="true"] .cm-completionLabel')).toHaveText(/^COPY\b/);
+  await expect(document).toHaveAttribute('aria-readonly','false');
   await this.page.locator('.cm-tooltip-autocomplete .cm-completionLabel').filter({hasText:/^COPY\b/}).click();
   await saved(this.page);await expect(document).toContainText('COPY');
   await this.page.keyboard.press('Control+z');await saved(this.page);await expect(document).toContainText('CO');await expect(document).not.toContainText('COPY');
@@ -219,6 +224,9 @@ Then('Liquid documentation and repository completions work offline with undo',as
   const document=this.page.getByLabel('Code editor document',{exact:true});
   await document.click();await this.page.keyboard.press('Control+a');await this.page.keyboard.insertText('{{ prod');await saved(this.page);
   await this.page.keyboard.press('Control+Space');
+  await expect(this.page.locator('.cm-tooltip-autocomplete [aria-selected="true"] .cm-completionLabel')).toHaveText('product');
+  await expect(document).toHaveAttribute('aria-readonly','false');
+  await expect(this.page.locator('.cm-tooltip-autocomplete')).not.toHaveClass(/cm-tooltip-autocomplete-disabled/);
   await this.page.locator('.cm-tooltip-autocomplete .cm-completionLabel').filter({hasText:/^product$/}).click();
   await saved(this.page);await expect(document).toHaveText('{{ product');
   await this.page.keyboard.press('Control+z');await saved(this.page);await expect(document).toHaveText('{{ prod');
@@ -451,7 +459,8 @@ Then('if and if-else completions insert editable conditional blocks',async funct
     const popup=this.page.locator('.cm-tooltip-autocomplete');
     for(const name of ['if','if-else'])await expect(popup.locator('.cm-completionLabel').filter({hasText:new RegExp('^'+name+'$')})).toHaveCount(1);
     assert.equal(await this.page.evaluate(()=>window.conditionalEngineRequests),0,'Conditional snippets do not wait for a language worker');
-    await popup.locator('.cm-completionLabel').filter({hasText:new RegExp('^'+label+'$')}).click();await saved(this.page);
+    await expect(popup).not.toHaveClass(/cm-tooltip-autocomplete-disabled/);
+    await popup.locator('.cm-completionLabel').filter({hasText:new RegExp('^'+label+'$')}).click();await expect(popup).toHaveCount(0);await saved(this.page);
     await this.page.keyboard.insertText('ready');await this.page.keyboard.press('Tab');await this.page.keyboard.insertText('run();');
     if(label==='if-else'){await this.page.keyboard.press('Tab');await this.page.keyboard.insertText('stop();');}
     await saved(this.page);

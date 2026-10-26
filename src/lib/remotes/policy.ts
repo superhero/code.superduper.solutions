@@ -42,6 +42,13 @@ export function repositoryUrl(value: string, access?: Pick<RemoteAccess, "provid
   }
   return url.href.replace(/\/$/, "");
 }
+/** Known public Git hosts whose Smart HTTP endpoint does not allow browser CORS. */
+export function requiresGitRelay(value: string): boolean {
+  try {
+    const host = new URL(repositoryUrl(value)).hostname;
+    return host === "github.com" || host === "www.github.com";
+  } catch { return false; }
+}
 export function repositoryPath(value: string, access: Pick<RemoteAccess, "provider" | "host">): string {
   const url = new URL(repositoryUrl(value, access)), host = new URL(normalizeHost(access.provider, access.host));
   const path = url.pathname.slice(host.pathname.replace(/\/$/, "").length).replace(/^\//, "").replace(/\.git$/, "");

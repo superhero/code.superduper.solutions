@@ -3,13 +3,12 @@
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 
 @header_navigation
-Feature: Header dropdowns select the repository and page
-  Scenario Outline: Header dropdowns fit a long repository name at <width> pixels
+Feature: Repository navigation and the permanent Editor heading
+  Scenario Outline: Repository navigation and the Editor heading fit a long repository name at <width> pixels
     Given a browser repository named "A repository with a deliberately long descriptive name" with an empty file "notes.txt"
     When the browser viewport is <width> by 900 pixels
-    Then the repository and page dropdowns replace the old navigation controls
+    Then the repository menu and static Editor heading fit their headers
     And the "Repository" header menu marks "A repository with a deliberately long descriptive name" as its only selected choice
-    And the "Page" header menu marks "Editor" as its only selected choice
     And the editor fills the viewport without horizontal overflow
     Examples:
       | width |
@@ -17,20 +16,12 @@ Feature: Header dropdowns select the repository and page
       | 760   |
       | 500   |
 
-  Scenario: The page dropdown works with the keyboard before any repository exists
-    Then the empty header offers pages without an available repository
-    When I choose the header page "Resources" with the keyboard
-    Then the header page "Resources" is active
-    And the "Page" header menu marks "Resources" as its only selected choice
-    When I choose the header page "Vault" with the keyboard
-    Then the header page "Vault" is active
-    And the "Page" header menu marks "Vault" as its only selected choice
-    When I choose the header page "Settings" with the keyboard
-    Then the header page "Settings" is active
-    And the "Page" header menu marks "Settings" as its only selected choice
-    When I choose the header page "Editor" with the keyboard
-    Then the header page "Editor" is active
-    And the "Page" header menu marks "Editor" as its only selected choice
+  Scenario: Settings opens beside the editor with the keyboard before any repository exists
+    Then the empty header offers repository actions and Settings
+    When I open Settings from its toolbar button with the keyboard
+    Then the "Settings" pane is visible
+    When I close Settings with the keyboard
+    Then the "Editor" pane is visible
 
   Scenario: Switching header repositories drains accepted edits and restores their selected files
     Given a browser repository named "Header primary" with an empty file "primary.txt"
@@ -53,7 +44,7 @@ Feature: Header dropdowns select the repository and page
     Given the current edit and source Git histories are recorded
     And repository control availability is being observed
     When I rapidly type "abcdefghijklmnopqrstuvwxyz0123456789ABCD" and immediately select header page "Settings"
-    Then the header page "Settings" is active
+    Then the "Settings" pane is visible
     When I switch repository views in this order:
       | view    |
       | History |
@@ -68,6 +59,5 @@ Feature: Header dropdowns select the repository and page
     Then no repository file is open
     And the "Repository" header menu marks "menu-import" as its only selected choice
     And the "Repository" header menu uses the context menu colors
-    And the "Page" header menu uses the context menu colors
     When I open the repository file "from-menu.txt"
     Then the code document contains "Imported through the header\n" after persistence

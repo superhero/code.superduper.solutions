@@ -4,6 +4,12 @@
 
 @workspace
 Feature: Durable application workspace metadata
+  Scenario: Settings becomes an independent pane and preserves older saved layouts
+    Then Settings migrate into an independent pane with durable widths and opening priority
+
+  Scenario: Vault is an independent responsive pane with private form data excluded
+    Then Vault pane preferences migrate persist and fit without storing secret drafts
+
   Scenario: Commit comparison tabs retain their commit and historical path
     Then commit comparison tabs survive normalization moves reload and missing working files
   Scenario: History becomes a third independent right pane with shared sizing
@@ -57,8 +63,11 @@ Feature: Durable application workspace metadata
   Scenario: Explorer width is optional and bounded in persisted workspace layouts
     Then explorer widths normalize without changing default workspace layouts
 
-  Scenario: Resources is a durable view without storing measurements in workspace metadata
+  Scenario: Legacy Resources views migrate to a pane without storing measurements in workspace metadata
     Then the resources view and scroll position survive safe workspace normalization
+
+  Scenario: Resources keeps an independent width and receives priority when space is limited
+    Then Resources widths visibility and priority survive normalization without storing measurements
 
   Scenario: Vault is a durable view without storing guarded values in workspace metadata
     Then the vault view survives workspace normalization without credential drafts
@@ -68,3 +77,18 @@ Feature: Durable application workspace metadata
 
   Scenario: AI and Git panes retain independent visibility and fit their shared dock
     Then both right panes survive reload and their widths keep room for the editor
+
+  Scenario: Opening a pane closes the oldest panes including the explorer when space runs out
+    Then the newest side pane stays open while older panes close to preserve the editor
+
+  Scenario: Pane visibility and order survive reload without reopening evicted panes
+    Then explorer visibility and pane opening order normalize safely and remain closed on expansion
+
+  Scenario: Pane columns fit narrow windows without hiding the editor
+    Then all retained pane widths leave space for the editor at every supported viewport width
+
+  Scenario: Dragging a crowded dock pane borrows spare neighbour width while preserving minimums
+    Then the resized dock pane receives its requested width before neighbours share the remaining space
+
+  Scenario: Settings sections and independent scroll positions survive reload and old layouts
+    Then Settings sections and per-section scroll positions normalize and persist independently

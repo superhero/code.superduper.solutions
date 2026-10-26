@@ -33,18 +33,14 @@ Feature: Live global preferences and repository inheritance
     And the global read-only editor setting is enabled
     Then the code document is selectable but rejects document edits
 
-  @development
-  Scenario: Per-file overrides reset through repository and global inheritance
+  Scenario: Settings offer global and repository inheritance without a file scope
     When the "global" settings scope sets tab width to 3
     And I choose the workspace page "Settings"
-    Then settings scope is selected in the top header after Settings
+    Then settings scope is selected in the Settings pane header
     And the "repository" settings scope sets tab width to 6
-    And the "file" settings scope sets tab width to 8
-    Then the code editor uses a tab width of 8
+    Then the code editor uses a tab width of 6
     When the editor is reloaded after persistence
     Then the open file tab "notes.txt" is selected
-    Then the code editor uses a tab width of 8
-    When the "file" settings scope inherits its tab width again
     Then the code editor uses a tab width of 6
     When the "repository" settings scope inherits its tab width again
     Then the code editor uses a tab width of 3

@@ -6,7 +6,7 @@ import {Then} from '@cucumber/cucumber';
 import {upstreamApiFixture as fixture} from '../../../tests/fixtures/upstream-api.mjs';
 import {apiFetch} from './api-fetch.ts';
 import {gitHttp,advertisementRef} from './git-http.ts';
-import {apiBase,normalizeHost,normalizeRelay,repositoryUrl,repositoryPath,refName,remoteName,remoteError} from './policy.ts';
+import {apiBase,normalizeHost,normalizeRelay,repositoryUrl,repositoryPath,refName,remoteName,remoteError,requiresGitRelay} from './policy.ts';
 const token='only-a-local-fixture-token',sha='1234567890abcdef1234567890abcdef12345678';
 const json=data=>new Response(JSON.stringify(data),{headers:{'content-type':'application/json'}});
 Then('the {string} adapter maps reads and explicit writes using only injected fixtures',async function(provider){
@@ -81,4 +81,9 @@ Then('upstream failures provide bounded redacted actionable messages',function()
  for(const status of [401,403,404,409,422,429])assert.ok(!remoteError(Object.assign(Error(token),{status}),token).includes(token));
  assert.equal(remoteError(Error(`failure ${token}`),token),'failure [redacted]');assert.equal(remoteError(Error('x'.repeat(600))).length,500);
  const basic=btoa(`fixture:${token}`);assert.ok(!remoteError(Error(`Authorization: Basic ${basic}`),token).includes(basic));
+});
+
+Then('known browser Git relay requirements are scoped to validated public GitHub URLs',function(){
+ for(const url of ['https://github.com/owner/repo.git','https://GitHub.COM/owner/repo','https://www.github.com/owner/repo.git'])assert.equal(requiresGitRelay(url),true);
+ for(const url of ['','https://github.com','https://github.com.evil.test/owner/repo.git','https://github.enterprise.test/owner/repo.git','https://git.example.test/owner/repo.git','https://gitlab.com/owner/repo.git','https://bitbucket.org/owner/repo.git','http://github.com/owner/repo.git','https://token@github.com/owner/repo.git','https://github.com/owner/repo.git?token=fixture'])assert.equal(requiresGitRelay(url),false,url);
 });

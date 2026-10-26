@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { pageSelector, selectPage, selectDropdown } from "./navigation.helpers.mjs";
+import { editorHeading, selectPage, selectDropdown } from "./navigation.helpers.mjs";
 
 const loader = page => page.getByRole("status", { name: "Loading code editor", exact: true });
 const saved = page => expect(page.getByRole("status", { name: "Persistence status", exact: true }))
@@ -13,8 +13,8 @@ const storageFailure = "Startup fixture storage is unavailable.";
 const drawings = page => loader(page).getByRole("article");
 
 Then("Settings lists all upstream integrations without downloading their libraries", async function () {
-  await selectPage(this.page, "Settings");
-  const settings = this.page.getByRole("region", { name: "Upstream connections", exact: true });
+  await selectPage(this.page, "Settings", "Git");
+  const settings = this.page.getByRole("region", { name: "Remote connections", exact: true });
   for (const provider of ["GitHub", "GitLab", "Bitbucket"]) {
     const card = settings.getByRole("region", { name: `${provider} integration`, exact: true });
     await expect(card.getByRole("button", { name: "Install", exact: true })).toBeEnabled();
@@ -106,7 +106,8 @@ Then("all nine startup drawings are visible and animated before JavaScript runs"
   await expect(loader(this.page).locator('article[data-status="pending"]')).toHaveCount(9);
   await expect(this.page.locator("#app main")).toHaveCount(0);
   for (const card of await drawings(this.page).all()) {
-    await expect(card.locator("h2")).toBeHidden();
+    await expect(card.locator("h2")).toHaveCSS('position','absolute');
+    await expect(card.locator("h2")).toHaveCSS('width','1px');
     await expect(card.locator(".sub-items, .compact-detail, [data-item]")).toHaveCount(0);
   }
   const painted = () => drawings(this.page).evaluateAll(elements => elements.map(element =>
@@ -128,7 +129,7 @@ Then("startup drawings fit compact screens before JavaScript runs", async functi
     { width: 320, height: 240, cards: 4 }]) {
     await this.page.setViewportSize({ width: viewport.width, height: viewport.height });
     await assertDrawingLayout(this.page, viewport.cards);
-    for (const card of await drawings(this.page).all()) await expect(card.locator("h2")).toBeHidden();
+    for (const card of await drawings(this.page).all()) await expect(card.locator("h2")).toHaveCSS('width','1px');
   }
 });
 
@@ -296,7 +297,7 @@ Then("the startup screen is removed and the application is available", async fun
   await expect(this.page.locator("#startup-status")).toHaveCount(0);
   await expect(this.page.locator("#app")).not.toHaveAttribute("inert", "");
   await expect(this.page.locator("#app")).not.toHaveAttribute("aria-busy", "true");
-  await expect(pageSelector(this.page)).toBeEnabled();
+  await expect(editorHeading(this.page)).toBeVisible();
 });
 
 Then("the first startup reveal already contained the restored document position", async function () {
@@ -320,6 +321,13 @@ Given("the next startup repository read fails", async function () {
       })));
     };
   }, storageFailure);
+});
+
+Then("repository recovery controls remain usable", async function () {
+  await this.page.getByRole('button',{name:'Create a repository',exact:true}).click();
+  await expect(this.page.getByRole('dialog')).toBeVisible();
+  await this.page.keyboard.press('Escape');
+  await expect(this.page.getByRole('dialog')).toHaveCount(0);
 });
 
 Then("the startup storage failure is explained", async function () {

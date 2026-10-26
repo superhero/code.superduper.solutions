@@ -6,7 +6,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { pageSelector, repositorySelector, selectPage, selectDropdown } from "./navigation.helpers.mjs";
+import { editorHeading, repositorySelector, selectPage, selectDropdown } from "./navigation.helpers.mjs";
 
 const input = page => page.getByLabel("Code editor document", { exact: true });
 const scroller = page => page.locator(".cm-editor > .cm-scroller");
@@ -15,7 +15,7 @@ const saved = page => expect(page.getByRole("status", { name: "Persistence statu
 const scrollPosition = locator => locator.evaluate(element => ({ top: element.scrollTop, left: element.scrollLeft }));
 
 Given("the editor footer is enabled", async function () {
-  await selectPage(this.page, "Settings");
+  await selectPage(this.page, "Settings", "Editor");
   await selectDropdown(this.page, "Settings scope", "global");
   await this.page.getByRole("switch", { name: "Editor footer", exact: true }).check();
   await saved(this.page);
@@ -36,7 +36,7 @@ async function importWorkspace(world, name, extraFiles = {}) {
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, content);
   }));
-  await world.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await world.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
   await saved(world.page);
   await expect(repositorySelector(world.page)).toContainText(name);
 }
@@ -71,6 +71,9 @@ Then("the workspace tabs are {string} with {string} active", async function (pat
 });
 
 When("I select and scroll a long workspace document", async function () {
+  await selectPage(this.page, "Settings", "Editor");
+  await this.page.getByRole("switch", { name: "Editor footer", exact: true }).check();
+  await saved(this.page);await selectPage(this.page, "Editor");
   await input(this.page).focus();
   await this.page.keyboard.press("Control+Home");
   for (let line = 1; line < 61; line += 1) await this.page.keyboard.press("ArrowDown");
@@ -126,7 +129,9 @@ When("I choose and scroll the workspace Settings page", async function () {
 });
 
 Then("the workspace page is {string}", async function (name) {
-  await expect(pageSelector(this.page)).toHaveAttribute("data-value", name.toLowerCase());
+  if(["Settings","Vault","Resources"].includes(name)) await expect(this.page.getByRole("button",{name,exact:true})).toHaveAttribute("aria-expanded","true");
+  else if(name === "History") await expect(this.page.locator("[data-history-panel]")).toBeVisible();
+  else await expect(editorHeading(this.page)).toBeVisible();
   await expect(this.page.getByRole("region", { name, exact: true })).toBeVisible();
 });
 

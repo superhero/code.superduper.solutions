@@ -38,6 +38,46 @@ async function clearArtifact(hash: string): Promise<void> {
     await tx.done;
   } finally { db.close(); }
 }
+class RetryableDownload extends Error {}
+async function downloadBlock(url: URL, file: Artifact, offset: number, last: number, expected: number,
+  progress: (received: number) => void, signal: AbortSignal, fetcher: typeof fetch): Promise<Uint8Array> {
+  for (let attempt = 0; ; attempt++) {
+    signal.throwIfAborted();
+    try {
+      const response = await fetcher(url, { credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store',
+        signal: AbortSignal.any([signal, AbortSignal.timeout(120_000)]),
+        ...(file.kind === 'weights' ? { headers: { Range: `bytes=${offset}-${last}` } } : {}) });
+      if (response.status === 429 || response.status >= 500) {
+        await response.body?.cancel(); throw new RetryableDownload(`Download interrupted (HTTP ${response.status}).`);
+      }
+      if (!response.body || (file.kind === 'weights' ? response.status !== 206 || response.headers.get('content-range') !== `bytes ${offset}-${last}/${file.bytes}` : !response.ok)) {
+        await response.body?.cancel(); throw new Error(`Could not download the pinned ${file.id}${file.kind === 'weights' ? ' byte range' : ''}.`);
+      }
+      const reader = response.body.getReader(), bytes = new Uint8Array(expected); let used = 0;
+      try {
+        for (;;) {
+          const { done, value } = await reader.read(); if (done) break;
+          if (used + value.length > expected) throw new Error('Model download exceeded the pinned file size.');
+          bytes.set(value, used); used += value.length; progress(offset + used);
+        }
+      } finally { await reader.cancel().catch(() => {}); }
+      if (used !== expected) throw new Error('Model download ended before all pinned bytes arrived.');
+      signal.throwIfAborted(); return bytes;
+    } catch (error) {
+      signal.throwIfAborted();
+      const retryable = error instanceof RetryableDownload || error instanceof TypeError || error instanceof DOMException && ['NetworkError','TimeoutError'].includes(error.name);
+      if (!retryable || attempt >= 2) throw error;
+      progress(offset);
+      await new Promise<void>((resolve, reject) => {
+        const done = () => { signal.removeEventListener('abort', abort); resolve(); };
+        const timer = setTimeout(done, 250 * (attempt + 1));
+        const abort = () => { clearTimeout(timer); signal.removeEventListener('abort', abort); reject(signal.reason); };
+        signal.addEventListener('abort', abort, { once: true });
+        if (signal.aborted) abort();
+      });
+    }
+  }
+}
 /** A complete marker is written only after every byte and its digest match. */
 export async function installArtifact(file: Artifact, progress: (received: number) => void, signal: AbortSignal,
   fetcher: typeof fetch = globalThis.fetch): Promise<void> {
@@ -51,26 +91,14 @@ export async function installArtifact(file: Artifact, progress: (received: numbe
     let offset = 0;
     while (offset < file.bytes) {
       signal.throwIfAborted();
+      const part = file.parts?.find((_, index) => file.parts!.slice(0, index).reduce((sum, item) => sum + item.bytes, 0) === offset);
       const last = Math.min(offset + BLOCK_BYTES, file.bytes) - 1;
-      const url = new URL(file.url, globalThis.location?.href ?? 'http://localhost/');
+      const url = new URL(part?.url ?? file.url, globalThis.location?.href ?? 'http://localhost/');
       if (file.kind === 'weights') url.searchParams.set('browser_range', `${offset}-${last}`);
-      const response = await fetcher(url, { credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store',
-        signal: AbortSignal.any([signal, AbortSignal.timeout(120_000)]),
-        ...(file.kind === 'weights' ? { headers: { Range: `bytes=${offset}-${last}` } } : {}) });
-      const expected = file.kind === 'weights' ? last - offset + 1 : file.bytes;
-      if (!response.body || (file.kind === 'weights' ? response.status !== 206 || response.headers.get('content-range') !== `bytes ${offset}-${last}/${file.bytes}` : !response.ok)) {
-        await response.body?.cancel(); throw new Error(`Could not download the pinned ${file.id}${file.kind === 'weights' ? ' byte range' : ''}.`);
-      }
-      const reader = response.body.getReader(), bytes = new Uint8Array(expected); let used = 0;
-      try {
-        for (;;) {
-          const { done, value } = await reader.read(); if (done) break;
-          if (used + value.length > expected) throw new Error('Model download exceeded the pinned file size.');
-          bytes.set(value, used); digest.update(value); used += value.length;
-          progress(offset + used);
-        }
-      } finally { await reader.cancel().catch(() => {}); }
-      if (used !== expected) throw new Error('Model download ended before all pinned bytes arrived.');
+      const expected = part?.bytes ?? (file.kind === 'weights' ? last - offset + 1 : file.bytes);
+      const bytes = await downloadBlock(url, file, offset, last, expected, progress, signal, fetcher), used = bytes.length;
+      // A failed attempt must never contribute bytes twice to the whole-file hash.
+      digest.update(bytes);
       signal.throwIfAborted();
       // Small runtime files also use this store; runtime size is bounded by its pin.
       for (let at = 0; at < used; at += BLOCK_BYTES)
@@ -84,7 +112,8 @@ export async function installArtifact(file: Artifact, progress: (received: numbe
   finally { db.close(); }
 }
 export async function installModel(id: string, progress: (event: Progress) => void, signal: AbortSignal, baseURL = globalThis.location?.href): Promise<void> {
-  const profile = profileById(id), files = artifactsFor(profile).map(file => ({ ...file, url: new URL(file.url, baseURL).href }));
+  const profile = profileById(id), files = artifactsFor(profile).map(file => ({ ...file, url: new URL(file.url, baseURL).href,
+    ...(file.parts ? { parts: file.parts.map(part => ({ ...part, url: new URL(part.url, baseURL).href })) } : {}) }));
   await locked(async () => {
     signal.throwIfAborted();
     const estimate = await navigator.storage?.estimate();

@@ -12,6 +12,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import * as formatter from '$lib/formatting/registry';
   import { syntaxRegistry } from '$lib/syntax/registry';
   import { remoteRegistry } from '$lib/remotes/registry';
+  import { speechNotices } from '$lib/assistant/speech/notices';
   import type { FormatterNotice, FormatterPackage, PackageEnvelope } from '$lib/formatting/packages';
 
   type Source = {
@@ -37,6 +38,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     loading=true;
     const found=new Map<string,FormatterNotice>(),failures:string[]=[];
     const add=(notice:FormatterNotice)=>found.set(`${notice.name}\0${notice.version}\0${notice.text}`,notice);
+    try { for (const notice of await speechNotices()) if (!['LICENSE','LICENSE-ADDITIONAL-TERMS'].includes(notice.name)) add(notice); }
+    catch (failure) { failures.push(failure instanceof Error ? failure.message : String(failure)); }
     // Core notices are inert production HTML, parsed as text rather than executed.
     const core=document.querySelector<HTMLTemplateElement>('template#license-notices');
     for(const pre of core?.content.querySelectorAll('pre[data-license-source]')??[]){
@@ -77,7 +80,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   </details>
 </section>
 <style>
-  .license-notices{margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px;min-width:0}
+  .license-notices{margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px;min-width:0}
   summary{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:0.75rem;font-weight:700;list-style:none}
   summary::-webkit-details-marker{display:none}
   .license-notices>details>summary{font-size:0.9375rem;font-weight:650}

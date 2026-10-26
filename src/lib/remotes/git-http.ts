@@ -50,7 +50,7 @@ export function gitHttp(url: string, access: RemoteAccess | undefined, signal: A
       });
     } catch {
       if (signal.aborted) throw new Error(write ? "Push cancelled. Refresh remote refs before retrying; an accepted push cannot be undone by cancelling." : "Git transfer cancelled.");
-      throw new Error(write ? "The push connection was interrupted. Refresh remote refs before retrying. Check the host and trusted CORS relay." : "Git transport could not connect. Check the host and trusted CORS relay in Settings → Upstream connections.");
+      throw new Error(write ? "The push connection was interrupted. Refresh remote refs before retrying. Check the host and trusted CORS relay." : "Git transport could not connect. Check the host and trusted CORS relay in Settings → Remote connections.");
     }
     if (response.status === 401 || response.status === 403) throw new Error("Git access was rejected. Check token permissions, SSO approval and the selected connection.");
     if (!response.ok) throw new Error(`Git transport returned HTTP ${response.status}. Check the clone URL, repository access and relay configuration.`);

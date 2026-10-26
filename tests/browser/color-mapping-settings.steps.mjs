@@ -62,8 +62,17 @@ When("I return to the editor from color settings", async function () {
 
 for (const [verb, label] of [["undo","Undo"],["redo","Redo"]]) When(`I ${verb} the current color settings`, async function () {
   await saved(this.page);
-  await this.page.getByRole("button",{name:label,exact:true}).click();
+  await this.page.getByRole("button",{name:`${label} settings`,exact:true}).click();
   await saved(this.page);
+});
+
+When("I reset the {string} color mix", async function (label) {
+  await pane(this.page).getByRole("button",{name:`Reset ${label} color mix`,exact:true}).click();
+  await saved(this.page);
+});
+
+Then("the {string} secondary color source is {string}", async function (label, value) {
+  await expect(pane(this.page).getByRole("button",{name:`${label} mix color`,exact:true})).toHaveAttribute("data-value",value);
 });
 
 When("I reset the editor color mappings", async function () {
@@ -88,8 +97,12 @@ Then("selection opacity is {int} percent", async function (value) {
   await expect(this.page.getByRole("slider",{name:"Selection opacity",exact:true})).toHaveValue(String(value));
 });
 
-Then("editor color mappings are hidden for file settings", async function () {
-  await expect(pane(this.page)).toBeHidden();
+Then("editor color mappings offer only global and repository settings scopes", async function () {
+  const menu = await openNavigationMenu(this.page, "Settings scope");
+  await expect(menu.getByRole("menuitemradio")).toHaveCount(2);
+  await expect(menu.getByRole("menuitemradio", { name: "Global defaults", exact: true })).toBeVisible();
+  await expect(menu.getByRole("menuitemradio", { name: "Repository settings", exact: true })).toBeVisible();
+  await this.page.keyboard.press("Escape");
 });
 
 Then("the editor color previews match the existing editor without reopening it", async function () {

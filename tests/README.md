@@ -1,8 +1,15 @@
 # Test infrastructure
 
-All independently meaningful cases are Cucumber scenarios or scenario-outline
-examples. The source, acceptance, automation, and browser profiles write
-separate JSON files under `tmp/test`; the combined report includes all four.
+All independently meaningful cases are named Gherkin scenarios or scenario-outline
+examples. The source, acceptance, automation, browser, and speech profiles write
+separate JSON files under `tmp/test`; the combined report includes all five.
+Speech uses the developer-requested Vitest/QuickPickle runner. Its report adapter
+preserves each named scenario with a runner-result step; detailed assertions
+and failures remain in `speech-vitest.json`.
+Those Vitest assertions are not merged into C8's source coverage artifact;
+no speech coverage percentage is claimed, and the existing coverage gate is
+unchanged. Real speech-model tests are explicit fixture-backed runs documented
+in the [speech guide](../src/lib/assistant/speech/README.md).
 There is no unreported standalone smoke suite.
 
 | Command | Responsibility |
@@ -12,6 +19,8 @@ There is no unreported standalone smoke suite.
 | `npm run build && npm run test:acceptance` | Production artifact contents and packaging boundaries |
 | `npm run test:automation` | Repository scripts and reporting behavior |
 | `npm run test:browser` | Built-page and isolated development-page behavior through Playwright |
+| `npm run test:speech` | Vitest/QuickPickle speech algorithms, lifecycle and optional-runtime packaging |
+| `npm run test:speech:live` | Explicit real-model Chromium recordings; pinned local model/audio fixtures required |
 | `npm run test:coverage` | Produce coverage reports and require the configured thresholds |
 
 Source scenarios pair `src/*.feature` and `src/*.test.mjs`. Build acceptance

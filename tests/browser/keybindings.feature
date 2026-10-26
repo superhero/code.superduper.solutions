@@ -20,3 +20,6 @@ Feature: Configurable keyboard actions
   Scenario: Formatting shortcuts work in split panes as one undoable edit
     Given JavaScript formatting support is installed
     Then the configured formatter shortcut formats the focused split editor
+
+  Scenario: Shortcut controls remain aligned across pane widths and while adding alternatives
+    Then shortcut rows keep Add in their headers across Settings widths

@@ -3,7 +3,7 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 // Adapted from the handoff's ornith-engine.mjs; files come from verified local storage.
 import {wllamaLoadOptions} from './settings.js';
-class LocalBlob extends Blob {
+export class LocalBlob extends Blob {
   constructor(file, reader, start = 0, end = file.bytes) { super([]); this.file = file; this.reader = reader; this.first = start; this.end = end; }
   get size() { return this.end - this.first; }
   get type() { return 'application/octet-stream'; }
@@ -33,8 +33,8 @@ export class BrowserGGUF {
       await this.raw.loadModel(files.map(file => new LocalBlob(file, this.options.readArtifact)), wllamaLoadOptions(this.manifest.settings));
       signal?.throwIfAborted(); this.abort.signal.throwIfAborted();
       const info = this.raw.getLoadedContextInfo();
-      if (!(info.n_layer > 0 && info.n_vocab > 0 && info.n_ctx > 0 && info.has_image_input))
-        throw Error(this.logs.filter(line => /error|failed|allocate/i.test(line)).slice(-8).join('\n') || 'The runtime did not create a usable language and vision context.');
+      if (!(info.n_layer > 0 && info.n_vocab > 0 && info.n_ctx > 0 && (!this.manifest.projector || info.has_image_input)))
+        throw Error(this.logs.filter(line => /error|failed|allocate/i.test(line)).slice(-8).join('\n') || 'The runtime did not create a usable model context.');
       return {context: Object.fromEntries(['n_layer','n_ctx','n_vocab','has_image_input'].map(key => [key,info[key]]))};
     } finally { clearTimeout(timeout); signal?.removeEventListener('abort',stop); }
   }

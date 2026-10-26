@@ -92,9 +92,11 @@ Then('the tab insertion line marks that boundary in the link hover color',async 
   expect(line.width).toBeGreaterThan(0);expect(line.width).toBeLessThanOrEqual(3);expect(line.height).toBeGreaterThan(20);
   expect(Math.abs(line.x+line.width/2-(side==='before'?destination.x:destination.x+destination.width))).toBeLessThan(3);
   expect(await indicator.evaluate(element=>{
-    const probe=document.createElement('span');probe.style.color='var(--color-hover-foreground)';element.append(probe);
+    const probe=document.createElement('span');probe.style.color='var(--color-accent)';element.append(probe);
     const actual=getComputedStyle(element),expected=getComputedStyle(probe).color;probe.remove();
-    return actual.backgroundColor===expected||actual.borderLeftColor===expected||actual.borderRightColor===expected;
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const context=canvas.getContext('2d');
+    const color=value=>{context.clearRect(0,0,1,1);context.fillStyle=value;context.fillRect(0,0,1,1);return [...context.getImageData(0,0,1,1).data].join(',');};
+    return [actual.backgroundColor,actual.borderLeftColor,actual.borderRightColor].some(value=>color(value)===color(expected));
   })).toBe(true);
   expect(await tab(this.page,target,targetPath).evaluate(element=>{
     const style=getComputedStyle(element);return [style.borderTopWidth,style.borderRightWidth,style.borderBottomWidth,style.borderLeftWidth];
@@ -155,9 +157,10 @@ Then('the watched tab-drag viewport keeps its editor while changing files',async
     const map=editor.querySelector('.cm-minimap-gutter'),canvas=map?.querySelector('canvas');
     const box=editor.getBoundingClientRect(),bounds=map?.getBoundingClientRect();
     const painted=canvas&&canvas.width>0&&canvas.height>0&&canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data.some((value,index)=>index%4===3&&value>0);
+    const scroll=editor.querySelector('.cm-scroller'),overflow=scroll.scrollHeight>scroll.clientHeight+1;
     return {editor:editor===previous.editor,content:element===previous.content,text:element.textContent===previous.text,opening:previous.opening,
-      minimapVisible:!!bounds&&bounds.width>0&&bounds.height>0,minimapPainted:!!painted,
-      minimapBounded:!!bounds&&bounds.left>=box.left&&bounds.right<=box.right+1};
+      minimapVisible:overflow===(!!bounds&&bounds.width>0&&bounds.height>0),minimapPainted:!overflow||!!painted,
+      minimapBounded:!overflow||!!bounds&&bounds.left>=box.left&&bounds.right<=box.right+1};
   })).toEqual({editor:true,content:true,text:true,opening:false,minimapVisible:true,minimapPainted:true,minimapBounded:true});
 });
 When('I drop external text on viewport {int} tabs',async function(index){

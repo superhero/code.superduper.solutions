@@ -63,27 +63,34 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       <div class="syntax-choice"><span class="syntax-label">{item.label}</span>
         <div class="syntax-controls"><div class="syntax-select"><NavigationDropdown matchTriggerWidth placeholder="Select syntax" label={item.id==='handlebars'?'Handlebars syntax provider':`${item.label} syntax highlighting`} value={selection(item.id)} items={options(item.id)} disabled={disabled || Boolean(pending)} onchange={choice=>choose(item.id,choice)} /></div>
         {#if artifact}
-          {#if !ready(artifact.id) && (needsPackage || current)}<Button variant="ghost" disabled={disabled || Boolean(pending)} aria-label={`${current?'Update':'Install'} ${artifact.name} syntax package`} onclick={()=>install(artifact.id)}>{pending===artifact.id?'Installing…':current?'Update':'Install'}</Button>{/if}
+          {#if !ready(artifact.id) && (needsPackage || current)}<Button variant="ghost" size="icon" tooltip={pending===artifact.id?'Installing…':current?'Update':'Install'} disabled={disabled || Boolean(pending)} aria-label={`${current?'Update':'Install'} ${artifact.name} syntax package`} onclick={()=>install(artifact.id)}><MaterialIcon name={current?'downloading':'install_desktop'} size={18}/></Button>{/if}
           {#if current}<Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${artifact.name} syntax package`} disabled={disabled || Boolean(pending)} onclick={()=>uninstall(artifact.id)}><MaterialIcon name="delete" size={18} /></Button>{/if}
         {/if}
         </div>
       </div>
     {/each}
     {#if !rows.length}<p>No matching languages.</p>{/if}
-    {#if rows.length>limit}<Button class="show-more" variant="ghost" onclick={()=>limit+=20}>Show {Math.min(20,rows.length-limit)} more of {rows.length-limit}</Button>
+    {#if rows.length>limit}<Button class="show-more" variant="ghost" onclick={()=>limit+=20}><MaterialIcon name="visibility" size={18}/>Show {Math.min(20,rows.length-limit)} more of {rows.length-limit}</Button>
     {/if}
   </div>
 </section>
 
 <style>
-  .syntax-preferences{margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px}
-  .card-heading{display:flex;gap:12px;margin-bottom:22px;align-items:center}
+  .syntax-preferences{margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px}
+  .card-heading{display:flex;gap:12px;margin-bottom:var(--pane-padding);align-items:center}
   
   h2{margin:0;font-size:0.9375rem;font-weight:650}p{font-size:0.75rem;line-height:1.6;margin:6px 0 18px}
   .syntax-search{width:100%;background:var(--color-background);color:var(--color-foreground);border:0;border-radius:4px;padding:8px 11px;font-size:0.6875rem}
   .syntax-list{margin-top:6px}
-  .syntax-choice{display:grid;grid-template-columns:minmax(80px,160px) minmax(0,1fr);gap:12px;align-items:center;margin-bottom:6px;font-size:0.6875rem}
-  .syntax-controls{display:flex;align-items:center;gap:6px;min-width:0}.syntax-select{flex:1;min-width:0}
-  .syntax-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;min-height:36px;padding:8px 11px;border-radius:4px;background:var(--palette-8);color:var(--color-background);font-weight:650;overflow-wrap:anywhere}
+  .syntax-choice{display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr);gap:0;align-items:start;margin-bottom:6px;font-size:0.6875rem;min-width:0}
+  .syntax-controls{display:flex;align-items:center;gap:0;min-width:0;border-radius:0 4px 4px 0;background:var(--color-background);overflow:hidden}.syntax-select{flex:1;min-width:0}
+  .syntax-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;box-sizing:border-box;height:36px;min-height:36px;padding:1px 8px;border-block:1px solid var(--color-background);border-radius:4px 0 0 4px;background:var(--palette-8);color:var(--color-background);line-height:1.25;font-weight:650;overflow-wrap:anywhere}
+  .syntax-controls :global(button.navigation-trigger){border-block:1px solid var(--color-background);border-radius:0}
+  .syntax-controls :global(button[data-slot="button"]){border-block:1px solid var(--color-background);border-inline-start:1px solid var(--color-background);border-radius:0}
   .syntax-list :global(.show-more){width:100%}
+  @container settings-pane (max-width:550px){
+    .syntax-choice{grid-template-columns:minmax(0,1fr)}
+    .syntax-label{justify-content:flex-start;text-align:left;border-radius:4px 4px 0 0}
+    .syntax-controls{border-radius:0 0 4px 4px}
+  }
 </style>

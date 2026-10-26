@@ -5,6 +5,19 @@ applies only to the exact package name, version and declared license registered
 in `../license-notices.mjs`. Missing or changed declarations fail the build.
 There is no general replacement for missing package notices.
 
+## ONNX Runtime 1.30.0
+
+The `onnxruntime-web` and `onnxruntime-common` npm payloads declare MIT but omit
+the license text. Their exact manifests are checked by the fallback inventory.
+`onnxruntime-1.30.0-LICENSE.txt` is the unchanged Microsoft license retrieved
+from [the official v1.30.0 tag](https://github.com/microsoft/onnxruntime/blob/v1.30.0/LICENSE)
+on 2026-10-24, SHA256
+`2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c`.
+The corresponding `onnxruntime-1.30.0-ThirdPartyNotices.txt` preserves the
+same tag's complete upstream notices, SHA256
+`143764b952fdb1a7c69ce653bfba74a7744d6a8a573bfb73e235fba356c83de3`.
+The optional speech runtime carries both texts with its bundled-package notices.
+
 ## locate-character 3.0.0
 
 The npm manifest identifies Rich Harris as author and declares MIT; its README
@@ -243,3 +256,19 @@ file. npm records release commit `eb03174ce67e177bb86297c84c0389491350ff21`.
 MIT template, explicitly retaining template placeholders rather than inventing
 a copyright statement. The fallback checks the exact release manifest and
 compiled JavaScript digests; changes require review.
+
+
+The LiteRT-LM 0.18.0 / wasm-utils 2.6.0 packages omit standalone license files;
+`litert-lm-0.18.0.txt` preserves their declared Apache-2.0 terms and Google notices,
+guarded by published package/source digests. The Apache license text is the
+standard complete license also shipped by Transformers.js 4.3.1.
+`onnxruntime-1.31.0-dev.txt` and its complete ThirdPartyNotices come from
+Microsoft ONNX Runtime commit `8d85527a0`; the common runtime commit
+`2a43ec07e` has the same MIT license. The source URLs are
+`https://raw.githubusercontent.com/microsoft/onnxruntime/<commit>/LICENSE` and
+`.../ThirdPartyNotices.txt`. Package metadata digests guard both fallbacks.
+`strands-decider-PR41.txt` is the complete Apache-2.0 license from upstream
+revision `0607f4ebc4eb6c5abaefcc5489c373a7411997b1`; the bundled worker/prompt/head
+retain this provenance and identify the editor's transport/input-bound changes.
+Elephant's OneJev license and Perplexity's publisher LICENSE/NOTICE remain separate
+installation artifacts under `src/public/browser-models/notices/`.

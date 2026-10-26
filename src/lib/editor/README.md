@@ -113,12 +113,17 @@ This adapter is covered by focused source scenarios; the sidebar integration use
 browser scenarios with native file drops.
 
 `settings.ts` validates browser preferences and resolves global defaults,
-repository overrides, `.editorconfig` indentation, and explicit file overrides.
-Preferences are separate from repository content and Git history. File overrides
-are limited to indentation, tab behavior, wrapping, and read-only mode.
+repository overrides, and repository `.editorconfig` indentation. Preferences are
+separate from repository content and Git history. Legacy file overrides are
+discarded during normalization, including settings restored from history.
 Tab indents by default; Shift+Tab outdents, and Escape then Tab leaves the editor.
 Version 1 preferences migrate the former global Tab-focus default to indentation;
-repository/file overrides and new explicit focus preferences remain supported.
+repository overrides and new explicit focus preferences remain supported.
+
+`settings-tabs.ts` defines the eight Settings categories. Workspace metadata stores
+the selected category and independent scroll positions without putting view state
+in preferences or repository files. Normalization accepts known category IDs only
+and keeps the old Settings position as Appearance's fallback.
 
 `editorconfig.ts` reads applicable repository configuration without changing
 files. It owns the supported indentation properties and nested matching rules.
@@ -257,7 +262,7 @@ the original six theme accents retain their contrast correction.
 
 Color mappings and selection opacity use personal defaults with per-role
 repository overrides, reset/inheritance and the current settings scope's Undo/Redo.
-They stay outside source files and file-scoped preferences. Missing mappings keep
+They stay outside source files. Missing mappings keep
 the existing defaults. `syntaxColors` uses a CodeMirror facet to update existing
 views; the same color adapter supplies Settings swatches, both diff views and the
 minimap. Dots and semicolons follow Operators by default but can be mapped separately.
@@ -342,8 +347,7 @@ intact for files without custom associations.
 
 Appearance keeps interface typography separate from the CodeMirror font. The
 `interfaceFont` setting offers bundled Montserrat/Rationale and system sans,
-serif and monospace families, inherits personal/repository settings, and is not a
-file override. The first-paint appearance cache includes its validated identifier,
+serif and monospace families and inherits personal/repository settings. The first-paint appearance cache includes its validated identifier,
 while IndexedDB settings and application history remain authoritative.
 
 `interfaceSize` selects Small/Medium/Large (14/16/18px root text sizes), defaulting
@@ -572,11 +576,11 @@ The CSS width clamps responsively to leave room for the workbench.
 
 The **Toolbar** settings card groups button visibility by Editor, Settings and
 History. Global defaults and repository overrides apply independently to each
-view; file overrides do not control toolbars. Existing editor visibility keys
+scope; file-specific preference scopes are retired. Existing editor visibility keys
 retain their meaning. Settings Undo and Redo, and History Undo and Redo default to visible.
 Settings Reset and Reset keybindings default to hidden. Reset keybindings lives
 in the Settings toolbar and resets only the active global or repository shortcut
-scope; it is disabled in file scope. Hiding a button does not disable its command or
+scope. Hiding a button does not disable its command or
 keyboard shortcut.
 
 Function, method and arrow parameter bindings and their uses have the same inset, rounded shape as scope pills, with an 80% pane-background fill. The method parameter background has its own Editor colors mapping; foreground colors remain unchanged.

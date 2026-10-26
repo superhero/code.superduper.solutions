@@ -8,9 +8,9 @@ Those reference files and their browser data are not modified or read for keys.
 
 ## Ownership
 
-Guarded values are managed in the global [Vault page](../components/vault/README.md),
-selected from the main header's Page dropdown. Its presentation is independent
-of AI and Git panes. Navigation remembers the selected view without storing
+Guarded values are managed in the global [Vault pane](../components/vault/README.md),
+opened from the editor toolbar. Its presentation is independent
+of AI and Git panes. Workspace metadata remembers pane visibility and width without storing
 credential inputs or recovery material in workspace metadata.
 
 `crypto.ts`, `format.ts`, `session.ts`, `storage.ts`, `key-index.ts`, `lifecycle.ts`

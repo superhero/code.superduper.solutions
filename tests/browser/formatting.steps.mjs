@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 
+import {selectPage} from "./navigation.helpers.mjs";
 import {installFormatterPackage} from "./formatter.helpers.mjs";
 import {repositoryHistories} from "./repository-snapshot.helpers.mjs";
 
@@ -79,8 +80,7 @@ const fixtures = {
 };
 
 async function chooseView(page, name) {
-  await page.getByRole("button", { name: "Page", exact: true }).click();
-  await page.getByRole("menuitemradio", { name, exact: true }).click();
+  await selectPage(page,name);
 }
 async function installSupport(page, name) {
   await chooseView(page, "Settings");
@@ -124,7 +124,7 @@ Given("the unformatted {string} document fixture is imported", async function (l
   }));
   // A second file gives the stale-tab scenario a real existing destination.
   await writeFile(join(directory, "other.ts"), "const other = 7;\n");
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
   await saved(this.page);
   await files(this.page).getByRole("treeitem", { name: fixture.path, exact: true }).locator(":scope > .tree-row").click();
   await expect.poll(() => documentText(this.page)).toBe(fixture.source);

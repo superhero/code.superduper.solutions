@@ -36,7 +36,7 @@ When("I right-click the padding of file tab {string}", async function (path) {
   });
   const bounds = await tab.boundingBox();
   assert.ok(bounds);
-  await tab.click({ button: "right", position: { x: 2, y: bounds.height / 2 } });
+  await tab.click({ button: "right", position: { x: 8, y: bounds.height / 2 } });
 });
 
 When("I right-click the close icon of file tab {string}", async function (path) {

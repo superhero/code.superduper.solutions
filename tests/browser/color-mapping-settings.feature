@@ -109,8 +109,7 @@ Feature: User-controlled editor color mappings
     Then selection opacity is 20 percent
     When I reset the editor color mappings
     Then the "Operators" editor color source is "inherit"
-    When I open editor colors in the "file" settings scope
-    Then editor color mappings are hidden for file settings
+    Then editor color mappings offer only global and repository settings scopes
 
   Scenario: Minimap tokens use the configured operator dot and semicolon colors
     Given a browser repository named "Custom minimap colors" with an empty file "main.js"
@@ -128,3 +127,35 @@ Feature: User-controlled editor color mappings
     Given a browser repository named "Responsive editor colors" with an empty file "main.js"
     When I open editor colors in the "global" settings scope
     Then editor color controls fit wide and narrow pages and expose palette swatches
+
+  Scenario: Resetting a blend ratio preserves its colors and supports Settings undo and redo
+    Given a browser repository named "Blend ratio reset" with an empty file "main.js"
+    When I open editor colors in the "global" settings scope
+    And I set these editor color sources:
+      | label        | source     |
+      | Parent scope | palette-11 |
+    And I set the "Parent scope" secondary color to "palette-10" with 75 percent of the first color
+    And I reset the "Parent scope" color mix
+    Then the "Parent scope" color mix is 50 percent
+    And the "Parent scope" editor color source is "palette-11"
+    And the "Parent scope" secondary color source is "palette-10"
+    When I undo the current color settings
+    Then the "Parent scope" color mix is 75 percent
+    When I redo the current color settings
+    And I reload the editor color settings
+    Then the "Parent scope" color mix is 50 percent
+
+  Scenario: Repository blend reset restores the inherited ratio and follows later default changes
+    Given a browser repository named "Inherited blend reset" with an empty file "main.js"
+    When I open editor colors in the "global" settings scope
+    And I set the "Parameter text" secondary color to "palette-9" with 35 percent of the first color
+    And I open editor colors in the "repository" settings scope
+    And I set the "Parameter text" secondary color to "palette-9" with 75 percent of the first color
+    And I reset the "Parameter text" color mix
+    Then the "Parameter text" color mix is 35 percent
+    And the "Parameter text" editor color source is "inherit"
+    And the "Parameter text" secondary color source is "palette-9"
+    When I open editor colors in the "global" settings scope
+    And I set the "Parameter text" secondary color to "palette-9" with 55 percent of the first color
+    And I open editor colors in the "repository" settings scope
+    Then the "Parameter text" color mix is 55 percent

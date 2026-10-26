@@ -29,10 +29,13 @@ responses, scrub known credential echoes and expose fixed error codes. Decrypt
 only the selected record for inference and batch streaming IPC/render updates.
 No generic decrypt or caller-supplied credentialed HTTP action is exposed.
 
-The AI pane provides Connections alongside thread tabs. Vault management is a
-separate main page, selected in the first header's second (Page) dropdown; it is
-independent of AI and Git panes. Unmounting it clears sensitive form drafts and
-recovery presentation. Only page selection enters workspace metadata.
+The AI pane provides Connections alongside thread tabs. Vault management is an
+independent sliding pane after History, Git and AI, before Resources. The toolbar
+opens it without replacing the main view. Its visibility, opening
+order and preferred width enter workspace metadata; form values never do.
+Closing the pane unmounts its forms, clearing sensitive drafts and recovery
+presentation and aborting unfinished management. Narrow windows retain the newest
+pane beside the editor by closing older panes.
 Each thread selects its own profile and model. Public connection profiles persist
 separately, holding an entry ID rather than a value. Normal inference does not
 return plaintext credentials to the page. User entry, explicit Copy and one-time

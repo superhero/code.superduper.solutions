@@ -32,14 +32,16 @@ Then('the adjacent panes have resized by {int} pixels with aligned tabs and mini
   const geometry=await this.page.locator(panes).evaluateAll(elements=>elements.map((element,index)=>{
     const box=element.getBoundingClientRect(),tabs=document.querySelectorAll('.editor-tabs > .file-tabs')[index].getBoundingClientRect();
     const map=element.querySelector('.cm-minimap-gutter').getBoundingClientRect();
-    return {width:box.width,tabsWidth:tabs.width,x:box.x,tabsX:tabs.x,right:box.right,mapRight:map.right,mapLeft:map.left};
+    return {width:box.width,tabsWidth:tabs.width,x:box.x,tabsX:tabs.x,right:box.right,mapRight:map.right,mapLeft:map.left,mapVisible:map.width>0};
   }));
   for(const pane of geometry){
     expect(Math.abs(pane.width-pane.tabsWidth)).toBeLessThan(1);
     expect(Math.abs(pane.x-pane.tabsX)).toBeLessThan(1);
-    expect(pane.right-pane.mapRight).toBeGreaterThanOrEqual(0);
-    expect(pane.right-pane.mapRight).toBeLessThan(16);
-    expect(pane.mapLeft).toBeGreaterThan(pane.x);
+    if(pane.mapVisible){
+      expect(pane.right-pane.mapRight).toBeGreaterThanOrEqual(0);
+      expect(pane.right-pane.mapRight).toBeLessThan(16);
+      expect(pane.mapLeft).toBeGreaterThan(pane.x);
+    }
   }
   await expect(this.page.locator('[data-split-motion]')).toHaveCount(0);
 });

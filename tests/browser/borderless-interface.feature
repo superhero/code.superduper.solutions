@@ -20,7 +20,7 @@ Feature: Interface controls use borderless surfaces
     When I right-click the tree filename "file10.txt"
     And I choose Delete file for "file10.txt"
     Then the file deletion confirmation names "file10.txt"
-    And the deletion dialog and its focused buttons are borderless
+    And the deletion dialog has the shared frame and borderless focused buttons
 
   Scenario: Settings controls stay borderless while CodeMirror retains matching-token outlines
     Given a browser repository named "Borderless settings" with an empty file "main.js"

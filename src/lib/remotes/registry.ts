@@ -3,4 +3,4 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import catalog from "virtual:remote-catalog";
 import { createPackageRegistry } from "../packages/registry.ts";
-export const remoteRegistry = createPackageRegistry(catalog, "code-remote-packages", "Settings → Upstream connections");
+export const remoteRegistry = createPackageRegistry(catalog, "code-remote-packages", "Settings → Remote connections");

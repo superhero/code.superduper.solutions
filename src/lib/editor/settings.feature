@@ -4,6 +4,17 @@
 
 @editor-settings
 Feature: Editor preference validation and inheritance
+  Scenario: History and Git controls ignore retired visibility preferences
+    Then retired pane visibility preferences are discarded from saved settings
+
+  Scenario Outline: <view> minimap is an independent opt-in
+    Then <view> minimap defaults off independently and preserves scoped preferences
+
+    Examples:
+      | view     |
+      | Settings |
+      | History  |
+
   @ai-input-settings
   Scenario: AI input preferences default validate inherit and stay outside file overrides
     Then AI input settings preserve defaults and repository inheritance
@@ -80,11 +91,11 @@ Feature: Editor preference validation and inheritance
       | "corrupt"   |
       | []          |
 
-  Scenario: File overrides retain only supported editor properties
-    Then file preferences reject malformed records and unsupported visual overrides
+  Scenario: Legacy file overrides are discarded without changing supported preferences
+    Then legacy file overrides are discarded while global and repository preferences survive
 
-  Scenario: File settings take precedence over EditorConfig and repository defaults
-    Then file preferences inherit through every supported settings layer
+  Scenario: EditorConfig retains repository conventions after file overrides are removed
+    Then EditorConfig resolves over repository defaults without legacy file overrides
 
   Scenario Outline: Automatic syntax mode follows the file extension
     Then "<path>" selects the "<language>" syntax mode automatically
@@ -133,8 +144,8 @@ Feature: Editor preference validation and inheritance
   Scenario: Compact fonts are absent from interface and editor font choices
     Then compact fonts cannot be selected for the interface or editor
 
-  Scenario: Per-file automatic history retention validates and inherits its limits
-    Then history limits default to three hundred and support bounded per-file overrides
+  Scenario: Global and repository history retention validates and inherits its limits
+    Then history limits default to three hundred and inherit global and repository bounds
 
   Scenario: Custom keyboard shortcuts validate persist and inherit independently
     Then keybinding choices preserve disabled commands and repository overrides
@@ -147,6 +158,9 @@ Feature: Editor preference validation and inheritance
 
   Scenario: Zoom wheel bindings validate and inherit with keyboard alternatives
     Then zoom wheel shortcuts are restricted to zoom actions and preserve modifiers
+
+  Scenario: AI connection settings shortcut defaults off and supports scoped overrides
+    Then toolbar button preference "showAIConnectionsButton" is validated and inherited without file overrides
 
   Scenario Outline: Toolbar button visibility inherits repository choices and preserves old defaults
     Then toolbar button preference "<key>" is validated and inherited without file overrides
@@ -164,10 +178,7 @@ Feature: Editor preference validation and inheritance
       | showZoomInButton  |
       | showFormatButton  |
       | showDiffButton    |
-      | showCommitHistoryButton |
-      | showStagedHistoryButton |
       | showCommitButton |
-      | showGitButton |
       | showHistoryCommitButton |
       | showHistoryGitButton |
 

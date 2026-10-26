@@ -34,7 +34,7 @@ Then("browser resource cards charts and database counts are readable and respons
   await selectPage(page, "Resources"); await ready(page);
   for (const name of ["Processing", "Memory", "Storage", "Repositories", "IndexedDB records", "Live resource history"])
     await expect(dashboard(page).getByRole("region", { name, exact: true })).toBeVisible();
-  await expect(button(page, "Undo")).toHaveCount(0);
+  await expect(page.locator('[data-resources-panel]').getByRole('button',{name:'Undo',exact:true})).toHaveCount(0);
   await expect(metric(page, "Repositories", "Local repositories")).toHaveText("1");
   await expect(metric(page, "Repositories", "Files in current repository")).toHaveText("1");
   await expect(metric(page, "Storage", "Used storage")).not.toHaveText("Unavailable");
@@ -55,7 +55,7 @@ Then("browser resource cards charts and database counts are readable and respons
     assert.ok(await dashboard(page).evaluate(node => node.scrollWidth <= node.clientWidth + 1), "Cards do not overflow the Resources panel");
     await button(page, "Pause monitoring").focus(); await expect(button(page, "Pause monitoring")).toBeFocused();
     await page.keyboard.press("Tab"); await expect(button(page, "Refresh resources")).toBeFocused();
-    await expect(page.getByRole("tooltip", { name: "Refresh samples and database counts", exact: true })).toBeVisible();
+    await expect(page.getByRole("tooltip", { name: "Refresh resources", exact: true })).toBeVisible();
     await button(page, "Pause monitoring").click();
     await expect(button(page, "Resume monitoring")).toBeVisible();
     await button(page, "Resume monitoring").click();
@@ -281,6 +281,6 @@ Then("the Resources chart shows its title and metric picker without a summary ro
   await expect(chart.locator(".chart-summary strong")).toBeVisible();
   await expect(chart.locator(".chart-summary")).not.toContainText("Used JavaScript heap");
   await expect(chart.getByText("Used JavaScript heap", { exact: true })).toHaveCount(1);
-  await expect(this.page.getByRole("button", { name: "Pause monitoring", exact: true })).toHaveCount(0);
-  await expect(this.page.getByRole("button", { name: "Refresh resources", exact: true })).toHaveCount(0);
+  await expect(chart.getByRole("button", { name: "Pause monitoring", exact: true })).toHaveCount(0);
+  await expect(chart.getByRole("button", { name: "Refresh resources", exact: true })).toHaveCount(0);
 });

@@ -1,8 +1,14 @@
 # Upstream integrations
 
 The editor supports GitHub, GitLab (including self-managed instances), and
-Bitbucket Cloud. It has no application backend. Install Octokit, GitBeaker or
-Bitbucket.js in **Settings → Upstream connections**, then add a personal connection.
+Bitbucket Cloud. It has no application backend. Install the provider's current
+Octokit, GitBeaker or Bitbucket.js integration in **Settings → Git**, then use
+**Add connection** (`add_link`) on its joined provider row for credentials or Git transport. Connection
+creation and provider selection require an installed integration matching the
+current catalog. Removing or replacing that package disables creation and saving
+new connections until it is ready again; existing connection profiles remain
+available for editing or removal. The integrations also enable account browsing
+and hosted tools.
 The three pinned, self-contained SDKs are optional static packages under
 `remotes/`; the shared registry verifies their exact size and SHA-256 before
 installation and again before execution. Full application and dependency notices
@@ -42,6 +48,17 @@ HTTP. Direct mode works only when the Git host allows the editor's browser origi
 GitHub's ordinary Git endpoint requires a CORS relay for browser access. Configure
 an **isomorphic-git compatible trusted CORS relay** under the connection's Git
 transport section. No public relay is preselected, deployed or silently contacted.
+The clone form blocks known GitHub direct-mode requests before starting a
+transfer and provides a Configure connection action to Remote connections.
+Locked connections provide an Unlock connection action instead. The Clone
+repository button stays hidden while either prerequisite is active. Repository
+browsing and its source tabs appear only when an upstream connection is selected;
+without one, the URL form remains available. Form submission
+uses the same guard as the button; configuring and selecting an unlocked matching
+connection with a relay enables cloning. Unknown/self-managed hosts can still
+use direct transport.
+Invalid clone fields use a dark red outline and accessible invalid-state metadata;
+URL validation reasons stay in the field's accessible description without visible paragraphs.
 The relay receives Git credentials and repository data, so its operator must be
 trusted. Its endpoint must accept `<relay>/<upstream-host>/<repository-path>` and
 forward Git GET/POST requests, Authorization and Git content types, with CORS for

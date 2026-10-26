@@ -12,7 +12,7 @@ const text=page=>editor(page).evaluate(element=>[...element.querySelectorAll('.c
 Given('a history profiling repository with {int} files and {int} document transactions',{timeout:120_000},async function(files,transactions){
   const directory=join(this.artifactDirectory,'history-profile');await mkdir(directory,{recursive:true});
   await Promise.all(Array.from({length:files},(_,index)=>writeFile(join(directory,`file${index}.js`),'const value = 0;\n'.repeat(20))));
-  await this.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(this.page);
+  await this.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(this.page);
   await this.page.getByRole('treeitem',{name:'file0.js',exact:true}).locator(':scope > .tree-row').click();
   await expect(editor(this.page)).toBeVisible();await editor(this.page).click();await this.page.keyboard.press('Control+End');
   this.historyInitial=await text(this.page);this.historyTransactions=transactions;

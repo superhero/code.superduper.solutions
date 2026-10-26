@@ -26,38 +26,91 @@ size, and JetBrains Mono at 13px with 1.7× line height. Indentation uses two sp
 and a tab width of four. The initial HTML uses the same dark Bonfire appearance;
 saved preferences and the first-paint appearance cache remain authoritative.
 
-`SettingsPage.svelte` edits global, repository, and selected-file preferences,
+`SettingsPanel.svelte` uses the shared docked Sheet pane after Resources, with
+close, resize, and tab headers. It keeps the editor mounted and visible. Its width,
+visibility and opening priority persist with the other workspace panes; older
+full-page Settings layouts migrate into this pane. Container queries adapt the
+settings content to the pane width.
+
+`SettingsPage.svelte` edits global defaults and repository overrides,
 showing inherited values and reset controls. Its parent persists settings and
 applies the resolved values. Appearance uses the shared semantic palette roles.
-The shared Settings scope dropdown follows Settings in the top breadcrumb;
-the application binds its selection to the settings fields. Repository and file
-scopes are offered when their corresponding context is available.
+The shared Settings scope dropdown follows the title in the Settings pane header;
+the application binds its selection to the settings fields. Settings Undo/Redo
+and reset controls occupy its own toolbar. File history remains available in
+the editor toolbar; keyboard history follows focus between the two panes.
+Repository scope is offered while a repository is selected.
 All choice fields use that same owned dropdown, including icons, checked options,
 keyboard navigation, right-click opening and the shared menu colors.
+Settings action buttons use the regular control background and foreground;
+hover changes text and icons, while disabled actions use muted text. Keyboard
+focus keeps its separate palette fill.
 `EditorColorSettings.svelte` provides searchable color mappings after Editor
 typography, with palette swatches, optional two-source mixes and selection opacity.
 Parameter background and Parameter text control ordinary function-declaration
 parameters and their bound uses; methods and arrows keep their existing colors.
 It shares the editor's color adapter so its previews match the rendered tokens.
+Every enabled blend has a ratio reset beside its slider, matching the selection
+opacity control. Slider labels and values use the left label column with
+right-aligned text, centered beside the slider and its reset control.
+Reset preserves both chosen colors and restores the default or
+inherited ratio (50% for newly enabled blends). Matching inherited recipes drop
+the repository override so later default changes still apply.
 Personal and repository settings inherit by role and use their own settings
 Undo/Redo; row inheritance and pane reset retain all existing defaults. These
-appearance controls are omitted from file settings.
-Toolbar settings independently control the Editor, History and Settings buttons.
-Editor groups Undo/Redo with Staged history, Zoom in/out, then File diff, Commit,
-Commit history and Git operations. Format file remains its own action.
+appearance controls are available in both supported scopes.
+
+Settings fills the available pane width. Its third header row has eight sections:
+Appearance (interface styling, editor fonts and colors), Editor (indentation and
+editing behavior), Languages (mappings, syntax, engines and types), Formatting,
+Controls (toolbar and keybindings), AI, Git (history and remote connections), and Licenses.
+`settings-tabs.ts` owns the shared identifiers, labels and icons. Tab/Shift+Tab,
+arrow keys and Home/End follow the horizontal tab pattern. Inactive panels stay
+mounted and hidden so drafts and package operations survive tab changes. Scope,
+undo/redo and reset controls remain shared. The selected tab and each repository's
+per-tab scroll positions persist with workspace metadata. Legacy Settings scroll
+positions map to Appearance; configuration links select Git directly. The stored
+`remotes` tab identifier remains compatible with existing workspace preferences.
+Its native scrollbar uses the shared 2px size; the optional
+minimap remains independently controlled.
+
+Toolbar settings use separate Editor toolbar and Settings toolbar cards with the
+same icon. History, zoom, formatting, comparison and reset groups use individual
+dark wrappers. Toggle columns adapt to the available group width. These settings
+independently control configurable Editor and Settings buttons. Each switch
+explains its button visibility setting on row hover and keyboard focus.
+Editor details uses the same wrappers for editing, display, minimap and scrolling
+options, showing switch titles with descriptions in the shared tooltip on row
+hover or switch keyboard focus. Paired sliders align their
+tracks below the labels even when a label wraps, keeping each value and unit together.
+AI preferences share those switch rows and wrappers, grouped into Git tools,
+repository tools and message controls, with descriptions available in tooltips.
+Editor choices include Undo/Redo, Zoom in/out, Format file and
+File diff. History and Git pane controls always remain visible; their retired
+visibility preferences and the retired staged-history shortcut preference are
+discarded from older settings. Use History’s Staged tab to open the staged graph.
 These choices use personal defaults and repository overrides. Settings reset
-actions start hidden; the other buttons start visible. File settings do not
-change toolbar visibility. Hidden buttons retain their keyboard commands.
+actions start hidden; the other buttons start visible. Hidden buttons retain their keyboard commands.
 Settings undo/redo and scope reset include the visibility choices.
 
 `HistoryPanel.svelte` hosts the per-repository staged and commit graphs in a
-resizable right-hand Sheet, keeping the editor mounted and visible on desktop.
+resizable right-hand dock, keeping the editor mounted and visible at every width.
 It retains graph selection, scroll, minimap and revision reveal behavior, with
 independent History toolbar settings and repository-scoped Undo/Redo. Closing it
-leaves Git and AI open. Dock ordering is History, Git, then AI; multiple compact
-panes stack. `workspace.ts` owns safe legacy-page migration and shared sizing.
+leaves the other panes open when they fit. Dock ordering is History, Git, AI,
+then Vault at the far right. Vault is independent of the main view and repository;
+its toolbar button and Page menu action open the same sliding, resizable pane.
+`workspace.ts` owns safe legacy-page migration, shared sizing and opening order.
+When space runs out, older panes close, including the file explorer; the editor
+and newest pane remain side by side. The File explorer button in the toolbar's
+right action group opens/closes the tree. Visibility and opening order persist,
+while automatic viewport fitting creates no separate history action.
+The explorer slides from the left while its clipped layout boundary moves the
+editor with it. Its contents retain their full width during entry and exit;
+the resize handle stays outside the clip and waits until motion finishes.
+Reduced-motion preferences apply the layout immediately.
 
-`GitPanel.svelte` shares Staging, Commits, Actions, Remotes and Stashes
+`GitPanel.svelte` shares Staging, Commits, Actions, Remotes and Stashed
 between the editor and History entry points. Its buttons, tabs, dropdown fields
 and file/commit rows keep their backgrounds on hover and use the shared hover foreground.
 Recovery is an entry in the Actions
@@ -112,12 +165,14 @@ explorer: the same delayed hover, pointer capture, keyboard steps and drag
 cancellation apply to both. Git starts at 320px. A resized width persists as
 workspace metadata and takes precedence
 when reopening or reloading, separately from file history. Its displayed width
-stays at least 320px, reserving 560px for the editor when opened alone or sharing
-the dock with the other panes while reserving 320px for the editor. Smaller viewports clamp the
-display without replacing the saved preference. Compact mode stays full-width.
-An explicit History or Git resize captures the displayed dock widths for its
-preview, keeping neighbouring panes and drag limits stable even when saved
-preferences exceed the available space. Accepting the resize saves that visible
+normally reserves 320px for each dock pane and the editor. Smaller viewports
+clamp the display and close older panes while retaining the editor; automatic
+fitting does not replace saved width preferences.
+An explicit History, Git, AI, Vault or Resources resize starts from the displayed
+dock widths. The dragged pane receives its requested width, taking spare space
+from neighbouring dock panes only once the editor reaches its minimum. Limits
+reserve neighbours' minimum widths, so opening another pane does not silently
+lock a divider at its current width. Accepting the resize saves that visible
 arrangement; cancelling restores the previous preferences. Checking out the
 current commit is disabled, and a skipped checkout does not close the Git pane.
 Commit changes and Git operations select their target tab when another Git tab
@@ -258,7 +313,7 @@ contents. Both operations use the repository service and private Git history;
 folder rename preserves expansion and updates descendant open tabs and the
 selected document. Each complete folder mutation is one undoable revision.
 `SplitEditor.svelte` composes another editable `CodeEditor`, with its own selection
-and scroll state, syntax support, minimap, language engine and file settings.
+and scroll state, syntax support, minimap, language engine and resolved repository settings.
 Diff tabs in primary and split panes use the same 45-degree surface-colored
 background stripes as the old side of a comparison, including when focused.
 The selected diff tab renders its stripes at 25% opacity.
@@ -295,7 +350,7 @@ and recursively drains directory entry batches. The application locks repository
 navigation while reading and drains pending edits before adding the complete batch
 as one undoable change. Failures never partially add or overwrite files. Existing
 tabs stay open; dropped files do not open automatically. Git metadata requires
-Import directory to preserve the separate repository and its history.
+Import repository to preserve the separate repository and its history.
 
 `App.svelte` composes the repository explorer, open files, history,
 and these views. Durable repository operations run through the repository
@@ -321,15 +376,28 @@ Startup stays covered by the static loader until the saved page and scroll
 positions are measured. CodeEditor signals readiness after fonts, language
 loading and viewport restoration; focus is restored after the app leaves its
 inert startup state. The same gate applies when a development update remounts App.
-The page dropdown switches views without a global busy state. File navigation drains
+Toolbar controls open the side panes without a global busy state. File navigation drains
 accepted writes and locks editing and mutation controls without disabled-color
 changes. The latest file request wins; HMR still waits for the active navigation.
-The top header holds repository and page dropdowns alongside save status. The
-repository menu also contains New repository and Import directory. Both menus
-mark the current selection and share the file context menu's styling.
+The file explorer's top header holds the repository dropdown; the editor's top
+header shows a static Editor title and icon. When the explorer closes, the repository dropdown
+moves into the editor header so repository selection remains available.
+Save status stays at the bottom of the file explorer, outside its scrolling tree,
+and remains announced to assistive technology when the explorer is closed. The
+repository menu groups Rename repository and Delete repository between its
+repository choices and New repository, Import repository and Clone repository.
+Rename keeps files, settings and history. Delete requires confirmation and
+permanently removes that browser repository and its saved changes; another
+repository opens if one remains. Both menus mark the current selection and share
+the file context menu's styling.
+The file explorer shares the editor's three header rows: repository selection, a toolbar with
+its close control, and the branch dropdown. These rows remain above the scrolling
+tree and follow the editor's measured header and tab heights.
+The tree sits in a padded surface card against the pane background, matching the
+Git cards while retaining its scrolling, selection, and drag-and-drop behaviour.
 The sidebar's branch dropdown forms the file-tree root. It lists local branches
 with the current branch checked and separates New branch from that list. The
-creation sheet creates and selects a branch from the current ordinary commit;
+creation dialog creates and selects a branch from the current ordinary commit;
 initial repositories must make that first commit explicitly. Branch changes drain
 pending edits and refresh open files. Checkout errors preserve the current
 branch and visible buffer; source-Git safety remains in the repository service.
@@ -374,6 +442,9 @@ compartment without replacing syntax highlighting or editor history.
 installation, update, uninstall and optional comparison measurements. Syntax
 packages are managed in `SyntaxSettings.svelte`. Each pane uses shared notices;
 there are no separate package installation components.
+Filename mappings, syntax, language-engine and formatter rows join their label,
+selector and any package actions into one bar, matching the color mappings'
+height and outer corners.
 
 `PageMinimap.svelte` provides Settings and History with a reserved right-hand
 overview, drawing text geometry in the page’s own colors. Layout/content changes
@@ -406,17 +477,25 @@ History has no outer left padding. The branch-label gutter uses cached text
 measurements at the active interface font and size, retaining only the space
 needed by the widest label. Font changes invalidate those measurements.
 
-The shared Minimap switch defaults on for editors, comparisons, History and
-Settings. Scrollbars defaults off alongside visible minimaps; enabling it shows
-both controls. With minimaps disabled, native scrollbars remain available. Both
-preferences use the normal personal/repository settings inheritance and history.
+The Minimap switch defaults on for editors and comparisons. History minimap and
+Settings minimap are separate opt-in switches, both off by default, including for
+stored preferences created before those switches existed. Scrollbars defaults off
+alongside visible minimaps; enabling it shows both controls. With a view's minimap
+disabled, native scrollbars remain available. These preferences use normal
+personal/repository settings inheritance and history.
 
-Editor details includes a Retained history changes per file slider (0–10,000, default
-1,000), with a live count. File settings can override the limit independently;
-cleanup applies at the next startup and leaves normal source commits untouched.
+The Git tab's Staging history card includes a Changes retained per file slider
+(0–10,000, default 300), with a live count. Its description distinguishes the
+IDE's private Git history for file Undo/Redo from repository commits.
+Global defaults and repository overrides set the budget
+for each file; cleanup applies at the next startup and leaves normal source commits
+untouched.
 
 `KeybindingSettings.svelte` offers searchable application, editing, search, folding
-and completion actions. Focus a shortcut field and press a combination to record
+and completion actions. Each action label and its shortcut controls form one
+joined unit with rounded outer corners. Add sits at the right of the action
+header when another shortcut can be added. Shortcut fields fill the rows below
+and alternatives wrap in their own grid. Focus a shortcut field and press a combination to record
 it; Escape cancels. Add allows alternate shortcuts, remove disables a shortcut,
 and the pane reset restores defaults or repository inheritance. Conflicts are
 rejected within the relevant context; completion shortcuts can share keys with

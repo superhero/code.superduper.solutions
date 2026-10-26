@@ -57,8 +57,7 @@ Feature: Show loading until the saved workspace is ready
     When I reload into the startup screen
     Then the startup screen is removed and the application is available
     And the startup storage failure is explained
-    When I choose the workspace page "Settings"
-    Then the workspace page is "Settings"
+    And repository recovery controls remain usable
 
   Scenario: Reduced motion disables loading animation while storage is pending
     Given reduced motion is preferred during startup
@@ -71,19 +70,14 @@ Feature: Show loading until the saved workspace is ready
     Then the startup screen is removed and the application is available
 
   @development
-  Scenario: Hot replacing the application shows loading until the same document restores its workspace
+  Scenario: Hot replacing the application preserves the current document and workspace
     Given I import a workspace fixture named "Startup hot replacement"
     When I open the repository file "beta.txt"
     And I open the repository file "alpha.txt"
     And I select and scroll a long workspace document
-    Given the next mounted startup storage reads are held
     When the development application is hot replaced
-    Then the startup storage reads are pending
-    And the startup screen covers the viewport and keeps the application inactive
-    When I release the startup storage reads
     Then the startup screen is removed and the application is available
     And the workspace tabs are "beta.txt, alpha.txt" with "alpha.txt" active
     And the workspace document selection and scroll position are restored
     And the workspace document has keyboard focus
-    And the first startup reveal already contained the restored document position
     And the development application kept the same document

@@ -5,6 +5,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import FontOption from './FontOption.svelte';
   import NavigationDropdown from '../NavigationDropdown.svelte';
   import {Button} from '../ui/button';
+  import MaterialIcon from '../MaterialIcon.svelte';
   import {editorFonts,interfaceFonts,googleFont} from '$lib/editor/fonts';
   import {installFont,isFontInstalled} from '$lib/editor/font-storage';
   let {value,kind="editor",disabled=false,onchange}:{value:string;kind?:"editor"|"interface";disabled?:boolean;onchange(value:string):void}=$props();
@@ -28,7 +29,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </script>
 <div class="font-control">
   <div class="font-choice"><NavigationDropdown id={kind==="editor"?"setting-fontFamily":"setting-interfaceFont"} {label} placeholder={label} searchable {value} {items} {disabled} matchTriggerWidth onchange={next=>onchange(next)}>{#snippet itemLabel(item)}<FontOption value={item.value} label={item.label} {kind} />{/snippet}</NavigationDropdown></div>
-  {#if googleFont(value)}<Button disabled={disabled || pending || installed} onclick={()=>void install()} aria-label={`Install ${kind} font for offline use`}>{pending?'Installing…':installed?'Installed':'Install'}</Button>{/if}
+  {#if googleFont(value)}<Button size={installed?'default':'icon'} tooltip={pending?'Installing…':installed?'Installed':'Install'} disabled={disabled || pending || installed} onclick={()=>void install()} aria-label={`Install ${kind} font for offline use`}>{#if installed}Installed{:else}<MaterialIcon name={pending?'downloading':'install_desktop'} size={18}/>{/if}</Button>{/if}
 </div>
 {#if error}<p class="font-error" role="alert">{error}</p>{/if}
 <style>

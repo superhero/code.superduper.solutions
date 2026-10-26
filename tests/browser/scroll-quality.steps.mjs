@@ -3,10 +3,11 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import {When,Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {selectPage,selectDropdown} from './navigation.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 async function configure(page,speed,smooth){
-  await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');
+  await selectPage(page, 'Settings', 'Editor');await selectDropdown(page,'Settings scope','global');
   await page.getByRole('slider',{name:'Scroll speed',exact:true}).evaluate((element,speed)=>{
     element.value=String(speed);element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}));
   },speed);
@@ -21,6 +22,13 @@ When('I prepare a wide document for the scroll settings review',async function()
 Then('I review every scroll speed with smoothing {string} and motion {string}',{timeout:240_000},async function(smoothing,motion){
   this.scrollReview={smooth:smoothing==='enabled',motion};
   await this.page.emulateMedia({reducedMotion:motion});
+  // Shift+wheel zooms by default. Release those configurable shortcuts for this scrolling review.
+  await selectPage(this.page,'Settings','Controls');await selectDropdown(this.page,'Settings scope','global');
+  for(const action of ['Zoom in','Zoom out']){
+    await this.page.getByRole('region',{name:'Keybindings',exact:true}).getByLabel('Filter keybindings').fill(action);
+    await this.page.getByRole('button',{name:`Remove ${action} shortcut 1`,exact:true}).click();await saved(this.page);
+  }
+  await selectPage(this.page,'Editor');
   const reports=[];
   for(let step=1;step<=20;step++){
     const speed=step/4;await configure(this.page,speed,this.scrollReview.smooth);
@@ -47,7 +55,7 @@ Then('I review every scroll speed with smoothing {string} and motion {string}',{
           const immediate=element[axis],positions=[start,immediate];
           for(let sample=0;sample<35;sample++){await frame();positions.push(element[axis]);if(Math.abs(element[axis]-expected)<=1&&sample>=2)break;}
           await frame();await frame();positions.push(element[axis]);
-          results.push({pane,case:input.name,start,expected,immediate,actual:element[axis],prevented:wheel.defaultPrevented,
+          results.push({pane,case:input.name,start,extent,unit,delta,max,expected,immediate,actual:element[axis],event:{dx:wheel.deltaX,dy:wheel.deltaY,mode:wheel.deltaMode,shift:wheel.shiftKey},prevented:wheel.defaultPrevented,
             backwards:positions.some((position,index)=>index&&position<positions[index-1]-1),
             otherMoved:scrolls.some((scroll,index)=>index!==pane&&(scroll.scrollTop!==before[index].top||scroll.scrollLeft!==before[index].left)),
             eased:smooth&&motion==='no-preference'});
@@ -55,6 +63,8 @@ Then('I review every scroll speed with smoothing {string} and motion {string}',{
       }
       return results;
     },{speed,smooth:this.scrollReview.smooth,motion});
+    await mkdir(this.artifactDirectory,{recursive:true});
+    await writeFile(`${this.artifactDirectory}/scroll-speed-${speed}.json`,JSON.stringify(results,null,2));
     for(const result of results){
       const label=`${speed}× pane ${result.pane+1} ${result.case}`;
       expect(Math.abs(result.actual-result.expected),label).toBeLessThanOrEqual(.51);expect(result.backwards,label).toBe(false);

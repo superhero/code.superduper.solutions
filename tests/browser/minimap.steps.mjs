@@ -51,12 +51,12 @@ Then('the minimap navigates a long document without editing it',async function()
   assert.equal(overflow.overflow,'hidden');
 });
 Then('the minimap can be disabled and restored in Editor details',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');
   const toggle=this.page.getByRole('switch',{name:'Minimap',exact:true});await expect(toggle).toBeChecked();await toggle.click();await saved(this.page);
   await selectPage(this.page,'Editor');await expect(this.page.getByRole('group',{name:'Document minimap',exact:true})).toHaveCount(0);
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
   await expect(this.page.getByRole('group',{name:'Document minimap',exact:true})).toHaveCount(0);
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');await expect(toggle).not.toBeChecked();await toggle.click();await saved(this.page);
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');await expect(toggle).not.toBeChecked();await toggle.click();await saved(this.page);
   await selectPage(this.page,'Editor');await expect(this.page.getByRole('group',{name:'Document minimap',exact:true})).toBeVisible();
 });
 
@@ -69,9 +69,11 @@ async function checkSyntaxColors(page){
     const values=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data,colors=new Set();
     for(let index=0;index<values.length;index+=4)if(values[index+3]>=150)colors.add(`${values[index]},${values[index+1]},${values[index+2]}`);
     const spans=[...content.querySelector('.cm-line').querySelectorAll('span')];
+    const probe=document.createElement('canvas');probe.width=probe.height=1;const brush=probe.getContext('2d');
     return ['const','"value"','123'].every(text=>{
       const span=spans.find(span=>span.textContent===text);if(!span)return false;
-      const color=getComputedStyle(span).color.match(/[\d.]+/g).slice(0,3).map(Number);
+      brush.clearRect(0,0,1,1);brush.fillStyle=getComputedStyle(span).color;brush.fillRect(0,0,1,1);
+      const color=[...brush.getImageData(0,0,1,1).data].slice(0,3);
       // Canvas blocks use partial alpha; unpremultiplication can round by 1–2.
       return [...colors].some(pixel=>pixel.split(',').every((channel,index)=>Math.abs(Number(channel)-color[index])<=2));
     });
@@ -79,11 +81,11 @@ async function checkSyntaxColors(page){
 }
 Then('minimap pixels use the editor syntax colors',async function(){
   const content=this.page.getByLabel('Code editor document',{exact:true});
-  await content.click();await this.page.keyboard.insertText(Array.from({length:30},(_,index)=>`const sample${index} = "value"; const number${index} = 123; // comment`).join('\n'));await saved(this.page);
+  await content.click();await this.page.keyboard.insertText(Array.from({length:250},(_,index)=>`const sample${index} = "value"; const number${index} = 123; // comment`).join('\n'));await saved(this.page);
   await this.page.keyboard.press('Control+Home');await checkSyntaxColors(this.page);
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);await checkSyntaxColors(this.page);
 });
 Then('minimap pixels follow a palette change',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');await selectDropdown(this.page,'Palette','bonfire');await saved(this.page);
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');await selectDropdown(this.page,'Palette','bonfire');await saved(this.page);
   await selectPage(this.page,'Editor');await checkSyntaxColors(this.page);
 });

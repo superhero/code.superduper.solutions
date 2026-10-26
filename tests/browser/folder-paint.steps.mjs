@@ -65,7 +65,7 @@ When("I import a deeply nested folder for paint checks", async function () {
   await writeFile(join(root, "README.md"), "# Folder paint regression\n");
   await Promise.all(Array.from({ length: 12 }, (_, index) =>
     writeFile(join(nested, `module${index}.ts`), `export const value = ${index};\n`)));
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(root);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(root);
   await expect(directory(this.page, "source")).toHaveAttribute("aria-expanded", "false");
   await expect(this.page.getByRole("status", { name: "Persistence status", exact: true })).toHaveText("All changes saved");
 });

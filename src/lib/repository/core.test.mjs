@@ -49,6 +49,24 @@ async function contents(root,prefix='') {
   return entries;
 }
 const source=(world,id)=>({fs:world.fs,dir:repositoryPaths(id,world.root).dir});
+Then('repository rename changes only its name and rejects invalid or stale requests',async function(){
+  let state=await fixture(this);
+  state=await this.engine.commit(state.id,'Source baseline',author,state.revision);
+  state=await this.engine.write(state.id,'main.ts','saved change',state.revision);
+  state=await this.engine.undo(state.id,state.revision);
+  const ordinary=await contents(repositoryPaths(state.id,this.root).gitdir);
+  const renamed=await this.engine.renameRepository(state.id,'  Renamed repository  ',state.revision);
+  assert.equal(renamed.name,'Renamed repository');assert.equal(renamed.id,state.id);
+  assert.deepEqual(renamed.files,state.files);assert.deepEqual(renamed.history,state.history);
+  assert.deepEqual(renamed.commits,state.commits);assert.equal(renamed.historyHead,state.historyHead);
+  assert.equal(renamed.canRedo,true);assert.equal(await this.engine.read(state.id,'main.ts'),'initial');
+  assert.deepEqual(await contents(repositoryPaths(state.id,this.root).gitdir),ordinary);
+  for(const name of ['', ' ', 'x'.repeat(201),'invalid\nname'])await assert.rejects(this.engine.renameRepository(state.id,name,renamed.revision),/repository name/);
+  await assert.rejects(this.engine.renameRepository(state.id,'Stale',state.revision),/another tab/);
+  this.engine=this.open();assert.equal((await this.engine.open(state.id)).name,'Renamed repository');
+  state=await this.engine.redo(state.id,renamed.revision);
+  assert.equal(await this.engine.read(state.id,'main.ts'),'saved change');
+});
 Then('private history subjects summarize grouped changes and explicit formatting durably',async function(){
   const initial='const timeout = 5000;';let state=await fixture(this,[input('main.ts',initial)]);
   state=await this.engine.commit(state.id,'Source baseline',author,state.revision);

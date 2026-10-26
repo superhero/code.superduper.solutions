@@ -29,7 +29,7 @@ Given('the published Pages editor is open', async function () {
   this.response = await this.page.goto(baseURL, {waitUntil:'networkidle', timeout:60_000});
   assert.equal(this.response.status(), 200);
   await expect(this.page.getByRole('status', {name:'Persistence status', exact:true})).toHaveText('All changes saved', {timeout:60_000});
-  await selectPage(this.page, 'Settings');
+  await selectPage(this.page, 'Settings', 'Formatting');
   await expect(this.page.getByRole('region', {name:'Formatters', exact:true})).toBeVisible();
 });
 Then('Pages serves the browser isolation headers', async function () {
@@ -39,6 +39,7 @@ Then('Pages serves the browser isolation headers', async function () {
   assert.deepEqual(await this.page.evaluate(() => ({secure:isSecureContext, isolated:crossOriginIsolated})), {secure:true, isolated:true});
 });
 Then('the editor offers the deployed corresponding source archive', async function () {
+  await selectPage(this.page, 'Settings', 'Licenses');
   const notices = this.page.getByRole('region', {name:'Licenses and notices', exact:true});
   await notices.locator(':scope > details > summary').click();
   await expect(notices.getByRole('link', {name:'Corresponding source', exact:true})).toHaveAttribute('href', './source.tar.gz');
@@ -64,6 +65,7 @@ When('I install the published split formatter and language packages', async func
   await selectFormatterPackage(this.page, 'Roslyn');
   await formatterRow(this.page, 'Roslyn').getByRole('button', {name:'Install Roslyn', exact:true}).click();
   await expect(formatterRow(this.page, 'Roslyn').getByRole('status')).toHaveText('Installed', {timeout:120_000});
+  await selectPage(this.page, 'Settings', 'Languages');
   const engines = this.page.getByRole('region', {name:'Language engines', exact:true});
   await engines.getByRole('button', {name:'Install Taplo language engine', exact:true}).first().click();
   await expect(engines.getByRole('button', {name:'Uninstall Taplo language engine', exact:true}).first()).toBeVisible({timeout:120_000});

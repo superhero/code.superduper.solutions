@@ -6,8 +6,8 @@ export const layerLimit = profile => (profile.gguf_block_count || profile.model_
 // @wllama/wllama3.8.1 generated glue: getHeapMax=4294967296,
 // maximum:65536n pages. GPU buffers are outside this CPU heap.
 export const CPU_HEAP_BYTES = 4294967296;
-export const fullCPUFitsBuild = profile => profile.weight_bytes + profile.projector.bytes < CPU_HEAP_BYTES;
-export function executionPlans(profile, capabilities, {mode = 'auto', gpuLayers = 24, visionGpu = true} = {}) {
+export const fullCPUFitsBuild = profile => profile.weight_bytes + (profile.projector?.bytes ?? 0) < CPU_HEAP_BYTES;
+export function executionPlans(profile, capabilities, {mode = 'auto', gpuLayers = profile.settings.gpu_fallback_layers ?? 24, visionGpu = true} = {}) {
   if (!['auto', 'gpu', 'hybrid', 'cpu'].includes(mode)) throw Error('Unknown execution mode');
   if (!Number.isInteger(gpuLayers) || gpuLayers < 1 || gpuLayers > layerLimit(profile)) throw Error('Invalid GPU layer count');
   const gpu = !!capabilities?.gpu?.compute && !!capabilities?.gpu?.f16_compute;

@@ -113,9 +113,9 @@ Then("dropped entries and fallback files reject unsafe paths", async function ()
 
 Then("dropped Git metadata is rejected with history-preserving import guidance", async function () {
   for (const value of [entry(".git"), folder(".git", []), folder("root", [[folder(".GIT", [])]])]) {
-    await assert.rejects(readDroppedFiles({ items: [item(value)] }), /Use Import directory.*whole Git repository with its history/);
+    await assert.rejects(readDroppedFiles({ items: [item(value)] }), /Use Import repository.*whole Git repository with its history/);
   }
-  await assert.rejects(readDroppedFiles({ files: [file("HEAD", [1], "root/.git/HEAD")] }), /Use Import directory/);
+  await assert.rejects(readDroppedFiles({ files: [file("HEAD", [1], "root/.git/HEAD")] }), /Use Import repository/);
 });
 
 Then("drops without files explain that empty folders are not versioned", async function () {

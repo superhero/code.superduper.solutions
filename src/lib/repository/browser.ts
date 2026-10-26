@@ -6,7 +6,10 @@ import { Buffer } from "buffer";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { createRepositoryEngine, type Checkpoint, type Metadata, type Pending, type RepositoryRecord } from "./core.ts";
 import { createApplicationHistory, type ActivityCheckpoint, type ActivityMetadata, type ActivityPending, type ActivityRecord } from "./application-history.ts";
-import { planHistoryRetention, finishHistoryRetention } from "./history-retention.ts";
+import { planHistoryRetention, finishHistoryRetention, planRepositoryDeletion } from "./history-retention.ts";
+import { repositoryPaths } from "./paths.ts";
+import { removeRemoteTree } from "./remote-git.ts";
+import type { ActivityState } from "./types.ts";
 import { trackProgress, type RepositoryProgress } from "./progress.ts";
 import type { RemoteProgress } from "../remotes/types.ts";
 export { repositoryPaths } from "./paths.ts";
@@ -19,6 +22,7 @@ interface RepositoryDatabase extends DBSchema {
   pending: { key: string; value: Pending };
   preferences: { key: string; value: unknown };
   application: { key: string; value: ActivityRecord | ActivityPending };
+  deletions: { key: string; value: { id: string } };
 }
 export type BrowserRepositoryOptions = {
   filesystemName?: string;
@@ -42,8 +46,8 @@ export function createRepositoryService(options: BrowserRepositoryOptions = {}) 
   let filesystemReady: Promise<unknown> | undefined;
   let connection: Promise<IDBPDatabase<RepositoryDatabase>> | undefined;
   function database(): Promise<IDBPDatabase<RepositoryDatabase>> {
-    connection ??= trackProgress(options.onProgress, "storage.metadata", () => openDB<RepositoryDatabase>(databaseKey, 2, {
-      upgrade(database) { for (const name of ["repositories", "pending", "preferences", "application"] as const)
+    connection ??= trackProgress(options.onProgress, "storage.metadata", () => openDB<RepositoryDatabase>(databaseKey, 3, {
+      upgrade(database) { for (const name of ["repositories", "pending", "preferences", "application", "deletions"] as const)
         if (!database.objectStoreNames.contains(name)) database.createObjectStore(name); },
       blocking() { void connection?.then(database => database.close()); connection = undefined; },
     })).catch(error => { connection = undefined; throw error; });
@@ -105,6 +109,59 @@ export function createRepositoryService(options: BrowserRepositoryOptions = {}) 
     ...(options.checkpoint ? { checkpoint: options.checkpoint } : {}) });
   const application = createApplicationHistory({ ...shared, repository, metadata: activityMetadata,
     ...(options.activityCheckpoint ? { checkpoint: options.activityCheckpoint } : {}) });
+  // Called under the application lock. Publication survives interruption; cleanup is idempotent.
+  async function finishDeletions(): Promise<void> {
+    const db = await database(), ids = await db.getAllKeys("deletions");
+    if (!ids.length) return;
+    const activity = (await activityMetadata.get())!;
+    await finishHistoryRetention(shared, { repositories: [], activity, changed: true });
+    for (const id of ids) await lock(id, async () => {
+      const paths = repositoryPaths(id);
+      await removeRemoteTree({ fs: filesystem }, paths.dir);
+      await removeRemoteTree({ fs: filesystem }, paths.historyGitdir);
+      await shared.flush();
+      await db.delete("deletions", id);
+    });
+  }
+  const recoverDeletions = () => lock("application", finishDeletions);
+  async function renameRepository(id: string, name: string, expectedRevision: string) {
+    await application.loadActivity();
+    return lock("application", async () => {
+      if (await activityMetadata.pending()) throw new Error("Recover the pending repository action before renaming it.");
+      return repository.renameRepository(id, name, expectedRevision);
+    });
+  }
+  async function deleteRepository(id: string, expectedRevision: string, expectedActivity: string, state: ActivityState) {
+    repositoryPaths(id);
+    await application.loadActivity();
+    await lock("application", async () => {
+      await finishDeletions();
+      await repository.prepareRetention(id);
+      await lock(id, async () => {
+        const db = await database(), record = await metadata.get(id), activity = (await activityMetadata.get())!;
+        if (record?.revision !== expectedRevision || activity.revision !== expectedActivity || await metadata.pending(id) || await activityMetadata.pending())
+          throw new Error("This repository changed in another tab. Reload before deleting it.");
+        const remaining = (await metadata.list()).filter(record => record.id !== id).map(record => record.id);
+        const next = await planRepositoryDeletion(shared, activity, id, state, remaining);
+        await shared.flush();
+        const tx = db.transaction(["repositories", "pending", "application", "preferences", "deletions"], "readwrite");
+        void tx.done.catch(() => {});
+        if ((await tx.objectStore("repositories").get(id))?.revision !== expectedRevision ||
+          (await tx.objectStore("application").get("current") as ActivityRecord).revision !== expectedActivity ||
+          await tx.objectStore("pending").get(id) || await tx.objectStore("application").get("pending")) {
+          tx.abort(); throw new Error("This repository changed before it could be deleted. Reload and try again.");
+        }
+        await tx.objectStore("application").put(next, "current");
+        await tx.objectStore("preferences").put(next.state!.settings, "editor");
+        await tx.objectStore("repositories").delete(id);
+        await tx.objectStore("pending").delete(id);
+        await tx.objectStore("deletions").put({ id }, id);
+        await tx.done;
+      });
+      await finishDeletions();
+    });
+    return application.loadActivity();
+  }
   let maintenance: Promise<void> | undefined;
   async function maintain(): Promise<void> {
     // Finish both existing journals before reading their immutable revision endpoints.
@@ -150,7 +207,10 @@ export function createRepositoryService(options: BrowserRepositoryOptions = {}) 
       await locked(0);
     });
   }
-  return { ...repository, ...application, async loadActivity() {
+  return { ...repository, ...application, renameRepository, deleteRepository,
+    async list() { await recoverDeletions(); return repository.list(); },
+    async loadActivity() {
+    await recoverDeletions();
     maintenance ??= trackProgress(options.onProgress, "history.actions", maintain).catch(error => { maintenance = undefined; throw error; });
     await maintenance;
     return application.loadActivity();

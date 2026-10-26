@@ -8,6 +8,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. */
 
 @custom-variant dark (&:is(.dark *));
 
+:root { --pane-gap: 12px; --pane-padding: 12px; --native-scrollbar-size: 2px; }
+
 @font-face {
   font-family: Geomini;
   font-style: normal;
@@ -109,7 +111,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. */
   --tone-6: var(--palette-1);
 }
 
-@theme {
+@theme static {
   --default-transition-timing-function: ease-in;
   --color-background: var(--tone-1);
   --color-surface: var(--tone-2);
@@ -140,6 +142,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. */
   --color-disabled-foreground: var(--tone-1);
   --color-destructive: var(--tone-6);
   --color-invalid-ring: color-mix(in srgb, var(--color-destructive) 30%, transparent);
+  --color-invalid-outline: #7f1d1d;
   --color-border: var(--tone-5);
   --color-git-added: var(--palette-8);
   --color-git-modified: #d6b542;
@@ -196,14 +199,20 @@ button, summary, select { cursor: pointer; }
 /* Pending Git work disables controls without repainting their palette colors. */
 button:disabled, [data-slot="button"][aria-disabled="true"] { cursor: not-allowed; opacity: 1; box-shadow: none; }
 button, a, textarea { -webkit-tap-highlight-color: transparent; }
-:is(.editor-toolbar, .git-context) :is(button, [data-slot="button"]) {
+:is(.editor-toolbar, .explorer-toolbar, .git-context, .history-actions, .pane-toolbar, .vault-toolbar, .resources-toolbar, .settings-toolbar) :is(button, [data-slot="button"]) {
   --control-hover-foreground: var(--color-toolbar-foreground);
+  --color-hover-background: color-mix(in srgb, var(--color-foreground) 50%, transparent);
+}
+:is(.editor-toolbar, .settings-toolbar) :is(button:disabled, [data-slot="button"][aria-disabled="true"]) {
+  background: transparent;
+  color: color-mix(in srgb, var(--color-surface) 65%, transparent);
 }
 @media (hover: hover) {
-  :is(button, a[href], summary, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *) {
+  :is(button, a[href], summary, select, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *) {
     color: var(--control-hover-foreground, var(--color-hover-foreground));
   }
-  :is(button, a[href], summary, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *):not(:where([data-hover="foreground"], [data-hover="foreground"] *)) {
+  /* Second-header controls keep their dedicated hover fill. */
+  :is(.editor-toolbar, .explorer-toolbar, .git-context, .history-actions, .pane-toolbar, .vault-toolbar, .resources-toolbar, .settings-toolbar) :is(button, [data-slot="button"]):hover:not(:disabled):not([aria-disabled="true"]):not([inert], [inert] *) {
     background-color: var(--color-hover-background);
   }
 }
@@ -222,15 +231,65 @@ button, a, textarea { -webkit-tap-highlight-color: transparent; }
 .cm-editor :where(button, a[href], summary, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-ring); outline-offset: 3px;
 }
+/* Square checkboxes share the palette across forms and rendered task lists. */
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox) {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  flex: 0 0 18px;
+  inline-size: 18px;
+  block-size: 18px;
+  padding: 0;
+  margin: 2px;
+  border: 2px solid var(--color-surface);
+  border-radius: 2px;
+  outline: 2px solid var(--color-background);
+  outline-offset: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  vertical-align: middle;
+  cursor: pointer;
+}
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox)::before {
+  content: "";
+  inline-size: 5px;
+  block-size: 9px;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
+  visibility: hidden;
+}
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox):checked::before { visibility: visible; }
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox):indeterminate::before {
+  inline-size: 8px;
+  block-size: 2px;
+  border: 0;
+  background: currentColor;
+  transform: none;
+  visibility: visible;
+}
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox):focus-visible {
+  background: var(--color-focus-background);
+  color: var(--color-focus-foreground);
+}
+:is(input[data-slot="checkbox"], input.task-list-item-checkbox):disabled { cursor: default; opacity: .5; }
 ::selection { background: var(--color-selection-background); color: var(--color-selection-foreground); }
 * { scrollbar-width: thin; scrollbar-color: var(--color-scrollbar-thumb) transparent; }
+/* Keep tab rails present without waiting for overflow. */
+.tab-scroll { --tab-rail-background: color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); overflow-x: scroll; overflow-y: hidden; scrollbar-color: var(--color-scrollbar-thumb) var(--tab-rail-background); }
+.view-tabs { display:flex; min-width:0; height:var(--workbench-tabs-height, 40px); flex:0 0 var(--workbench-tabs-height, 40px); padding:0; background:var(--color-surface); border-top:2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); overscroll-behavior-x:contain; }
+.view-tabs .view-tab { flex:0 0 auto; justify-content:flex-start; height:var(--workbench-tabs-content-height, 32px); padding:8px 14px; border-right:2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); border-radius:0; background:var(--color-hover-background); font-size:.625rem; font-weight:400; gap:8px; }
+.view-tabs .view-tab:is([aria-pressed="true"], [aria-current="page"]) { background:var(--color-background); }
+.view-tabs .view-tab:focus-visible { background:var(--color-focus-background); color:var(--color-focus-foreground); }
 @supports selector(::-webkit-scrollbar) {
   /* Native scrollbar colors override pseudo-element styling in Chromium. */
   * { scrollbar-width: auto; scrollbar-color: auto; }
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar { width: var(--native-scrollbar-size); height: var(--native-scrollbar-size); }
   ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--color-scrollbar-thumb); border-radius: 4px; }
   ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  .tab-scroll { scrollbar-color: auto; }
+  .tab-scroll::-webkit-scrollbar-track { background: var(--tab-rail-background); }
 }
 .button-content { display: inline-flex; align-items: center; justify-content: inherit; gap: inherit; min-width: 0; }
 .app-tooltip { z-index: 100; max-width: min(280px, calc(100vw - 16px)); padding: 6px 10px; border-radius: 4px; background: var(--color-badge-background); color: var(--color-badge-foreground); font-size: 0.6875rem; font-weight: 700; overflow-wrap: anywhere; }

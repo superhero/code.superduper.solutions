@@ -21,3 +21,6 @@ Feature: Optional upstream clients and scoped transport
 
   Scenario: Remote error messages never retain access tokens
     Then upstream failures provide bounded redacted actionable messages
+
+  Scenario: Known GitHub browser transport requirements are recognized without blocking unknown hosts
+    Then known browser Git relay requirements are scoped to validated public GitHub URLs

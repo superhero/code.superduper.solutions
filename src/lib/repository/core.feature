@@ -3,6 +3,9 @@
 # See LICENSE and LICENSE-ADDITIONAL-TERMS.
 @repository-core
 Feature: Git-backed repository editing
+  @repository-lifecycle
+  Scenario: Renaming a repository preserves its files, Git history and saved redo
+    Then repository rename changes only its name and rejects invalid or stale requests
   @history-messages
   Scenario: A grouped message describes the complete edit and formatting has its own label
     Then private history subjects summarize grouped changes and explicit formatting durably

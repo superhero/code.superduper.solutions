@@ -76,7 +76,7 @@ When("I import a directory with varied file icon types", async function () {
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, content);
   }
-  await this.page.getByLabel("Import directory", { exact: true }).setInputFiles(directory);
+  await this.page.getByLabel("Import repository", { exact: true }).setInputFiles(directory);
   await expect(treeRow(this.page, "main.ts")).toBeVisible();
   await expect(this.page.getByRole("status", { name: "Persistence status", exact: true })).toHaveText("All changes saved");
 });

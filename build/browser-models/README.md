@@ -26,3 +26,17 @@ against `src/lib/assistant/browser/notices.json` and installed with the selected
 model. The Ornith pinned model card declares MIT but its linked parent LICENSE
 is unavailable; its existing declaration is retained rather than inventing a
 copyright notice. The Bonsai Apache license is preserved in full.
+
+The `native/` subdirectory retains the exact additional source-build inputs for
+D3's no-forward inspector/8 GiB heap, Elephant's two-block readout and Perplexity's
+protocol-v3 inline readout. These are separate Wllama builds, not replacements
+for the chat runtime. Their published files and complete MIT license are under
+`src/public/browser-models/wllama-{d3,elephant,pplx-v3}/`; each build receipt pins
+both executable outputs and the retained recipe/patch hashes. The optional
+runtime build verifies them without invoking compilers, Docker or inference.
+
+Reference owners are llm-sds-01's
+`inference/evaluations/browser-decisions/runtime/{elephant,pplx}-build.py` and
+`inference/evaluations/browser-decision-context/runtime/native/`.
+Use the recorded Wllama/llama.cpp/Emscripten/Dawn revisions and container digest;
+review those records before rebuilding. No model weights belong in this folder.

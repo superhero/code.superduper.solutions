@@ -1,9 +1,14 @@
 # Browser resources
 
-The **Resources** page adapts Operations' browser resource cards, storage/heap
+The **Resources** pane adapts Operations' browser resource cards, storage/heap
 counters, long-task observer and manual page-memory measurement. Presentation
 lives in [`components/resources`](../components/resources/ResourcesPage.svelte).
-It uses the editor's navigation, semantic palette and shared controls.
+It slides into the far-right dock after Vault, using the shared three header
+rows, palette, controls and reduced-motion transition. The editor toolbar
+opens it independently of the main view. Visibility, opening priority,
+preferred width (320–1,600px) and scroll position are workspace metadata.
+Narrow screens close older panes while retaining Resources and the editor;
+container queries adapt cards to the actual pane width.
 
 `browser.ts` samples origin storage estimates, persistence status and the optional
 JavaScript heap counters. Opening Resources requests persistent origin storage if
@@ -15,8 +20,10 @@ observation interval. Unsupported or failed observations remain `null`.
 
 Sampling runs after the previous cycle completes, with two seconds between
 cycles. Only the latest 1,024 samples remain in memory. Opening Resources starts
-monitoring, which continues across views with its session buffer intact. Hiding the document and application teardown stop the observer and
-scheduled sampling. Monitoring is automatic, with no Pause or Refresh controls. The view has
+monitoring, which continues across main views while the pane is open. Closing
+the pane, hiding the document and application teardown stop the observer and
+scheduled sampling and abort unfinished measurements. Reopening keeps the
+bounded session buffer; reloading clears it. Monitoring is automatic, with no Pause or Refresh controls. The view has
 no recording worker, cross-tab recorder, persisted metrics or network reporting.
 
 `history.ts` maps real sample ages onto a logarithmic horizontal axis measured

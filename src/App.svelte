@@ -6,10 +6,13 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import { interfaceFontStack, googleFont } from "$lib/editor/fonts";
   import { activateEditorFont } from "$lib/editor/font-storage";
   import { onMount, tick, untrack } from "svelte";
+  import { fly, type TransitionConfig } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
   import { Tooltip } from "bits-ui";
   import { Button } from "$lib/components/ui/button";
-  import * as Sheet from "$lib/components/ui/sheet";
+  import * as Dialog from "$lib/components/ui/dialog";
   import MaterialIcon from "$lib/components/MaterialIcon.svelte";
+  import Devicon from "$lib/components/Devicon.svelte";
   import FileIcon from "$lib/components/FileIcon.svelte";
   import NavigationDropdown from "$lib/components/NavigationDropdown.svelte";
   import FileDiff from "$lib/components/editor/FileDiff.svelte";
@@ -18,7 +21,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import PaneDividers from "$lib/components/editor/PaneDividers.svelte";
   import CodeEditor from "$lib/components/editor/CodeEditor.svelte";
   import AIPanel from "$lib/components/assistant/AIPanel.svelte";
-  import VaultPage from "$lib/components/vault/VaultPage.svelte";
+  import type { AIConnection } from "$lib/assistant/connections";
+  import VaultPanel from "$lib/components/vault/VaultPanel.svelte";
   import GitPanel from "$lib/components/editor/GitPanel.svelte";
   import CloneRepository from "$lib/components/editor/CloneRepository.svelte";
   import type { GitAction } from "$lib/repository/local-git-types";
@@ -30,7 +34,9 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import PageMinimap from "$lib/components/editor/PageMinimap.svelte";
   import { keybindingActions, shortcutsFor, matchesShortcut } from "$lib/editor/keybindings";
   import SettingsPage from "$lib/components/editor/SettingsPage.svelte";
-  import ResourcesPage from "$lib/components/resources/ResourcesPage.svelte";
+  import SettingsPanel from "$lib/components/editor/SettingsPanel.svelte";
+  import type { SettingsTab } from "$lib/editor/settings-tabs";
+  import ResourcesPanel from "$lib/components/resources/ResourcesPanel.svelte";
   import { mappedLanguageForPath } from "$lib/editor/languages";
   import { DEFAULT_SETTINGS, normalizeSettings, resolveSettings, languageForPath, type EditorSettings, type SettingsStore } from "$lib/editor/settings";
   import { ancestorDirectories } from "$lib/editor/file-tree";
@@ -44,7 +50,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import { resolveFormattingConfiguration } from "$lib/formatting/configuration";
   import { repositoryClient, subscribeRepositoryProgress, type RepositorySnapshot, type RepositorySummary, type ImportedFile } from "$lib/repository/client";
   import { attachGitDirectory, gitDirectoryLink } from "$lib/repository/import";
-  import { WORKSPACE_KEY, rightDockWidths, normalizeWorkspace, emptyRepositoryWorkspace, reconcileRepositoryWorkspace,
+  import { WORKSPACE_KEY, settingsScrollTop, rightDockWidths, fitWorkspacePanes, explorerDockWidth, normalizeWorkspace, emptyRepositoryWorkspace, reconcileRepositoryWorkspace,
     renameRepositoryWorkspace, commitDiffTab, commitDiffOid, diffTab, isDiffTab, isStagedDiffTab, tabFile, tabLabel, activePaneTab, tabAfterClose, moveWorkspaceTab, resolvePaneSizes, splitPaneSizes, removePaneSize, type WorkspacePage, type WorkspaceState, type RepositoryWorkspace, type EditorSession, type EditorViewport, type HistoryView, type RightPane } from "$lib/editor/workspace";
   import { beginStartup, finishStartup, rememberAppearance } from "$lib/startup";
   import { updateStartupItem, skipStartupItems, type StartupItem, type StartupStatus } from "$lib/startup-progress";
@@ -53,7 +59,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import type { ActivityScope, ActivityState, ActivitySnapshot, ActivityCommand, ActivityResult, EditGroup } from "$lib/repository/types";
 
   type Page = WorkspacePage;
-  type Form = "repository" | "branch" | "file" | "delete" | "reload";
+  type Form = "repository" | "rename-repository" | "delete-repository" | "branch" | "file" | "delete" | "reload";
   let repositories = $state<RepositorySummary[]>([]);
   let repository = $state.raw<RepositorySnapshot | null>(null);
   const markdownRepository = $derived.by(() => {
@@ -107,7 +113,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let workspaceError = $state("");
   let workspaceSaveTimer: ReturnType<typeof setTimeout> | undefined;
   let workspaceLeaving = false;
-  let restoringChrome = 0;
+  let restoringChrome = $state(0);
   let chromeRequest = 0;
   let fileTabs = $state<HTMLDivElement>();
   let historyPanel = $state<HTMLDivElement>();
@@ -126,8 +132,6 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const currentSession = $derived(Object.hasOwn(currentWorkspace.documents, path) ? currentWorkspace.documents[path] : undefined);
   let loading = $state(true);
   let starting = $state(true);
-  let resourcesStarted = $state(false);
-  $effect(() => { if (page === "resources") resourcesStarted = true; });
   let stopStartupProgress = () => {};
   let startupDisposed = false;
   let startupPositionFailed = false;
@@ -149,14 +153,19 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let error = $state("");
   let fileError = $state("");
   let settings = $state<SettingsStore>(normalizeSettings(null));
-  let settingsScope = $state<"global" | "repository" | "file">("global");
-  const activeHistoryScope:ActivityScope|undefined=$derived(page==='resources'||page==='vault'?undefined:page==='settings'?
-    {kind:'settings',scope:settingsScope,...(settingsScope!=='global'&&repository?{repositoryId:repository.id}:{}),
-      ...(settingsScope==='file'?{file:path}:{})}:repository?{kind:'repository',repositoryId:repository.id}:undefined);
+  let settingsScope = $state<"global" | "repository">("global");
+  const settingsTab = $derived(workspace.settingsTab ?? "appearance");
+  let settingsFocused = $state(false);
+  const settingsHistoryScope: ActivityScope = $derived({kind:'settings',scope:settingsScope,
+    ...(settingsScope==='repository'&&repository?{repositoryId:repository.id}:{})});
+  const settingsHistory = $derived(activity.histories?.[activityScopeKey(settingsHistoryScope)]);
+  const settingsCanUndo = $derived(Boolean(settingsHistory?.canUndo));
+  const settingsCanRedo = $derived(Boolean(settingsHistory?.canRedo));
+  const activeHistoryScope:ActivityScope|undefined=$derived(repository?{kind:'repository',repositoryId:repository.id}:undefined);
   const activeHistory=$derived(activeHistoryScope?activity.histories?.[activityScopeKey(activeHistoryScope)]:undefined);
   const canUndo = $derived(Boolean(activeHistory?.canUndo)||activeHistoryScope?.kind==='repository'&&Boolean(repository?.canUndo));
   const canRedo = $derived(Boolean(activeHistory?.canRedo)||activeHistoryScope?.kind==='repository'&&(activeHistory?.legacyRedoAllowed??activity.scopedLegacyRedoAllowed??activity.legacyRedoAllowed)&&Boolean(repository?.canRedo));
-  const settingsResetLabel = $derived(settingsScope === "file" ? "Reset file overrides" : settingsScope === "repository" ? "Reset repository overrides" : "Reset global defaults");
+  const settingsResetLabel = $derived(settingsScope === "repository" ? "Reset repository overrides" : "Reset global defaults");
   let preferencePending = $state(0);
   let settingsError = $state("");
   let fileConfiguration = $state<Partial<EditorSettings>>({});
@@ -164,17 +173,30 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let systemDark = $state(false);
   let form = $state<Form>("repository");
   let formOpen = $state(false);
-  let ollamaOpen = $derived((workspace.rightPanes?.includes("ai") ?? workspace.rightPane === "ai"));
+  let workspaceWidth = $state(0);
+  const visibleWorkspace = $derived(fitWorkspacePanes(workspaceWidth, workspace));
+  const explorerOpen = $derived(visibleWorkspace.explorerOpen !== false);
+  let ollamaOpen = $derived((visibleWorkspace.rightPanes?.includes("ai") ?? visibleWorkspace.rightPane === "ai"));
   let vaultRevision = $state(0);
-  let gitOpen = $derived((workspace.rightPanes?.includes("git") ?? workspace.rightPane === "git"));
+  let aiPanel: AIPanel | undefined = $state();
+  let initialAIConnection = $state.raw<AIConnection>();
+  const vaultOpen = $derived(visibleWorkspace.rightPanes?.includes("vault") ?? false);
+  let vaultPreview = $state<number>();
+  let vaultResize: { before: ActivityState; epoch: number } | undefined;
+  const settingsOpen = $derived(visibleWorkspace.rightPanes?.includes("settings") ?? false);
+  let settingsPreview = $state<number>();
+  let settingsResize: { before: ActivityState; epoch: number } | undefined;
+  const resourcesOpen = $derived(visibleWorkspace.rightPanes?.includes("resources") ?? false);
+  let resourcesPreview = $state<number>();
+  let resourcesResize: { before: ActivityState; epoch: number } | undefined;
+  let gitOpen = $derived((visibleWorkspace.rightPanes?.includes("git") ?? visibleWorkspace.rightPane === "git"));
   let gitInitialCommit = $state(""), gitInitialTab = $state("Changes"), gitRequest = $state(0);
-  let historyOpen = $derived(workspace.rightPanes?.includes("history") ?? false);
+  let historyOpen = $derived(visibleWorkspace.rightPanes?.includes("history") ?? false);
   let historyPreview = $state<number>();
   let historyResize: { before: ActivityState; epoch: number } | undefined;
   let gitActiveTab = $state("Changes");
-  let workAreaWidth = $state(0);
   let workbenchHeader = $state<HTMLElement>();
-  let workbenchHeaderHeight = $state(48), workbenchTabsHeight = $state(40), workbenchTabsContentHeight = $state(36);
+  let workbenchHeaderHeight = $state(48), workbenchTabsHeight = $state(40), workbenchTabsContentHeight = $state(32);
   $effect(() => {
     const header = workbenchHeader, tabs = fileTabs;
     const observer = new ResizeObserver(entries => {
@@ -192,16 +214,45 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let gitPreview = $state<number>();
   let gitResize: { before: ActivityState; epoch: number } | undefined;
   let dockResizeWidths = $state.raw<Record<RightPane, number>>();
-  const rightPaneCount = $derived(Number(ollamaOpen) + Number(gitOpen && Boolean(repository)) + Number(historyOpen && Boolean(repository)));
-  const compactRightPanes = $derived(rightPaneCount > 1 && workAreaWidth < Math.max(1000, 320 * (rightPaneCount + 1)));
+  let resizingDock = $state<RightPane>();
+  let aiPreview = $state<number>();
+  let aiResize: { before: ActivityState; epoch: number } | undefined;
+  const rightPaneCount = $derived(Number(settingsOpen) + Number(resourcesOpen) + Number(vaultOpen) + Number(ollamaOpen) + Number(gitOpen && Boolean(repository)) + Number(historyOpen && Boolean(repository)));
+  const explorerPaneWidth = $derived(explorerDockWidth(workspaceWidth, rightPaneCount, explorerPreview ?? workspace.explorerWidth ?? (workspaceWidth <= 950 ? 215 : 245)));
+  let explorerMotionWidth = $state(245), explorerMoving = $state(false);
+  $effect.pre(() => {
+    if (explorerOpen && explorerPaneWidth > 0) explorerMotionWidth = explorerPaneWidth;
+  });
+  const explorerMotionDuration = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180;
+  function explorerMotion(_node: HTMLElement): TransitionConfig {
+    const width = explorerMotionWidth;
+    return { duration: explorerMotionDuration(), easing: cubicOut, css: t => `flex-basis:${Math.max(0, t * width)}px` };
+  }
+  const explorerMaximumWidth = $derived(Math.min(600, explorerDockWidth(workspaceWidth, rightPaneCount, 600)));
+  const workAreaWidth = $derived(Math.max(0, workspaceWidth - (explorerOpen ? explorerPaneWidth : 0)));
+  const editorMinimumWidth = $derived(Math.min(320, workAreaWidth / 2));
   const rightWidths = $derived(rightDockWidths(workAreaWidth, {
-    ...(ollamaOpen ? { ai: dockResizeWidths?.ai ?? workspace.aiPaneWidth ?? 380 } : {}),
+    ...(settingsOpen ? { settings: settingsPreview ?? dockResizeWidths?.settings ?? workspace.settingsPaneWidth ?? 640 } : {}),
+    ...(ollamaOpen ? { ai: aiPreview ?? dockResizeWidths?.ai ?? workspace.aiPaneWidth ?? 380 } : {}),
+    ...(vaultOpen ? { vault: vaultPreview ?? dockResizeWidths?.vault ?? workspace.vaultPaneWidth ?? 380 } : {}),
+    ...(resourcesOpen ? { resources: resourcesPreview ?? dockResizeWidths?.resources ?? workspace.resourcesPaneWidth ?? 480 } : {}),
     ...(gitOpen && repository ? { git: gitPreview ?? dockResizeWidths?.git ?? workspace.gitPaneWidth ?? 320 } : {}),
     ...(historyOpen && repository ? { history: historyPreview ?? dockResizeWidths?.history ?? workspace.historyPaneWidth ?? 440 } : {})
-  }));
-  const gitMaximumWidth = $derived(Math.max(320, Math.min(1600, workAreaWidth - (rightPaneCount > 1 ? 320 + rightWidths.ai + rightWidths.history : 560))));
-  const historyMaximumWidth = $derived(Math.max(320, Math.min(1600, workAreaWidth - (rightPaneCount > 1 ? 320 + rightWidths.ai + rightWidths.git : 560))));
+  }, resizingDock));
+  const dockMinimumWidth = $derived(Math.min(320, workAreaWidth / (rightPaneCount + 1)));
+  const dockResizeRoom = $derived(Math.max(0, workAreaWidth - editorMinimumWidth - dockMinimumWidth * Math.max(0, rightPaneCount - 1)));
+  const gitMaximumWidth = $derived(Math.min(1600, dockResizeRoom));
+  const historyMaximumWidth = $derived(Math.min(1600, dockResizeRoom));
+  const aiMaximumWidth = $derived(Math.min(640, dockResizeRoom));
+  const vaultMaximumWidth = $derived(Math.min(640, dockResizeRoom));
+  const resourcesMaximumWidth = $derived(Math.min(1600, dockResizeRoom));
+  const settingsMaximumWidth = $derived(Math.min(1600, dockResizeRoom));
   const gitPaneWidth = $derived(rightWidths.git || 320);
+  $effect(() => {
+    if (!workspaceReady || starting || replaying || restoringChrome || visibleWorkspace === workspace) return;
+    workspace = visibleWorkspace;
+    scheduleWorkspaceSave();
+  });
   let formValue = $state("");
   let formInput = $state<HTMLInputElement>();
   let formTarget = $state("");
@@ -224,8 +275,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const workspaceBusy = $derived(controlsBusy && !gitIndexBusy);
   const activeRepositoryId = $derived(repository?.id);
   const effective = $derived(resolveSettings(settings, activeRepositoryId, path, fileConfiguration));
-  const toolbarUndoVisible = $derived(page === "settings" ? effective.showSettingsUndoButton : effective.showUndoButton);
-  const toolbarRedoVisible = $derived(page === "settings" ? effective.showSettingsRedoButton : effective.showRedoButton);
+  const toolbarUndoVisible = $derived(effective.showUndoButton);
+  const toolbarRedoVisible = $derived(effective.showRedoButton);
   let installedFormatters = $state<{ id: string; sha256: string }[]>([]);
   onMount(() => {
     let disposed = false;
@@ -279,7 +330,6 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const inheritedConfiguration = $derived(JSON.stringify(resolveSettings(settings, repository?.id)));
   const saving = $derived(pending > 0 || preferencePending > 0 || activityPending > 0 || controlsBusy);
   const status = $derived(!storageReady ? "Local storage unavailable" : writeFailed ? "Changes not saved" : activityError ? "History could not be saved" : settingsError ? "Settings not saved" : saving ? "Saving changes…" : fileNavigation ? fileNavigationStatus : "All changes saved");
-  const pages: { id: Page; name: string; icon: string }[] = [{ id: "editor", name: "Editor", icon: "wysiwyg" }, { id: "resources", name: "Resources", icon: "monitoring" }, { id: "vault", name: "Vault", icon: "lock" }, { id: "settings", name: "Settings", icon: "tune" }];
 
   /** Capture deliberate action boundaries; passive position updates are not actions. */
   function captureActivity(): ActivityState {
@@ -425,36 +475,59 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   });
   function startExplorerResize(){stopSplitMotion();explorerResize={before:captureActivity(),epoch:restoreEpoch};}
   function setRightPane(pane: RightPane, open: boolean) {
-    const current = workspace.rightPanes ?? (workspace.rightPane ? [workspace.rightPane] : []);
+    const current = visibleWorkspace.rightPanes ?? (visibleWorkspace.rightPane ? [visibleWorkspace.rightPane] : []);
     if (current.includes(pane) === open) return;
     const before = captureActivity();
-    const next = { ...workspace, rightPanes: open ? [...current, pane] : current.filter(entry => entry !== pane) };
+    const next = fitWorkspacePanes(workspaceWidth, { ...visibleWorkspace, rightPanes: open ? [...current, pane] : current.filter(entry => entry !== pane) }, open ? pane : undefined);
     delete next.rightPane;
     workspace = next;
     scheduleWorkspaceSave();
-    void recordWorkspace(`${open ? "Open" : "Close"} ${pane === "ai" ? "AI" : pane === "history" ? "History" : "Git"} pane`, before).catch(() => {});
+    void recordWorkspace(`${open ? "Open" : "Close"} ${pane === "ai" ? "AI" : pane === "history" ? "History" : pane === "vault" ? "Vault" : pane === "resources" ? "Resources" : pane === "settings" ? "Settings" : "Git"} pane`, before).catch(() => {});
   }
-  function saveAIWidth(width: number) {
-    const before = captureActivity();
-    workspace = { ...workspace, aiPaneWidth: width };
+  function toggleExplorer() {
+    const before = captureActivity(), open = !explorerOpen;
+    workspace = fitWorkspacePanes(workspaceWidth, { ...visibleWorkspace, explorerOpen: open }, open ? 'explorer' : undefined);
     scheduleWorkspaceSave();
-    void recordWorkspace("Resize AI pane", before).catch(() => {});
+    void recordWorkspace(`${open ? 'Open' : 'Close'} file explorer`, before).catch(() => {});
+  }
+  function startAIResize(){
+    stopSplitMotion();aiResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="ai";
   }
   function startHistoryResize(){
-    stopSplitMotion();historyResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};
+    stopSplitMotion();historyResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="history";
+  }
+  function startVaultResize(){
+    stopSplitMotion();vaultResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="vault";
+  }
+  function startResourcesResize(){
+    stopSplitMotion();resourcesResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="resources";
+  }
+  function startSettingsResize(){
+    stopSplitMotion();settingsResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="settings";
   }
   function startGitResize(){
-    stopSplitMotion();gitResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};
+    stopSplitMotion();gitResize={before:captureActivity(),epoch:restoreEpoch};dockResizeWidths={...rightWidths};resizingDock="git";
   }
-  function saveDockWidth(pane: "history" | "git", width: number) {
-    // An explicit resize starts from the displayed widths. Keep its neighbours
-    // fixed instead of redistributing oversized saved preferences every frame.
+  function saveDockWidth(pane: RightPane, width: number) {
+    // Start from the displayed widths and keep any necessary neighbour
+    // adjustments, rather than restoring oversized preferences after release.
     workspace = { ...workspace,
       ...(historyOpen ? { historyPaneWidth: pane === "history" ? width : rightWidths.history } : {}),
       ...(gitOpen ? { gitPaneWidth: pane === "git" ? width : rightWidths.git } : {}),
-      ...(ollamaOpen ? { aiPaneWidth: rightWidths.ai } : {})
+      ...(ollamaOpen ? { aiPaneWidth: pane === "ai" ? width : rightWidths.ai } : {}),
+      ...(vaultOpen ? { vaultPaneWidth: pane === "vault" ? width : rightWidths.vault } : {}),
+      ...(resourcesOpen ? { resourcesPaneWidth: pane === "resources" ? width : rightWidths.resources } : {}),
+      ...(settingsOpen ? { settingsPaneWidth: pane === "settings" ? width : rightWidths.settings } : {})
     };
     scheduleWorkspaceSave();
+  }
+  function finishAIResize(width:number|undefined){
+    const resizing=aiResize;aiResize=undefined;
+    if(resizing&&width!==undefined&&!replaying&&restoreEpoch===resizing.epoch){
+      saveDockWidth("ai",width);
+      void recordWorkspace("Resize AI pane",resizing.before).catch(()=>{});
+    }
+    aiPreview=undefined;dockResizeWidths=undefined;resizingDock=undefined;
   }
   function finishHistoryResize(width: number | undefined) {
     const resizing = historyResize; historyResize = undefined;
@@ -463,7 +536,31 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       void recordWorkspace("Resize History pane", resizing.before).catch(() => {});
     }
     historyPreview = undefined;
-    dockResizeWidths = undefined;
+    dockResizeWidths = undefined;resizingDock=undefined;
+  }
+  function finishVaultResize(width:number|undefined){
+    const resizing=vaultResize;vaultResize=undefined;
+    if(resizing&&width!==undefined&&!replaying&&restoreEpoch===resizing.epoch){
+      saveDockWidth("vault",width);
+      void recordWorkspace("Resize Vault pane",resizing.before).catch(()=>{});
+    }
+    vaultPreview=undefined;dockResizeWidths=undefined;resizingDock=undefined;
+  }
+  function finishResourcesResize(width:number|undefined){
+    const resizing=resourcesResize;resourcesResize=undefined;
+    if(resizing&&width!==undefined&&!replaying&&restoreEpoch===resizing.epoch){
+      saveDockWidth("resources",width);
+      void recordWorkspace("Resize Resources pane",resizing.before).catch(()=>{});
+    }
+    resourcesPreview=undefined;dockResizeWidths=undefined;resizingDock=undefined;
+  }
+  function finishSettingsResize(width:number|undefined){
+    const resizing=settingsResize;settingsResize=undefined;
+    if(resizing&&width!==undefined&&!replaying&&restoreEpoch===resizing.epoch){
+      saveDockWidth("settings",width);
+      void recordWorkspace("Resize Settings pane",resizing.before).catch(()=>{});
+    }
+    settingsPreview=undefined;dockResizeWidths=undefined;resizingDock=undefined;
   }
   function finishGitResize(width:number|undefined){
     const resizing=gitResize;gitResize=undefined;
@@ -472,7 +569,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       void recordWorkspace('Resize Git pane',resizing.before).catch(()=>{});
     }
     gitPreview=undefined;
-    dockResizeWidths=undefined;
+    dockResizeWidths=undefined;resizingDock=undefined;
   }
   function finishExplorerResize(width:number|undefined){
     const resizing=explorerResize;explorerResize=undefined;
@@ -615,7 +712,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   }
   function shortcutTarget(event:KeyboardEvent){
     const target=event.target;
-    return !(target instanceof Element&&target.closest('input, textarea, select, [data-git-draft], [data-ai-composer], [contenteditable="true"]:not(.cm-content)'));
+    return !(target instanceof Element&&target.closest('input, textarea, select, [data-git-draft], [data-markdown-composer], [data-vault-panel], [data-resources-panel], [contenteditable="true"]:not(.cm-content)'));
   }
   function preventBrowserSave(event: KeyboardEvent) {
     // CodeMirror reserves Save after trying configured editor/completion commands.
@@ -627,9 +724,15 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     if(event.defaultPrevented||!shortcutTarget(event))return;
     const action=keyboardAction(event);if(!action)return;
     event.preventDefault();
-    if(action.id==='undo'){undo();return;}
-    if(action.id==='redo'){redo();return;}
-    if(action.id==='openEditor'){navigate('editor');return;}
+    if(action.id==='undo'||action.id==='redo'){requestHistory(action.id,settingsFocused&&settingsOpen?settingsHistoryScope:activeHistoryScope);return;}
+    if(action.id==='openEditor'){
+      if(controlsBusy||fileNavigation||writeFailed)return;
+      if(focusedSplit)splitEditors[focusedSplit.id]?.focus();
+      else if(fileDiffOpen)primaryDiff?.focus();
+      else if(editorComponent)editorComponent.focus();
+      else document.getElementById('panel-editor')?.focus();
+      return;
+    }
     if(action.id==='commit'){toggleGit("Changes");return;}
     if(action.id==='git'){toggleGit();return;}
     if(action.id==='openHistory'){navigate('history');return;}
@@ -685,6 +788,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     updateWorkspace(id, { expandedDirectories, treeFocus });
   }
   function rememberFocus(event: FocusEvent) {
+    if (event.target instanceof Element && event.target.closest('.app-shell')) settingsFocused = Boolean(event.target.closest('[data-settings-panel]'));
     if (!workspaceReady || loading || starting || replaying || !repository || !(event.target instanceof Element)) return;
     const focused=event.target.closest<HTMLElement>('.split-editor, .file-tabs[data-pane-id]')?.dataset.paneId;
     if(focused)activePane=focused;
@@ -694,7 +798,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
         (event.target.closest('.editor-document > .code-editor')?'primary':undefined);
       if(targetPane!==pendingPaneFocus.pane)pendingPaneFocus=undefined;
     }
-    const focus = event.target.closest(".cm-content") && !event.target.closest('[data-ai-composer]') ? "editor" : event.target.closest('[role="treeitem"]') ? "tree" : "none";
+    const focus = event.target.closest(".cm-content") && !event.target.closest('[data-markdown-composer]') ? "editor" : event.target.closest('[role="treeitem"]') ? "tree" : "none";
     if (focus !== currentWorkspace.focus) updateWorkspace(repository.id, { focus });
   }
   function tabReveal(node:HTMLElement){
@@ -718,8 +822,23 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     updateWorkspace(repository.id, { scroll: { ...currentWorkspace.scroll,
       [area]: area === "tabs" ? element.scrollLeft : element.scrollTop } });
   }
+  function rememberSettingsScroll(node: HTMLDivElement) {
+    if (!workspaceReady || loading || restoringChrome || replaying || !repository || !node.clientHeight) return;
+    updateWorkspace(repository.id, { settingsScroll: { ...currentWorkspace.settingsScroll, [settingsTab]: node.scrollTop },
+      ...(settingsTab === "appearance" ? { scroll: { ...currentWorkspace.scroll, settings: node.scrollTop } } : {}) });
+  }
+  function restoreSettingsScroll(node: HTMLDivElement) { node.scrollTop = settingsScrollTop(currentWorkspace, settingsTab); }
+  function selectSettingsTab(next: SettingsTab) {
+    if (next === settingsTab || workspaceBusy || fileNavigation || writeFailed || replaying) return;
+    if (settingsPanel) rememberSettingsScroll(settingsPanel);
+    const before = captureActivity();
+    workspace = { ...workspace, settingsTab: next };
+    scheduleWorkspaceSave();
+    void recordWorkspace("Select Settings tab", before).catch(() => {});
+    void restoreChrome();
+  }
   async function restoreChrome(restoreTreeFocus = false) {
-    const request = ++chromeRequest, id = repository?.id, targetPage = page;
+    const request = ++chromeRequest, id = repository?.id, targetPage = page, targetSettingsTab = settingsTab;
     const stored = currentWorkspace;
     restoringChrome += 1;
     try {
@@ -730,8 +849,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       if (fileExplorer) fileExplorer.scrollTop = stored.scroll.explorer;
       if (fileTabs) fileTabs.scrollLeft = stored.scroll.tabs;
       if (historyOpen && historyPanel) historyPanel.scrollTop = stored.scroll.history;
-      if (page === "settings" && settingsPanel) settingsPanel.scrollTop = stored.scroll.settings;
-      if (page === "resources" && resourcesPanel) resourcesPanel.scrollTop = stored.scroll.resources ?? 0;
+      if (settingsOpen && settingsPanel && settingsTab === targetSettingsTab) settingsPanel.scrollTop = settingsScrollTop(stored, targetSettingsTab);
+      if (resourcesOpen && resourcesPanel) resourcesPanel.scrollTop = stored.scroll.resources ?? 0;
       if (restoreTreeFocus && stored.focus === "tree") {
         const row = [...(fileExplorer?.querySelectorAll<HTMLElement>('[role="treeitem"]') ?? [])]
           .find(element => element.getAttribute("aria-label") === stored.treeFocus);
@@ -1109,20 +1228,16 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   }
   function openCommitDiff(file:string,oid:string){
     if(!repository||controlsBusy||fileNavigation||writeFailed)return;
-    if(workAreaWidth<1000)for(const pane of ["history","git","ai"] as const)setRightPane(pane,false);
     diffViewport=undefined;
     void selectFile(commitDiffTab(file,oid));
   }
   function openGitFile(file:string){
     if(!repository||controlsBusy||fileNavigation||writeFailed)return;
     if(!repository.files.includes(file)){openStagedDiff(file);return;}
-    if(workAreaWidth<1000)for(const pane of ["history","git","ai"] as const)setRightPane(pane,false);
     void selectFile(file);
   }
   function openStagedDiff(file:string){
     if(!repository||controlsBusy||fileNavigation||writeFailed)return;
-    // Compact right panes cover the editor; reveal the requested document.
-    if(workAreaWidth<1000)for(const pane of ["history","git","ai"] as const)setRightPane(pane,false);
     diffViewport=undefined;
     void selectFile(diffTab(file,true));
   }
@@ -1174,19 +1289,48 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     if (!completed) throw new Error("Wait for the current editor operation before cloning.");
   }
   async function openUpstreamSettings() {
-    setRightPane("git", false); settingsScope = "global"; navigate("settings"); await tick();
-    const section = document.querySelector<HTMLElement>('[aria-label="Upstream connections"]');
+    setRightPane("git", false); settingsScope = "global"; navigate("settings"); selectSettingsTab("remotes");
+    // Finish saved-position restoration before applying this explicit destination.
+    await restoreChrome();
+    if (!settingsOpen) return;
+    const section = document.querySelector<HTMLElement>('[aria-label="Remote connections"]');
     section?.scrollIntoView({ block: "start" });
     section?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }
+  async function openAISettings(section: "connections" | "speech", connection?: AIConnection) {
+    initialAIConnection = connection ? { ...connection } : undefined;
+    settingsScope = "global"; navigate("settings"); selectSettingsTab("ai");
+    await restoreChrome();
+    if (!settingsOpen) return;
+    document.getElementById("settings-tab-ai")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const target = settingsPanel?.querySelector<HTMLElement>(`[aria-label="${section === "speech" ? "Speech input settings" : "AI connections"}"]`);
+    target?.scrollIntoView({ block: "start" });
+    target?.querySelector<HTMLElement>("h3, h4")?.focus({ preventScroll: true });
+  }
+  function useAIConnection(connection: AIConnection) {
+    aiPanel?.useConnection(connection);
+    setRightPane("settings", false); setRightPane("ai", true);
+  }
+  function openUtilityPane(pane: "vault" | "resources" | "settings") {
+    const title = pane === "vault" ? "Vault" : pane === "settings" ? "Settings" : "Resources";
+    (document.querySelector<HTMLElement>(`.toolbar-right button[aria-label="${title}"]`) ?? document.querySelector<HTMLElement>('.editor-heading'))?.focus({preventScroll:true});
+    if (visibleWorkspace.rightPanes?.includes(pane)) {
+      const nextWorkspace=fitWorkspacePanes(workspaceWidth,visibleWorkspace,pane);
+      if(nextWorkspace!==visibleWorkspace){
+        const before=captureActivity();workspace=nextWorkspace;scheduleWorkspaceSave();
+        void recordWorkspace(`Select ${title} pane`,before).catch(()=>{});
+      }
+    } else setRightPane(pane, true);
+    void tick().then(()=>document.querySelector<HTMLElement>(`[data-${pane}-panel] [data-pane-heading]`)?.focus({preventScroll:true}));
+  }
   function navigate(next: Page) {
+    if (next === "vault" || next === "resources" || next === "settings") { openUtilityPane(next); return; }
     if (next === "history") { openHistory(currentWorkspace.historyView); return; }
     if (controlsBusy || fileNavigation || writeFailed || next === page) return;
     pendingPaneFocus=undefined;
     const before = captureActivity();
     error = "";
     page = next;
-    if (next === "vault") { setRightPane("ai", false); setRightPane("git", false); setRightPane("history", false); }
     void recordWorkspace("Change view", before).catch(() => {});
     void restoreChrome();
   }
@@ -1196,8 +1340,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     pendingPaneFocus = undefined;
     error = "";
     updateWorkspace(repository.id, { historyView, scroll: { ...currentWorkspace.scroll, history: historyView === currentWorkspace.historyView ? currentWorkspace.scroll.history : 0 } });
-    const current = workspace.rightPanes ?? (workspace.rightPane ? [workspace.rightPane] : []);
-    workspace = { ...workspace, rightPanes: [...new Set([...current, "history" as const])] };
+    const current = visibleWorkspace.rightPanes ?? (visibleWorkspace.rightPane ? [visibleWorkspace.rightPane] : []);
+    workspace = fitWorkspacePanes(workspaceWidth, { ...workspace, ...visibleWorkspace, rightPanes: [...new Set([...current, "history" as const])] }, 'history');
     delete workspace.rightPane;
     scheduleWorkspaceSave();
     void recordWorkspace("Open history", before).catch(() => {});
@@ -1401,10 +1545,11 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     });
   }
   function focusFilePath(event: Event) {
-    if (form !== "file" || !formInput) return;
+    if ((form !== "file" && form !== "rename-repository") || !formInput) return;
     event.preventDefault();
     formInput.focus();
-    formInput.setSelectionRange(formInput.value.length, formInput.value.length);
+    if (form === "rename-repository") formInput.select();
+    else formInput.setSelectionRange(formInput.value.length, formInput.value.length);
   }
   async function submitForm(event: SubmitEvent) {
     event.preventDefault(); formError = "";
@@ -1426,6 +1571,17 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           const created = await repositoryClient.create(formValue.trim());
           repositories = await repositoryClient.list(); storageReady = true; openedFiles = []; await refresh(created, ""); page = "editor";
           await recordWorkspace("New repository", before);
+        } else if (form === "rename-repository" || form === "delete-repository") {
+          if (!repository || repository.id !== formTarget) throw new Error("The selected repository changed. Reopen the repository menu and try again.");
+          if (form === "rename-repository") {
+            await refresh(await repositoryClient.renameRepository(repository.id, formValue.trim(), repository.revision));
+            repositories = await repositoryClient.list();
+          } else {
+            activity = await repositoryClient.deleteRepository(repository.id, repository.revision, activity.revision, captureActivity());
+            repositories = await repositoryClient.list();
+            await restoreActivity({ activity });
+            saveWorkspaceNow();
+          }
         } else if (repository) {
           if (form === "branch") await refresh(await repositoryClient.createBranch(repository.id, formValue.trim(), repository.revision));
           if (form === "file") {
@@ -1497,7 +1653,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   function editorZoomWheel(node:HTMLElement){
     let lastTime=0,lastDirection=0;
     const wheel=(event:WheelEvent)=>{
-      if(!(event.target instanceof Element)||!event.target.closest('.cm-scroller')||event.target.closest('.cm-tooltip, [data-ai-composer]'))return;
+      if(!(event.target instanceof Element)||!event.target.closest('.cm-scroller')||event.target.closest('.cm-tooltip, [data-markdown-composer]'))return;
       const delta=event.deltaY||event.deltaX;if(!delta)return;
       const key=delta<0?'WheelUp':'WheelDown';
       const action=(['zoomIn','zoomOut'] as const).find(id=>shortcutsFor(id,effective.keybindings).some(binding=>matchesShortcut({...event,key,ctrlKey:event.ctrlKey,metaKey:event.metaKey,altKey:event.altKey,shiftKey:event.shiftKey},binding)));
@@ -1530,15 +1686,45 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 
 <svelte:window onkeydowncapture={preventBrowserSave} onbeforeunload={protectPending} onpagehide={leaveWorkspace} onpageshow={() => { workspaceLeaving = false; }} />
 <svelte:document onfocusin={rememberFocus} onkeydown={applicationKeydown} />
-<input class="directory-input" bind:this={directoryInput} type="file" webkitdirectory multiple aria-label="Import directory" onchange={importDirectory} />
+<input class="directory-input" bind:this={directoryInput} type="file" webkitdirectory multiple aria-label="Import repository" onchange={importDirectory} />
+
+{#snippet repositoryPicker()}
+<div class="header-picker repository-picker" inert={fileNavigation}>
+  <NavigationDropdown label="Repository" value={repository?.id ?? ""} placeholder="Choose a repository" placeholderIcon="folder_open"
+    items={repositories.map(item => ({ value: item.id, label: item.name, icon: item.id === repository?.id ? "folder_open" : "folder" }))}
+    disabled={workspaceBusy || loading || writeFailed}
+    onchange={id => { void selectRepository(id); }}
+    actionGroups={repository ? [[
+      { label: "Rename repository", icon: "drive_file_rename_outline", onselect: () => { if (repository) showForm("rename-repository", repository.id, repository.name); } },
+      { label: "Delete repository", icon: "delete", onselect: () => { if (repository) showForm("delete-repository", repository.id, repository.name); } }
+    ]] : []}
+    actions={[
+      { label: "New repository", icon: "create_new_folder", onselect: () => showForm("repository") },
+      { label: "Import repository", icon: "drive_folder_upload", onselect: () => directoryInput.click() },
+      { label: "Clone repository", icon: "cloud_download", onselect: () => cloneOpen = true }
+    ]} />
+</div>
+{/snippet}
 
 <Tooltip.Provider>
-<main aria-label="Code editor" class="app-shell">
+<main aria-label="Code editor" class="app-shell" bind:clientWidth={workspaceWidth}
+  style:--workbench-header-height={`${workbenchHeaderHeight}px`}
+  style:--workbench-tabs-height={`${workbenchTabsHeight}px`}
+  style:--workbench-tabs-content-height={`${workbenchTabsContentHeight}px`}>
+  {#if explorerOpen}
+  <div class="explorer-dock" style:flex-basis={`${explorerMotionWidth}px`} transition:explorerMotion
+    onintrostart={() => explorerMoving = true} onintroend={() => explorerMoving = false}
+    onoutrostart={() => explorerMoving = true} onoutroend={() => explorerMoving = false}>
+  <div class="explorer-clip">
   <RepositoryContextMenu disabled={!repository || workspaceBusy || fileNavigation || writeFailed} oncreate={() => showNewFile("")}>
     {#snippet child({ props })}
-  <aside {...props} style:--explorer-width={explorerPreview!==undefined||workspace.explorerWidth!==undefined?`${explorerPreview??workspace.explorerWidth}px`:undefined} class="sidebar" inert={gitIndexBusy} aria-label="Repository explorer">
-    <div class="files-section" bind:this={fileExplorer} onscroll={event => rememberScroll("explorer", event.currentTarget)}>
-      <div class="section-heading">
+  <aside {...props} id="repository-explorer" style:width={`${explorerMotionWidth}px`} class="sidebar" inert={gitIndexBusy || !explorerOpen} aria-label="Repository explorer"
+    transition:fly|global={{x:-explorerMotionWidth,opacity:1,duration:explorerMotionDuration(),easing:cubicOut}}>
+    <header class="explorer-header">{@render repositoryPicker()}</header>
+    <div class="explorer-toolbar">
+      <Button variant="ghost" size="icon-sm" aria-label="Close file explorer" tooltip="Close file explorer" tooltipSide="top" onclick={toggleExplorer}><MaterialIcon name="close" size={18} /></Button>
+    </div>
+    <nav class="explorer-tabs tab-scroll" aria-label="Explorer branch">
         {#if repository}
           <div class="branch-label" inert={fileNavigation}>
             <NavigationDropdown label="Branch" value={repository.branch ?? ""} placeholder={repository.branch ?? (repository.head ? `Detached ${repository.head.slice(0, 8)}` : "Detached HEAD")} placeholderIcon="folder_open"
@@ -1546,8 +1732,9 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
               disabled={workspaceBusy || writeFailed} onchange={branch => void changeBranch(branch)}
               actions={[{ label: "New branch", icon: "account_tree", onselect: () => showForm("branch") }]} />
           </div>
-        {:else}<span>FILES</span>{/if}
-      </div>
+        {/if}
+    </nav>
+    <div class="files-section" bind:this={fileExplorer} onscroll={event => rememberScroll("explorer", event.currentTarget)}>
       <div class="root-files">
         {#key repository?.id}
           <FileTree showIcons={effective.fileExplorerIcons} files={repository?.files ?? []} selectedPath={path} disabled={workspaceBusy || writeFailed}
@@ -1556,58 +1743,35 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
             {...(repository ? { onimport: addDroppedFiles } : {})}
             onselect={file => void selectFile(file)} onrename={renameEntry} ondelete={file => showForm("delete", file)} oncreate={showNewFile} />
         {/key}
+        {#if !repository?.files.length}<p class="empty-files">{repository ? "No files yet. Start with a new file." : "Your files will appear here."}</p>{/if}
       </div>
-      {#if !repository?.files.length}<p class="empty-files">{repository ? "No files yet. Start with a new file." : "Your files will appear here."}</p>{/if}
     </div>
-    <ExplorerDivider disabled={!workspaceReady||workspaceBusy||fileNavigation||writeFailed||replaying} onstart={startExplorerResize} onpreview={width=>{explorerPreview=width;}} onend={finishExplorerResize}/>
+    <footer class="explorer-footer">
+      <div class="save-status" role="status" aria-label="Persistence status" aria-live="polite"><span class:pending={saving} class:failed={writeFailed || Boolean(settingsError)} class="status-dot"></span>{loading ? "Opening local storage…" : status}</div>
+    </footer>
   </aside>
     {/snippet}
   </RepositoryContextMenu>
-  <div class="work-area" bind:clientWidth={workAreaWidth}
-    style:--workbench-header-height={`${workbenchHeaderHeight}px`}
-    style:--workbench-tabs-height={`${workbenchTabsHeight}px`}
-    style:--workbench-tabs-content-height={`${workbenchTabsContentHeight}px`}>
-  <section class="workbench" inert={gitIndexBusy} hidden={compactRightPanes}>
+  </div>
+  <ExplorerDivider maximum={explorerMaximumWidth} disabled={explorerMoving||!workspaceReady||workspaceBusy||fileNavigation||writeFailed||replaying} onstart={startExplorerResize} onpreview={width=>{explorerPreview=width;}} onend={finishExplorerResize}/>
+  </div>
+  {/if}
+  {#if !explorerOpen}<div class="sr-only" role="status" aria-label="Persistence status" aria-live="polite">{loading ? "Opening local storage…" : status}</div>{/if}
+  <div class="work-area">
+  <section class="workbench" inert={gitIndexBusy}>
     <header class="topbar" bind:this={workbenchHeader}>
       <nav class="breadcrumb" aria-label="Repository navigation" inert={fileNavigation}>
-        <div class="header-picker repository-picker">
-          <NavigationDropdown label="Repository" value={repository?.id ?? ""} placeholder="Choose a repository" placeholderIcon="folder_open"
-            items={repositories.map(item => ({ value: item.id, label: item.name, icon: item.id === repository?.id ? "folder_open" : "folder" }))}
-            disabled={workspaceBusy || loading || writeFailed}
-            onchange={id => { void selectRepository(id); }}
-            actions={[
-              { label: "New repository", icon: "create_new_folder", onselect: () => showForm("repository") },
-              { label: "Import directory", icon: "drive_folder_upload", onselect: () => directoryInput.click() },
-              { label: "Clone repository", icon: "cloud_download", onselect: () => cloneOpen = true }
-            ]} />
-        </div>
-        <span aria-hidden="true">/</span>
-        <div class="header-picker page-picker">
-          <NavigationDropdown label="Page" value={page} placeholder="Editor"
-            items={pages.map(item => ({ value: item.id, label: item.name, icon: item.icon }))}
-            disabled={workspaceBusy || writeFailed} onchange={value => navigate(value as Page)} />
-        </div>
-        {#if page === "settings"}
-          <span aria-hidden="true">/</span>
-          <div class="header-picker settings-picker">
-            <NavigationDropdown label="Settings scope" value={settingsScope} placeholder="Global defaults"
-              items={[
-                { value: "global", label: "Global defaults", icon: "public" },
-                ...(repository ? [{ value: "repository", label: "Repository settings", icon: "folder_managed" }] : []),
-                ...(repository && path ? [{ value: "file", label: "File settings", icon: "display_settings" }] : [])
-              ]}
-              disabled={workspaceBusy || writeFailed}
-              onchange={value => { settingsScope = value as "global" | "repository" | "file"; }} />
-          </div>
-        {/if}
+        {#if !explorerOpen}{@render repositoryPicker()}<span aria-hidden="true">/</span>{/if}
+        <h2 class="editor-heading" tabindex="-1"><MaterialIcon name="wysiwyg" size={16}/><span>Editor</span></h2>
+
       </nav>
-      <div class="save-status" role="status" aria-label="Persistence status" aria-live="polite"><span class:pending={saving} class:failed={writeFailed || Boolean(settingsError)} class="status-dot"></span>{loading ? "Opening local storage…" : status}</div></header>
+    </header>
     {#if page !== "resources" && page !== "vault"}<div class="editor-toolbar" inert={fileNavigation} onwheel={scrollTabs}>
       {#if storageReady}
-        {#if toolbarUndoVisible || toolbarRedoVisible || (page === "editor" && effective.showStagedHistoryButton)}<div class="editor-actions" role="group" aria-label={page==='settings'?'Settings history':'File actions'}>
+        <Button variant="ghost" size="icon-sm" aria-label="File explorer" aria-controls="repository-explorer" aria-expanded={explorerOpen} tooltip={explorerOpen ? 'Close file explorer' : 'Open file explorer'} onclick={toggleExplorer}><MaterialIcon name={explorerOpen ? 'left_panel_close' : 'left_panel_open'} size={18} /></Button>
+        {#if toolbarUndoVisible || toolbarRedoVisible}<div class="editor-actions" role="group" aria-label="File actions">
           {#if toolbarUndoVisible}<Button variant="ghost" size="icon-sm" class="history-action" aria-label="Undo" tooltip="Undo" disabled={workspaceBusy || writeFailed || (!canUndo && pending === 0 && activityPending === 0)} onclick={undo}><MaterialIcon name="undo" size={18} /></Button>{/if}
           {#if toolbarRedoVisible}<Button variant="ghost" size="icon-sm" class="history-action" aria-label="Redo" tooltip="Redo" disabled={workspaceBusy || writeFailed || !canRedo} onclick={redo}><MaterialIcon name="redo" size={18} /></Button>{/if}
-          {#if page === "editor" && effective.showStagedHistoryButton}<Button variant="ghost" size="icon-sm" aria-label="Open staged history" tooltip="Open staged history" disabled={!repository || workspaceBusy || writeFailed} onclick={() => openHistory("changes")}><MaterialIcon name="manage_history" size={18} /></Button>{/if}
         </div>{/if}
         {#if page === "editor"}
           {#if effective.showZoomOutButton || effective.showZoomInButton}<div class="editor-actions" role="group" aria-label="Editor zoom">
@@ -1626,22 +1790,15 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           </Button>{/if}
           </div>{/if}
         {/if}
-        {#if page === "settings" && effective.showSettingsKeybindingsResetButton}
-          <Button variant="ghost" size="icon-sm" aria-label="Reset keybindings" tooltip={settingsScope === "repository" ? "Use inherited keybindings" : "Restore default keybindings"} disabled={workspaceBusy || writeFailed || settingsScope === "file"} onclick={() => settingsComponent?.resetKeybindings()}>
-            <MaterialIcon name="settings_backup_restore" size={18} />
-          </Button>
-        {/if}
-        {#if page === "settings" && effective.showSettingsResetButton}
-          <Button variant="ghost" size="icon-sm" aria-label={settingsResetLabel} tooltip={settingsResetLabel} disabled={workspaceBusy || writeFailed} onclick={() => settingsComponent?.resetAll()}>
-            <MaterialIcon name="reset_settings" size={18} />
-          </Button>
-        {/if}
-        <div class="editor-actions toolbar-right" role="group" aria-label="Pane actions">
+        <div class="editor-actions toolbar-right" role="group" aria-label="Pane actions" style:--pane-action-count={6}>
           {#if page === "editor"}
-            {#if effective.showCommitHistoryButton}<Button variant="ghost" size="icon-sm" aria-label="Open History" aria-expanded={historyOpen && currentWorkspace.historyView === "versions"} tooltip={historyOpen && currentWorkspace.historyView === "versions" ? "Close History" : "Open History"} disabled={!repository || workspaceBusy || writeFailed} onclick={() => { if (controlsBusy || fileNavigation || writeFailed) return; if (historyOpen && currentWorkspace.historyView === "versions") setRightPane("history", false); else openHistory("versions"); }}><MaterialIcon name="history" size={18} /></Button>{/if}
-            {#if effective.showGitButton}<Button variant="ghost" size="icon-sm" aria-label="Git operations" aria-expanded={gitOpen} tooltip={gitOpen && gitActiveTab === "Actions" ? "Close Git pane" : "Git operations"} disabled={!repository || workspaceBusy || writeFailed} onclick={() => toggleGit()}><MaterialIcon name="account_tree" size={18} /></Button>{/if}
+            <Button variant="ghost" size="icon-sm" aria-label="Open History" aria-expanded={historyOpen && Boolean(repository)} tooltip={historyOpen && currentWorkspace.historyView === "versions" ? "Close History" : "Open History"} disabled={!repository || workspaceBusy || writeFailed} onclick={() => { if (controlsBusy || fileNavigation || writeFailed) return; if (historyOpen && currentWorkspace.historyView === "versions") setRightPane("history", false); else openHistory("versions"); }}><MaterialIcon name="history" size={18} /></Button>
+            <Button variant="ghost" size="icon-sm" aria-label="Git operations" aria-expanded={gitOpen && Boolean(repository)} tooltip={gitOpen && gitActiveTab === "Actions" ? "Close Git pane" : "Git operations"} disabled={!repository || workspaceBusy || writeFailed} onclick={() => toggleGit()}><Devicon name="git-plain" size={18} /></Button>
           {/if}
-        <Button variant="ghost" size="icon-sm" class="toolbar-chat" aria-label="AI chat" aria-expanded={ollamaOpen} tooltip="AI chat" tooltipSide="left" onclick={() => { setRightPane("ai", !ollamaOpen); }}><MaterialIcon name="robot" size={18} /></Button>
+        <Button variant="ghost" size="icon-sm" class="toolbar-chat" aria-label="AI chat" aria-expanded={ollamaOpen} tooltip="AI chat" tooltipSide="top" onclick={() => { setRightPane("ai", !ollamaOpen); }}><MaterialIcon name="robot" size={18} /></Button>
+        <Button variant="ghost" size="icon-sm" aria-label="Vault" aria-controls="panel-vault" aria-expanded={vaultOpen} tooltip={vaultOpen ? "Close Vault" : "Open Vault"} onclick={() => setRightPane("vault", !vaultOpen)}><MaterialIcon name="shield_locked" size={18}/></Button>
+        <Button variant="ghost" size="icon-sm" aria-label="Resources" aria-controls="panel-resources" aria-expanded={resourcesOpen} tooltip={resourcesOpen ? "Close Resources" : "Open Resources"} onclick={() => setRightPane("resources", !resourcesOpen)}><MaterialIcon name="monitoring" size={18}/></Button>
+        <Button variant="ghost" size="icon-sm" aria-label="Settings" aria-controls="panel-settings" aria-expanded={settingsOpen} tooltip={settingsOpen ? "Close Settings" : "Open Settings"} disabled={workspaceBusy || writeFailed} onclick={() => setRightPane("settings", !settingsOpen)}><MaterialIcon name="tune" size={18}/></Button>
         </div>
       {/if}
     </div>{/if}
@@ -1652,10 +1809,13 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       {#if repository && path}
         <div class="editor-layout">
         <div class="editor-tabs" class:split={splitViews.length>0} style:grid-template-columns={paneColumns} bind:this={editorTabs}>
-        <div class="file-tabs" use:tabDrag={{pane:"primary",repository:repository.id,disabled:workspaceBusy||fileNavigation||writeFailed||replaying,paths:openedFiles,ondrop:dropTab}} onwheel={scrollTabs} aria-label="Open files" bind:this={fileTabs} onscroll={event => rememberScroll("tabs", event.currentTarget)}>
+        <div class="file-tabs tab-scroll" use:tabDrag={{pane:"primary",repository:repository.id,disabled:workspaceBusy||fileNavigation||writeFailed||replaying,paths:openedFiles,ondrop:dropTab}} onwheel={scrollTabs} aria-label="Open files" bind:this={fileTabs} onscroll={event => rememberScroll("tabs", event.currentTarget)}>
           {#each openedFiles as opened (opened)}
             <div class="file-tab" class:diff-tab={isDiffTab(opened)} in:tabReveal role="group" aria-label={`File tab ${tabLabel(opened,true)}`} data-tab-path={opened} data-file-context-target class:active={opened === activeFileTab}
-              onpointerdown={event => { if (middleClickClosesTab(effective,event)) event.preventDefault(); }}
+              onpointerdown={event => {
+                if (middleClickClosesTab(effective,event)) event.preventDefault();
+                else if (event.button === 0 && event.target === event.currentTarget && !workspaceBusy && !fileNavigation && !writeFailed) void selectFile(opened);
+              }}
               onauxclick={event => {
                 if (!middleClickClosesTab(effective,event)) return;
                 event.preventDefault();
@@ -1672,11 +1832,14 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
           {/each}
         </div>
         {#each splitViews as pane (pane.id)}
-          <div class="file-tabs split-file-tabs" use:tabDrag={{pane:pane.id,repository:repository.id,disabled:workspaceBusy||fileNavigation||writeFailed||replaying,paths:pane.tabs,ondrop:dropTab}}
+          <div class="file-tabs split-file-tabs tab-scroll" use:tabDrag={{pane:pane.id,repository:repository.id,disabled:workspaceBusy||fileNavigation||writeFailed||replaying,paths:pane.tabs,ondrop:dropTab}}
             onwheel={scrollTabs} aria-label="Split open files" data-pane-id={pane.id}>
             {#each pane.tabs as opened (opened)}
             <div class="file-tab" class:diff-tab={isDiffTab(opened)} in:tabReveal class:active={opened===activePaneTab(pane)} role="group" aria-label={`Split file tab ${tabLabel(opened,true)}`} data-tab-path={opened} data-file-context-target
-              onpointerdown={event=>{if(middleClickClosesTab(effective,event))event.preventDefault();}}
+              onpointerdown={event=>{
+                if(middleClickClosesTab(effective,event))event.preventDefault();
+                else if(event.button===0&&event.target===event.currentTarget&&!workspaceBusy&&!fileNavigation&&!writeFailed)selectSplitTab(pane.id,opened);
+              }}
               onauxclick={event=>{if(middleClickClosesTab(effective,event)){event.preventDefault();closeSplitTab(pane.id,opened);}}}>
               <FileName path={tabFile(opened)} tab disabled={workspaceBusy||fileNavigation||writeFailed} onsplit={()=>openSplit(opened,pane.id)} onclosesplit={()=>closeSplit(pane.id)}>
                 {#snippet child({props})}
@@ -1705,62 +1868,109 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
         {/if}
         </div>
         {#if effective.editorFooter}<footer class="editor-status"><span>Ln {cursor.line}, Col {cursor.column}</span><span>{effective.indentWithTabs ? "Tabs" : "Spaces"}: {effective.indentWithTabs ? effective.tabSize : effective.indentSize}</span><span>UTF-8</span><span class="status-spacer"></span><span>{effective.readOnly ? "Read-only" : languageForPath(path,"auto",effective.languageMappings)}</span></footer>{/if}
-      {:else}<div class="welcome"><h1>code.</h1><span class="eyebrow">A HEADLESS BROWSER IDE</span><div class="welcome-actions"><Button style={repository ? "--color-hover-background: var(--color-primary)" : ""} disabled={loading || workspaceBusy} onclick={() => showForm(repository ? "file" : "repository")}><MaterialIcon name={repository ? "note_add" : "add"} size={18} />{repository ? "New file" : "Create a repository"}</Button><Button variant="outline" disabled={loading || workspaceBusy} onclick={() => directoryInput.click()}>Import directory<MaterialIcon name="arrow_outward" size={16} /></Button><Button variant="outline" disabled={loading || workspaceBusy} onclick={() => cloneOpen = true}>Clone repository<MaterialIcon name="cloud_download" size={16} /></Button></div></div>{/if}
+      {:else}<div class="welcome"><h1>code.</h1><span class="eyebrow">A HEADLESS BROWSER IDE</span><div class="welcome-actions"><Button style={repository ? "--color-hover-background: var(--color-primary)" : ""} disabled={loading || workspaceBusy} onclick={() => showForm(repository ? "file" : "repository")}><MaterialIcon name={repository ? "note_add" : "add"} size={18} />{repository ? "New file" : "Create a repository"}</Button><Button variant="outline" disabled={loading || workspaceBusy} onclick={() => directoryInput.click()}>Import repository<MaterialIcon name="arrow_outward" size={16} /></Button><Button variant="outline" disabled={loading || workspaceBusy} onclick={() => cloneOpen = true}>Clone repository<MaterialIcon name="cloud_download" size={16} /></Button></div></div>{/if}
     </div>
-    {#if resourcesStarted || page === "resources"}<div hidden={page !== "resources"} bind:this={resourcesPanel} onscroll={event => rememberScroll("resources", event.currentTarget)} id="panel-resources" role="region" tabindex="-1" aria-label="Resources" class="scroll-panel">{#if storageReady}<ResourcesPage {repository} repositoryCount={repositories.length} />{/if}</div>{/if}
 
-    <div class="page-with-minimap" class:hide-scrollbars={!effective.scrollbars} hidden={page !== "settings"}><div inert={fileNavigation} bind:this={settingsPanel} onscroll={event => rememberScroll("settings", event.currentTarget)} id="panel-settings" role="region" tabindex="-1" aria-label="Settings" hidden={page !== "settings"} class="scroll-panel"><SettingsPage files={repository?.files} bind:this={settingsComponent} {settings} bind:scope={settingsScope} disabled={page === "settings" && workspaceBusy} {path} {fileConfiguration} {...(repository ? { repositoryId: repository.id } : {})} onchange={saveSettings} /></div>{#if effective.minimap}<PageMinimap target={settingsPanel} label="Settings" />{/if}</div>
-    {#if page === "vault" && storageReady}<VaultPage onchange={() => vaultRevision++} />{/if}
+
   </section>
-  <div class="right-panes" class:compact={compactRightPanes}>
+  <div class="right-panes">
   {#if repository}<HistoryPanel bind:open={() => historyOpen, value => setRightPane("history", value)} bind:panel={historyPanel} bind:graph={changesGraph}
-    docked={workAreaWidth >= 1000 || compactRightPanes} width={rightWidths.history || 440} maximumWidth={historyMaximumWidth}
-    resizeDisabled={compactRightPanes || !workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
+    docked width={rightWidths.history || 440} maximumWidth={historyMaximumWidth}
+    resizeDisabled={!workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
     {repository} frozen={gitIndexBusy} settings={effective} view={currentWorkspace.historyView} disabled={workspaceBusy || fileNavigation || writeFailed}
     onviewchange={selectHistoryView} onselectchange={loadHistoryChange} onselectcommit={showGit} onscroll={panel => rememberScroll("history", panel)}
     onresizestart={startHistoryResize}
     onresizepreview={width => historyPreview = width} onresizeend={finishHistoryResize}/>{/if}
-  {#if repository}{#key repository.id}<GitPanel bind:tab={gitActiveTab} bind:open={() => gitOpen, value => setRightPane("git", value)} docked={workAreaWidth >= 1000 || compactRightPanes} request={gitRequest} width={gitPaneWidth} maximumWidth={gitMaximumWidth}
+  {#if repository}{#key repository.id}<GitPanel bind:tab={gitActiveTab} bind:open={() => gitOpen, value => setRightPane("git", value)} docked request={gitRequest} width={gitPaneWidth} maximumWidth={gitMaximumWidth}
     actionsDisabled={!workspaceReady || controlsBusy || fileNavigation || writeFailed || replaying || starting}
-    resizeDisabled={compactRightPanes || !workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
+    resizeDisabled={!workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
     onresizestart={startGitResize} onresizepreview={width => gitPreview = width} onresizeend={finishGitResize}
     {repository} settings={effective} initialCommit={gitInitialCommit} initialTab={gitInitialTab} onaction={gitAction} oncheckout={checkoutVersion} onremote={remoteAction} onbranch={changeBranch} onsettings={openUpstreamSettings} onopencommitdiff={openCommitDiff} onopendiff={openStagedDiff} onopenfile={openGitFile} />{/key}{/if}
-  <AIPanel stacked={compactRightPanes} bind:open={() => ollamaOpen, value => setRightPane("ai", value)} availableWidth={workAreaWidth} savedWidth={rightWidths.ai || 380} reservedWidth={rightPaneCount > 1 ? 320 + rightWidths.git + rightWidths.history : 560} onwidthchange={saveAIWidth} {vaultRevision} {markdownRepository} showSendButton={effective.showAISendButton} enterAction={effective.aiEnterAction} instructions={effective.aiInstructions} skills={effective.aiSkills} tools={effective.aiTools} modelContexts={effective.aiModelContexts} gitRepository={gitToolRepository} editorSettings={{ personal: settings.global, effective: resolveSettings(settings, repository?.id), ...(repository ? { repository: { id: repository.id, overrides: settings.repositories[repository.id] ?? {} } } : {}) }}
+  <AIPanel bind:this={aiPanel} bind:open={() => ollamaOpen, value => setRightPane("ai", value)} maximumWidth={aiMaximumWidth} savedWidth={rightWidths.ai || 380} onresizestart={startAIResize} onresizepreview={width => aiPreview = width} onresizeend={finishAIResize} onsettings={openAISettings} {vaultRevision} {markdownRepository} showSendButton={effective.showAISendButton} showConnectionsButton={effective.showAIConnectionsButton} enterAction={effective.aiEnterAction} instructions={effective.aiInstructions} skills={effective.aiSkills} tools={effective.aiTools} modelContexts={effective.aiModelContexts} gitRepository={gitToolRepository} editorSettings={{ personal: settings.global, effective: resolveSettings(settings, repository?.id), ...(repository ? { repository: { id: repository.id, overrides: settings.repositories[repository.id] ?? {} } } : {}) }}
     oncontextchange={(key, limit) => {
       if (repository) saveSettings({ ...settings, repositories: { ...settings.repositories, [repository.id]: { ...settings.repositories[repository.id], aiModelContexts: { ...effective.aiModelContexts, [key]: limit } } } });
       else saveSettings({ ...settings, global: { ...settings.global, aiModelContexts: { ...settings.global.aiModelContexts, [key]: limit } } });
     }} />
+  {#if storageReady}<VaultPanel bind:open={() => vaultOpen, value => setRightPane("vault", value)} width={rightWidths.vault || 380} maximumWidth={vaultMaximumWidth}
+    resizeDisabled={!workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
+    onresizestart={startVaultResize} onresizepreview={width => vaultPreview = width} onresizeend={finishVaultResize} onchange={() => vaultRevision++}/>{/if}
+  {#if storageReady}<ResourcesPanel bind:open={() => resourcesOpen, value => setRightPane("resources", value)} bind:panel={resourcesPanel}
+    width={rightWidths.resources || 480} maximumWidth={resourcesMaximumWidth} {repository} repositoryCount={repositories.length}
+    scrollTop={currentWorkspace.scroll.resources ?? 0} onscroll={panel => rememberScroll("resources", panel)}
+    resizeDisabled={!workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
+    onresizestart={startResourcesResize} onresizepreview={width => resourcesPreview = width} onresizeend={finishResourcesResize}/>{/if}
+  {#if storageReady}<SettingsPanel bind:open={() => settingsOpen, value => setRightPane("settings", value)}
+    bind:tab={() => settingsTab, selectSettingsTab} tabsDisabled={workspaceBusy || fileNavigation || writeFailed || replaying}
+    width={rightWidths.settings || 640} maximumWidth={settingsMaximumWidth}
+    resizeDisabled={!workspaceReady || workspaceBusy || fileNavigation || writeFailed || replaying || starting}
+    onresizestart={startSettingsResize} onresizepreview={width => settingsPreview = width} onresizeend={finishSettingsResize}>
+    {#snippet header()}
+          <div class="header-picker settings-picker">
+            <NavigationDropdown label="Settings scope" value={settingsScope} placeholder="Global defaults"
+              items={[
+                { value: "global", label: "Global defaults", icon: "public" },
+                ...(repository ? [{ value: "repository", label: "Repository settings", icon: "folder_managed" }] : [])
+              ]}
+              disabled={workspaceBusy || writeFailed}
+              onchange={value => { settingsScope = value as "global" | "repository"; }} />
+          </div>
+    {/snippet}
+    {#snippet toolbar()}
+      <div class="editor-actions" role="group" aria-label="Settings history">
+        {#if effective.showSettingsUndoButton}<Button variant="ghost" size="icon-sm" aria-label="Undo settings" tooltip="Undo settings" disabled={workspaceBusy || writeFailed || (!settingsCanUndo && preferencePending === 0 && activityPending === 0)} onclick={() => requestHistory("undo", settingsHistoryScope)}><MaterialIcon name="undo" size={18}/></Button>{/if}
+        {#if effective.showSettingsRedoButton}<Button variant="ghost" size="icon-sm" aria-label="Redo settings" tooltip="Redo settings" disabled={workspaceBusy || writeFailed || !settingsCanRedo} onclick={() => requestHistory("redo", settingsHistoryScope)}><MaterialIcon name="redo" size={18}/></Button>{/if}
+      </div>
+        {#if effective.showSettingsKeybindingsResetButton}
+          <Button variant="ghost" size="icon-sm" aria-label="Reset keybindings" tooltip={settingsScope === "repository" ? "Use inherited keybindings" : "Restore default keybindings"} disabled={workspaceBusy || writeFailed} onclick={() => settingsComponent?.resetKeybindings()}>
+            <MaterialIcon name="settings_backup_restore" size={18} />
+          </Button>
+        {/if}
+        {#if effective.showSettingsResetButton}
+          <Button variant="ghost" size="icon-sm" aria-label={settingsResetLabel} tooltip={settingsResetLabel} disabled={workspaceBusy || writeFailed} onclick={() => settingsComponent?.resetAll()}>
+            <MaterialIcon name="reset_settings" size={18} />
+          </Button>
+        {/if}
+    {/snippet}
+    {#snippet children()}
+      <div class="page-with-minimap" class:hide-scrollbars={effective.settingsMinimap && !effective.scrollbars}>
+        <div inert={fileNavigation} bind:this={settingsPanel} use:restoreSettingsScroll onscroll={event => rememberSettingsScroll(event.currentTarget)} id="panel-settings" role="region" tabindex="-1" aria-label="Settings" class="scroll-panel">
+          <SettingsPage tab={settingsTab} files={repository?.files} bind:this={settingsComponent} {settings} bind:scope={settingsScope} disabled={workspaceBusy} {vaultRevision} {initialAIConnection} onconnectionchange={async (connection, removed) => { await aiPanel?.refreshConnections(connection, removed); }} onconnectionselect={useAIConnection} {...(repository ? { repositoryId: repository.id } : {})} onchange={saveSettings}/>
+        </div>
+        {#if effective.settingsMinimap}<PageMinimap target={settingsPanel} label="Settings"/>{/if}
+      </div>
+    {/snippet}
+  </SettingsPanel>{/if}
   </div>
   </div>
 </main>
 <CloneRepository bind:open={cloneOpen} onclone={cloneRepository} onsettings={openUpstreamSettings} />
-<Sheet.Root bind:open={formOpen}>
-  <Sheet.Content class="repository-form-panel" onOpenAutoFocus={focusFilePath}>
-    <Sheet.Header>
-      <Sheet.Title>{form === "repository" ? "New repository" : form === "branch" ? "New branch" : form === "file" ? "New file" : form === "delete" ? (formDirectory ? "Delete folder" : "Delete file") : "Reload repository"}</Sheet.Title>
-      <Sheet.Description>{form === "repository" ? "A private place for your files, stored in this browser." : form === "branch" ? "Create and switch to a branch from the current commit. Your working changes stay with you." : form === "delete" ? (formDirectory ? "The folder and all its files will be removed from the working tree. You can restore them with Undo." : "The file will be removed from the working tree. You can restore it with Undo.") : form === "reload" ? "Unsaved visible changes will be discarded. Download the file first if you need to keep them." : "Use a relative path. Folders are created as needed."}</Sheet.Description>
-    </Sheet.Header>
+<Dialog.Root bind:open={formOpen}>
+  <Dialog.Content class="repository-form-dialog" onOpenAutoFocus={focusFilePath}>
+    <Dialog.Header>
+      <Dialog.Title>{form === "repository" ? "New repository" : form === "rename-repository" ? "Rename repository" : form === "delete-repository" ? "Delete repository" : form === "branch" ? "New branch" : form === "file" ? "New file" : form === "delete" ? (formDirectory ? "Delete folder" : "Delete file") : "Reload repository"}</Dialog.Title>
+      {#if form !== "repository"}<Dialog.Description>{form === "rename-repository" ? "Choose a new name for this repository." : form === "delete-repository" ? "Are you sure? This action can't be undone. All saved changes in this repository will be removed." : form === "branch" ? "Create and switch to a branch from the current commit. Your working changes stay with you." : form === "delete" ? (formDirectory ? "The folder and all its files will be removed from the working tree. You can restore them with Undo." : "The file will be removed from the working tree. You can restore it with Undo.") : form === "reload" ? "Unsaved visible changes will be discarded. Download the file first if you need to keep them." : "Use a relative path. Folders are created as needed."}</Dialog.Description>{/if}
+    </Dialog.Header>
     <form class="repository-form" onsubmit={submitForm}>
-      {#if form === "repository" || form === "branch" || form === "file"}
-        <label for="form-value">{form === "repository" ? "Repository name" : form === "branch" ? "Branch name" : "File path"}</label>
+      {#if form === "repository" || form === "rename-repository" || form === "branch" || form === "file"}
+        <label for="form-value">{form === "repository" || form === "rename-repository" ? "Repository name" : form === "branch" ? "Branch name" : "File path"}</label>
         <input id="form-value" bind:this={formInput} bind:value={formValue} required
-          placeholder={form === "repository" ? "My next idea" : form === "branch" ? "feature/my-change" : "src/index.ts"} disabled={workspaceBusy} />
-      {:else if form === "delete"}<p class="delete-name">{formTarget}</p>{/if}
+          placeholder={form === "repository" || form === "rename-repository" ? "Name" : form === "branch" ? "feature/my-change" : "src/index.ts"} disabled={workspaceBusy} />
+      {:else if form === "delete" || form === "delete-repository"}<p class="delete-name">{form === "delete-repository" ? formValue : formTarget}</p>{/if}
       {#if formError}<p role="alert">{formError}</p>{/if}
       <div class="form-buttons">
-        <Button variant="outline" disabled={busy} onclick={() => { formOpen = false; }}>Cancel</Button>
-        <Button type="submit" disabled={busy}>{busy ? "Working…" : form === "repository" ? "Create repository" : form === "branch" ? "Create branch" : form === "file" ? "Create file" : form === "delete" ? "Delete" : "Reload and discard"}</Button>
+        <Button variant="outline" size="sm" disabled={busy} onclick={() => { formOpen = false; }}>Cancel</Button>
+        <Button type="submit" variant="secondary" size="sm" disabled={busy}>{busy ? "Working…" : form === "repository" ? "Create repository" : form === "rename-repository" ? "Rename repository" : form === "delete-repository" ? "Delete repository" : form === "branch" ? "Create branch" : form === "file" ? "Create file" : form === "delete" ? "Delete" : "Reload and discard"}</Button>
       </div>
     </form>
-  </Sheet.Content>
-</Sheet.Root>
+  </Dialog.Content>
+</Dialog.Root>
 
-<Sheet.Root bind:open={() => pendingImport !== null, open => { if (!open && !workspaceBusy) pendingImport = null; }}>
-  <Sheet.Content class="repository-form-panel">
-    <Sheet.Header>
-      <Sheet.Title>Import Git history</Sheet.Title>
-      <Sheet.Description>This folder stores its Git history elsewhere. Choose its Git directory to import the repository with its history.</Sheet.Description>
-    </Sheet.Header>
+<Dialog.Root bind:open={() => pendingImport !== null, open => { if (!open && !workspaceBusy) pendingImport = null; }}>
+  <Dialog.Content class="repository-form-dialog">
+    <Dialog.Header>
+      <Dialog.Title>Import Git history</Dialog.Title>
+      <Dialog.Description>This folder stores its Git history elsewhere. Choose its Git directory to import the repository with its history.</Dialog.Description>
+    </Dialog.Header>
     {#if pendingImport}
       <div class="repository-form git-import">
         <p>The <code>.git</code> file in <strong>{pendingImport.name}</strong> points to:</p>
@@ -1769,39 +1979,53 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
         {#if gitImportError}<p role="alert">{gitImportError}</p>{/if}
         <input class="directory-input" bind:this={gitDirectoryInput} type="file" webkitdirectory multiple aria-label="Import Git directory" onchange={importGitDirectory} />
         <div class="form-buttons">
-          <Button variant="outline" disabled={workspaceBusy} onclick={() => { pendingImport = null; }}>Cancel</Button>
-          <Button disabled={workspaceBusy} onclick={() => gitDirectoryInput?.click()}>{busy ? "Importing…" : "Choose Git directory"}</Button>
+          <Button variant="outline" size="sm" disabled={workspaceBusy} onclick={() => { pendingImport = null; }}>Cancel</Button>
+          <Button variant="secondary" size="sm" disabled={workspaceBusy} onclick={() => gitDirectoryInput?.click()}>{busy ? "Importing…" : "Choose Git directory"}</Button>
         </div>
       </div>
     {/if}
-  </Sheet.Content>
-</Sheet.Root>
+  </Dialog.Content>
+</Dialog.Root>
 
 </Tooltip.Provider>
 
 <style>
-  .app-shell { display: flex; height: 100dvh; overflow: hidden; }
+  .app-shell { --tab-icon-center:calc(14px + .46875rem); display: flex; height: 100dvh; overflow: hidden; }
   .right-panes { display: contents; }
-  .right-panes.compact { display: flex; flex-direction: column; width: 100%; min-width: 0; height: 100%; }
-  .right-panes.compact :global(.sheet-dock) { flex: 1 1 0 !important; height: 0; width: 100%; }
-  .right-panes.compact :global(.docked-content) { width: 100% !important; }
-  .workbench[hidden] { display: none; }
   .work-area { display: flex; flex: 1; min-width: 0; height: 100%; }
-  .sidebar { position:relative; --explorer-default-width:245px; border-right: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); width:clamp(160px,var(--explorer-width,var(--explorer-default-width)),max(160px,min(600px,calc(100vw - 240px)))); flex: 0 0 auto; display: flex; flex-direction: column; background: var(--color-surface); }
-  .section-heading { display: flex; justify-content: space-between; align-items: center; font-size: 0.5625rem; letter-spacing: .14em; font-weight: 750; margin-bottom: 7px; }
+  @media (prefers-reduced-motion: no-preference) {
+    /* Share the entering/leaving pane's cubicOut timing with existing columns.
+       Width changes from dragging stay immediate when no pane is sliding. */
+    .app-shell:has(:global([data-pane-moving="true"])) :global(.sheet-dock),
+    .app-shell:has(:global([data-pane-moving="true"])) .explorer-dock {
+      transition: flex-basis 180ms cubic-bezier(.333333, 1, .666667, 1);
+    }
+    .app-shell:has(:global([data-pane-moving="true"])) :global(.docked-content),
+    .app-shell:has(:global([data-pane-moving="true"])) .sidebar {
+      transition: width 180ms cubic-bezier(.333333, 1, .666667, 1);
+    }
+  }
+  .explorer-dock { position:relative; flex:0 0 auto; min-width:0; height:100%; }
+  .explorer-clip { height:100%; overflow:clip; }
+  .sidebar { position:relative; min-width:0; height:100%; border-right: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); display: flex; flex-direction: column; background: var(--color-background); }
+  .explorer-header { display:flex; align-items:center; gap:9px; height:var(--workbench-header-height, 48px); flex:0 0 var(--workbench-header-height, 48px); padding:6px 12px 6px calc(var(--tab-icon-center) - .5rem); background:var(--color-background); }
+  .explorer-toolbar { display:flex; align-items:center; justify-content:flex-end; height:40px; flex:0 0 40px; padding:4px calc(var(--tab-icon-center) - 1rem) 4px 12px; background:var(--color-toolbar-background); color:var(--color-toolbar-foreground); }
+  .explorer-tabs { display:flex; min-width:0; height:var(--workbench-tabs-height, 40px); flex:0 0 var(--workbench-tabs-height, 40px); border-top:2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); background:var(--color-surface); }
   input { border: 0; background: var(--color-background); color: var(--color-foreground); border-radius: 4px; padding: 10px 12px; font-size: 0.75rem; }
   .directory-input { display: none; }
-  .files-section { padding: 15px 11px; flex: 1; overflow: auto; }.files-section .section-heading { padding: 0; margin-bottom: 1px; }.empty-files { font-size: 0.625rem; padding: 10px 6px; line-height: 1.8; }
+  .files-section { padding:var(--pane-gap); flex: 1; min-height:0; overflow: auto; }.empty-files { font-size: 0.625rem; padding: 10px 6px; line-height: 1.8; }
   /* Tab icons are .9375rem wide after 14px padding; share their center with both headers. */
-  .workbench { --tab-icon-center: calc(14px + .46875rem); flex: 1; min-width: 0; display: flex; flex-direction: column; }.topbar { min-height: 48px; padding: 6px 28px 6px calc(var(--tab-icon-center) - .5rem); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }.breadcrumb { display: flex; gap: 11px; align-items: center; font-size: 0.6875rem; min-width: 0; max-width: 100%; }.breadcrumb > :global(.material-symbols-rounded) { flex-shrink: 0; }
-  .header-picker { position: relative; min-width: 0; }.repository-picker { flex: 0 1 auto; max-width: 260px; }.page-picker { flex-shrink: 0; }
-  .save-status { margin-left: auto; display: flex; gap: 7px; align-items: center; font-size: 0.5625rem; white-space: nowrap; }.status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-foreground); }.status-dot.pending { animation: saving 1s ease-in-out infinite alternate; }.status-dot.failed { width: 7px; height: 7px; border-radius: 1px; }
-  .branch-label { display: flex; flex: 1; align-items: center; min-width: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0; }.root-files { padding-left: 14px; }
-  .branch-label :global(.navigation-trigger) { padding-inline: 14px 8px; }
+  .workbench { flex: 1; min-width: 0; display: flex; flex-direction: column; }.topbar { min-height: 48px; padding: 6px calc(var(--tab-icon-center) - 5px) 6px calc(var(--tab-icon-center) - .5rem); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }.breadcrumb { display: flex; gap: 11px; align-items: center; font-size: 0.6875rem; min-width: 0; max-width: 100%; }.breadcrumb > :global(.material-symbols-rounded) { flex-shrink: 0; }
+  .header-picker { position: relative; min-width: 0; }.repository-picker { flex: 0 1 auto; max-width: 260px; }.editor-heading { display:flex; align-items:center; gap:7px; flex-shrink:0; margin:0; font-size:.6875rem; font-weight:700; }
+  .explorer-footer { flex-shrink:0; padding:var(--pane-gap); background:var(--color-background); }
+  .save-status { display:flex; gap:7px; align-items:center; min-width:0; font-size:.5625rem; overflow-wrap:anywhere; }.status-dot { flex-shrink:0; width:5px; height:5px; border-radius:50%; background:var(--color-foreground); }.status-dot.pending { animation: saving 1s ease-in-out infinite alternate; }.status-dot.failed { width: 7px; height: 7px; border-radius: 1px; }
+  .branch-label { display:flex; flex:0 0 auto; align-items:center; min-width:0; max-width:100%; height:var(--workbench-tabs-content-height, 32px); border-right:2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); background:var(--color-background); }.root-files { min-width:0; padding:var(--pane-padding); background:var(--color-surface); border-radius:4px; }
+  .branch-label :global(.navigation-trigger) { height:100%; gap:8px; padding:8px 14px; border-radius:0; font-size:.625rem; font-weight:400; }
+  .branch-label :global(.navigation-label) { margin-left:0; }
   .editor-layout { position:relative;display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;overflow:hidden; }
   .editor-tabs { min-width:0;flex-shrink:0;overflow:hidden; }.editor-tabs.split { display:grid;gap:2px;background:var(--color-surface); }
   .split-file-tabs { border-left:2px solid color-mix(in srgb,var(--color-surface) 20%,var(--color-background)); }
-  .editor-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; }.editor-panel[hidden], .scroll-panel[hidden] { display: none; }.file-tabs { display: flex; min-height: 38px; border-top: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); border-bottom: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); overflow-x: auto; background: var(--color-surface); }.file-tab { border-right: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); background: var(--color-hover-background); position: relative; display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding: 8px 14px; font-size: 0.625rem; white-space: nowrap; }.file-tab.active { background: var(--color-background); }.file-tabs button { display: flex; gap: 8px; align-items: center; border: 0; background: transparent; color: inherit; font: inherit; padding: 0; white-space: nowrap; }
+  .editor-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; }.editor-panel[hidden], .scroll-panel[hidden] { display: none; }.file-tabs { display: flex; min-height: 38px; border-top: 2px solid color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); background: var(--color-surface); }.file-tab { border: 0; background: var(--color-hover-background); position: relative; display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding: 8px 16px 8px 14px; font-size: 0.625rem; white-space: nowrap; }.file-tab.active { background: var(--color-background); }.file-tabs button { display: flex; gap: 8px; align-items: center; border: 0; background: transparent; color: inherit; font: inherit; padding: 0; white-space: nowrap; }
   .file-tab.diff-tab {
     background-image: repeating-linear-gradient(45deg, transparent 0 15px, var(--color-surface) 15px 16px);
   }
@@ -1813,29 +2037,34 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .file-tab-select::before { content: ""; position: absolute; inset: 0 -2px 0 0; }
   .file-tab:has(:focus-visible) { background-color: var(--color-focus-background); color: var(--color-focus-foreground); }
   .file-tab :global(button) { --color-hover-background: transparent; }
+  .file-tab::after { content:""; position:absolute; inset:0 0 0 auto; width:2px; background:color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); pointer-events:none; }
   .file-tab :global(.file-tab-close) { position: relative; z-index: 1; width: 20px; height: 20px; padding: 0; border-radius: 2px; }
   @media (hover: hover) {
     .file-tab:has(.file-tab-select:enabled):hover {
       color: var(--color-hover-foreground);
     }
   }
-  .editor-toolbar { overflow-x: auto; scrollbar-width: none; --first-action-half-width: 1rem; display: flex; align-items: center; justify-content: flex-start; gap: 16px; height: 40px; flex: 0 0 40px; padding: 4px 20px 4px calc(var(--tab-icon-center) - var(--first-action-half-width)); background: var(--color-toolbar-background); color: var(--color-toolbar-foreground); font-weight: 700; --color-ring: var(--color-toolbar-foreground); }.editor-toolbar:has(> .editor-actions:first-child > :global(.history-action:first-child)) { --first-action-half-width: 16px; }.editor-actions { flex-shrink: 0; display: flex; gap: 2px; align-items: center; }.editor-actions:not(:last-child) { margin-right: 8px; }.editor-actions :global(.history-action) { width: 32px; height: 32px; }.editor-toolbar :global(button) { --color-hover-background: color-mix(in srgb, var(--color-foreground) 50%, transparent); }.editor-toolbar :global(button:disabled) { background: transparent; color: color-mix(in srgb, var(--color-surface) 65%, transparent); }
+  .editor-toolbar { container:editor-toolbar / inline-size; overflow-x: auto; scrollbar-width: none; --first-action-half-width: 1rem; display: flex; align-items: center; justify-content: flex-start; gap: 16px; height: 40px; flex: 0 0 40px; padding: 4px calc(var(--tab-icon-center) - 1rem) 4px calc(var(--tab-icon-center) - var(--first-action-half-width)); background: var(--color-toolbar-background); color: var(--color-toolbar-foreground); font-weight: 700; --color-ring: var(--color-toolbar-foreground); }.editor-toolbar:has(> .editor-actions:first-child > :global(.history-action:first-child)) { --first-action-half-width: 16px; }.editor-actions { flex-shrink: 0; display: flex; gap: 2px; align-items: center; }.editor-actions:not(:last-child) { margin-right: 8px; }.editor-actions :global(.history-action) { width: 32px; height: 32px; }
+  .editor-toolbar :global(button[aria-expanded="true"]) { background-color:var(--color-hover-background); color:var(--color-toolbar-foreground); border:2px solid var(--color-foreground); }
+  .editor-toolbar :global(button[aria-expanded="true"]:focus-visible) { background-color:var(--color-focus-background); color:var(--color-focus-foreground); }
   .primary-pane { position:relative;min-width:0;min-height:0;height:100%;overflow:hidden; }.primary-source { height:100%;min-height:0; }.primary-source[hidden] { display:none; }
   .editor-document { height:100%;min-height:0; }.editor-document.split { overflow:hidden;display:grid;gap:2px;background:var(--color-surface); }.editor-document[hidden] { display:none; }
   .editor-surface { flex: 1; min-height: 0; position: relative; }.editor-status { display: flex; gap: 20px; padding: 7px 22px; font-size: 0.5625rem; }.status-spacer { flex: 1; }.file-unavailable { max-width: 430px; margin: 80px auto; text-align: center; }.file-unavailable h2 { font-family: Rationale, sans-serif; font-weight: 400; font-size: 1.75rem; }.file-unavailable p { font-size: 0.75rem; line-height: 1.8; }
   .welcome { margin: auto; padding: 48px 38px 60px; max-width: 740px; width: 100%; }.eyebrow { font-size: 0.5625rem; font-weight: 700; letter-spacing: .18em; }.welcome h1 { font-family: Rationale, sans-serif; font-size: clamp(38px, 4vw, 58px); font-weight: 400; line-height: 1.03; margin: 16px 0 8px; letter-spacing: -.02em; }.welcome > .eyebrow { display: block; margin-bottom: 25px; }.welcome-actions { display: flex; flex-wrap: wrap; gap: 12px; }.welcome-actions :global(button) { font-size: 0.6875rem; }
   /* Graph rows place the first lane center 20px inside the history page. */
   .page-with-minimap { display:flex;flex:1;min-height:0;min-width:0; }.page-with-minimap[hidden] { display:none; }
+  .settings-picker { flex:1; min-width:0; margin-left:auto; }
   .page-with-minimap.hide-scrollbars:has(> :global(.page-minimap:not([hidden]))) > .scroll-panel { scrollbar-width:none; }
   .page-with-minimap.hide-scrollbars:has(> :global(.page-minimap:not([hidden]))) > .scroll-panel::-webkit-scrollbar { display:none; }
   .scroll-panel { position: relative; flex: 1; min-height: 0; overflow: auto; }
   .repository-form label { font-size: 0.625rem; font-weight: 650; }
-  .error-banner { display: flex; align-items: center; gap: 12px; margin: 0; padding: 15px 23px; background: var(--color-surface); color: var(--color-foreground); font-size: 0.6875rem; }.error-banner > div { flex: 1; }.error-banner p { margin: 4px 0 0; line-height: 1.6; }
-  :global(.repository-form-panel) { padding: 32px 24px; }.repository-form { display: flex; flex-direction: column; padding: 8px 16px; gap: 10px; }.repository-form [role="alert"] { margin: 6px 0; font-size: 0.6875rem; }.form-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }.delete-name { font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
+  .error-banner { display: flex; align-items: center; gap: 12px; margin: 0; padding: var(--pane-padding); background: var(--color-surface); color: var(--color-foreground); font-size: 0.6875rem; }.error-banner > div { flex: 1; }.error-banner p { margin: 4px 0 0; line-height: 1.6; }
+  .repository-form { display: flex; flex-direction: column; gap: 10px; }.repository-form [role="alert"] { margin: 6px 0; font-size: 0.6875rem; }.form-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }.delete-name { font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
   .git-import p { font-size: 0.75rem; line-height: 1.7; margin: 0; }.git-directory-path { padding: 12px; border-radius: 4px; font-size: 0.6875rem; overflow-wrap: anywhere; }
   @keyframes saving { to { opacity: .3; } }
-  @media (max-width: 950px) { .sidebar { --explorer-default-width:215px; }.save-status { font-size: 0.5rem; } }
+  @media (max-width: 950px) { .save-status { font-size: 0.5rem; } }
   .editor-toolbar::-webkit-scrollbar { display: none; }
-  .editor-toolbar .toolbar-right { margin-left: auto; margin-right: 0; }
-  @media (max-width: 650px) { .topbar { padding-right: 15px; }.breadcrumb { gap: 6px; flex-wrap: wrap; }.save-status { max-width: 95px; white-space: normal; }.editor-toolbar { padding-right: 7px; }.welcome { padding: 25px 20px; }.welcome h1 { font-size: 2.125rem; }.editor-status { gap: 12px; padding-inline: 12px; }.editor-status > span:nth-child(3) { display: none; } }
+  @container editor-toolbar (max-width:200px) { .toolbar-right { --pane-action-width:min(2rem, calc((100cqw - 1rem) / (var(--pane-action-count) - .5))); gap:0; padding-inline-end:calc(1rem - var(--pane-action-width) / 2); }.toolbar-right :global(button) { width:var(--pane-action-width); } }
+  .editor-toolbar .toolbar-right { position: sticky; right: 0; z-index: 1; margin-left: auto; margin-right: 0; background: var(--color-toolbar-background); }
+  @media (max-width: 650px) { .breadcrumb { gap: 6px; flex-wrap: wrap; }.welcome { padding: 25px 20px; }.welcome h1 { font-size: 2.125rem; }.editor-status { gap: 12px; padding-inline: 12px; }.editor-status > span:nth-child(3) { display: none; } }
 </style>

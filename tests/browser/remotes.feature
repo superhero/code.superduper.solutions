@@ -5,8 +5,11 @@ Feature: Install and use upstream integrations
   Background:
     Given a browser repository named "Remote UI fixture" with an empty file "main.js"
 
-  Scenario: Upstream SDKs install explicitly and retain trusted import export and removal
+  Scenario: Upstream SDKs install explicitly and support export removal and reinstall
     Then upstream libraries install only on request and preserve verified package controls
+
+  Scenario: Connections require an installed and current provider integration
+    Then connection creation follows provider installation and blocks outdated integration drafts
 
   Scenario: Remembered upstream credentials are encrypted and stay outside editing histories
     Given the current edit and source Git histories are recorded
@@ -35,3 +38,12 @@ Feature: Install and use upstream integrations
       | github    |
       | gitlab    |
       | bitbucket |
+
+  Scenario: Known clone prerequisites prevent Git requests and link directly to configuration
+    Then GitHub cloning is blocked until a matching relay connection is selected
+
+  Scenario: Invalid clone input uses a field outline instead of validation paragraphs
+    Then invalid clone input has a dark red outline that clears when corrected
+
+  Scenario: Locked clone connections link directly to unlocking before any transfer
+    Then a locked clone connection must be unlocked through the guided settings action

@@ -58,7 +58,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
         items={[...(repository?[{value:'inherit',label:`Inherited · ${engines.find(engine=>engine.id===engineFor(language,inherited))?.name??'Disabled'}`,icon:'public'}]:[]),...available.map(engine=>({value:engine.id,label:`${engine.name}${ready(engine.id)?'':' · Not installed'}`,icon:'code'})),{value:'none',label:'Disabled',icon:'block'}]}
         onchange={id=>choose(language,id)} /></div>
       {#if item}
-        {#if !ready(item.id) && (selected || current)}<Button variant="ghost" disabled={disabled || Boolean(pending)} aria-label={`${current?'Update':'Install'} ${item.name} language engine`} onclick={()=>install(item.id)}>{pending===item.id?'Installing…':current?'Update':'Install'}</Button>{/if}
+        {#if !ready(item.id) && (selected || current)}<Button variant="ghost" size="icon" tooltip={pending===item.id?'Installing…':current?'Update':'Install'} disabled={disabled || Boolean(pending)} aria-label={`${current?'Update':'Install'} ${item.name} language engine`} onclick={()=>install(item.id)}><MaterialIcon name={current?'downloading':'install_desktop'} size={18}/></Button>{/if}
         {#if current}<Button variant="ghost" size="icon" tooltip="Uninstall" aria-label={`Uninstall ${item.name} language engine`} disabled={disabled || Boolean(pending)} onclick={()=>uninstall(item.id)}><MaterialIcon name="delete" size={18} /></Button>{/if}
       {/if}
       </div>
@@ -70,13 +70,20 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 
 </section>
 <style>
-  .engine-preferences{margin-top:20px;padding:24px;background:var(--color-surface);border-radius:4px}
+  .engine-preferences{margin-top:var(--pane-gap);padding:var(--pane-padding);background:var(--color-surface);border-radius:4px}
   h2{margin:0;font-size:0.9375rem;font-weight:650}p{font-size:0.75rem;line-height:1.6;margin:6px 0 18px}
-  .card-heading{display:flex;gap:12px;margin-bottom:22px;align-items:center}
+  .card-heading{display:flex;gap:12px;margin-bottom:var(--pane-padding);align-items:center}
   
   .engine-search{width:100%;background:var(--color-background);color:var(--color-foreground);border:0;border-radius:4px;padding:8px 11px;font-size:0.6875rem}
   .engine-list{margin-top:6px}
-  .engine-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:center;margin-bottom:6px;font-size:0.6875rem;min-width:0}
-  .engine-controls{display:flex;align-items:center;gap:6px;min-width:0}.engine-select{flex:1;min-width:0}
-  .engine-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;min-height:36px;padding:8px 11px;border-radius:4px;background:var(--palette-8);color:var(--color-background);font-weight:650;overflow-wrap:anywhere}
+  .engine-choice{display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr);gap:0;align-items:start;margin-bottom:6px;font-size:0.6875rem;min-width:0}
+  .engine-controls{display:flex;align-items:center;gap:0;min-width:0;border-radius:0 4px 4px 0;background:var(--color-background);overflow:hidden}.engine-select{flex:1;min-width:0}
+  .engine-label{display:flex;align-items:center;justify-content:flex-end;text-align:right;box-sizing:border-box;height:36px;min-height:36px;padding:1px 8px;border-block:1px solid var(--color-background);border-radius:4px 0 0 4px;background:var(--palette-8);color:var(--color-background);line-height:1.25;font-weight:650;overflow-wrap:anywhere}
+  .engine-controls :global(button.navigation-trigger){border-block:1px solid var(--color-background);border-radius:0}
+  .engine-controls :global(button[data-slot="button"]){border-block:1px solid var(--color-background);border-inline-start:1px solid var(--color-background);border-radius:0}
+  @container settings-pane (max-width:550px){
+    .engine-choice{grid-template-columns:minmax(0,1fr)}
+    .engine-label{justify-content:flex-start;text-align:left;border-radius:4px 4px 0 0}
+    .engine-controls{border-radius:0 0 4px 4px}
+  }
 </style>

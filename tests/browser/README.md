@@ -66,7 +66,7 @@ React, Express and Svelte declaration archives against the public npm registry,
 then verifies completion offline. It uses no credentials and never modifies the
 imported repository's dependencies. Normal browser runs do not contact npm.
 
-`ai-vault.feature` (`@ai-vault-ui`) checks the global header Vault page, keyboard
+`ai-vault.feature` (`@ai-vault-ui`) checks the global far-right Vault pane, keyboard
 navigation, reload, cleared drafts on unmount and absence of AI vault buttons.
 It uses real worker cryptography and IndexedDB
 with synthetic credentials. It covers saved OpenAI profiles, reload and peer-tab
@@ -130,7 +130,29 @@ is opt-in through the `ollamaLive` profile and excluded from ordinary offline ru
 See the [adapter guide](../../src/lib/assistant/README.md) for the command and
 runtime requirements.
 
-`resources.feature` exercises the production Resources page with real storage
+`workspace-panes.feature` also checks Settings sliding after Resources, including
+pointer resizing, close/reopen and reload persistence, saved scrolling, narrow
+columns and normal/reduced motion. A focused keyboard scenario verifies Settings
+undo/redo preserves file edits while the editor stays usable beside it.
+
+`workspace-panes.feature` checks Resources sliding after Vault with normal and
+reduced motion, resize/reload, retained session samples, narrow-screen eviction
+and reachable toolbar controls without changing source history. Vault motion
+between AI and Resources is sampled over three opening/closing cycles at
+1440px and 1920px, including reduced motion and quick reversals. Geometry
+artifacts check neighbour continuity, the editor minimum and the far-right edge.
+Resize recovery covers interrupted toggles on all five side panes, pointer and
+keyboard resizing in wide and crowded layouts, neighbour minimums, Escape,
+closing during a drag, and persistence after reload. An isolated development
+fixture hot-replaces the shared Sheet while History and Git are open, then
+checks the painted divider line for hit testing, visible hover and real dragging.
+Later-opened AI and Vault provide comparison handles; this catches suppressed
+intro callbacks that production-only toggle tests cannot reproduce. A legacy
+module fixture also deliberately locks already-open History and Git, then
+hot-upgrades those same instances to the current implementation and verifies
+that hover and real dragging recover without closing them or reloading.
+
+`resources.feature` exercises the production Resources dashboard with real storage
 counts, charts, responsive/keyboard navigation and reload. Focused fixtures cover
 unavailable/denied APIs, manual memory privacy, disappearing databases, shared
 unfinished requests, continued sampling across views, and observer cleanup on pause and browser-tab hiding. Its live vs
@@ -180,7 +202,7 @@ both diff panes and minimap; matching Settings swatches; parent/import mix ratio
 selection color/opacity; reload, reset and repository inheritance; separate global
 and repository settings Undo/Redo across reload; and unchanged source/edit Git
 histories. It also checks all controls and palette swatches at 1440, 760 and 390px
-widths, filtering and omission from file settings. Source scenarios validate
+widths, filtering and global/repository inheritance. Source scenarios validate
 recipes, reference ordering, persisted input, per-role inheritance and opacity.
 
 `function-parameters.feature` checks JS/TS/JSX/TSX parameter text styling and bound
@@ -269,15 +291,15 @@ boundary and retain nine cards at 600, 650, and 651 pixels high.
 `keyboard.feature` checks default Tab indentation, selected-line outdent, Escape
 navigation, and repeated Git undo/redo without refocusing the editor. A held worker
 request verifies focus and read-only editing protection while further shortcuts queue.
-`header-navigation.feature` covers the repository and page dropdowns, narrow
-header layout, selected checkmarks, context-menu colors, keyboard selection and
-focus restoration, directory import through the menu, and accepted writes while
-switching pages or repositories. Shared page selection lives in `navigation.helpers.mjs`.
+`header-navigation.feature` covers the repository dropdown and static Editor title,
+narrow header layout, selected repository checkmarks, context-menu colors, keyboard
+Settings controls, directory import and accepted writes while opening panes or
+switching repositories. Shared pane navigation lives in `navigation.helpers.mjs`.
 
 `branches.feature` checks local branch creation and selection, checked menu
 choices, committed files and source history after switching, dirty-file safety,
 reload, invalid names, and the initial-commit requirement.
-`history-view.feature` checks the Staged changes/Commit history tabs,
+`history-view.feature` checks the Staged/Committed tabs,
 selection per repository, reload and undo/redo, with
 responsive navigation and no inline commit form. `history-hover.feature` profiles
 pointer movement across 30 and 1,500 rendered rows with Chrome Performance metrics
@@ -382,7 +404,7 @@ names, keyboard navigation, and explicit activation. File-selection helpers
 expand ancestors before addressing lazy-rendered descendants; focus and
 expansion must never implicitly open a document.
 Palette scenarios read
-the browser's computed semantic colors and disabled page dropdown colors in every
+the browser's computed semantic colors and Editor heading colors in every
 palette/mode combination.
 Recovery scenarios use a development-only storage fixture that interrupts the
 durable journal at named checkpoints, reopens the service, and inspects real Git
@@ -636,8 +658,43 @@ minimap style/geometry capture. A fresh complete
 capture is the pixel oracle for the cached overview after opening and closing.
 This is a cache-correctness and bounded-work check, not a machine timing threshold.
 
-`@browser-models-ui` checks the six-profile UI without model downloads, real GPU
+`@browser-models-ui` checks the model catalog UI without model downloads, real GPU
 capability reporting, saved controls, worker cancellation, bounded synthetic
 weight ranges, SHA-256 rejection, local offline reads, shared-file removal leases
 and resized images passing through the existing Pi adapters. These fixtures
 do not constitute new hardware/model/OCR performance evidence.
+
+The opt-in `modelsLive` profile uses `live/browser-models.feature` for actual
+language/tool exchanges, LFM image handoffs, native decision probabilities and
+auxiliary selection. It requires `BROWSER_MODELS_LIVE=1`, a running development
+server and a qualified discrete WebGPU adapter. Its own persistent browser
+profile retains verified multi-GB model downloads between checks; output and
+profile placement follow `MODEL_LIVE_ARTIFACTS`. Keep it separate from the
+ordinary synthetic browser suite and personal browser storage.
+`MODEL_LIVE_SPEECH_FIXTURE` optionally adds the three Parakeet modes using the
+public JFK WAV and Chromium's fake microphone; source waveform rate/channels
+are converted by the normal capture path. No personal recording is used.
+
+`browser-runtime.feature` uses a tiny native WebML stand-in while keeping the
+actual runtime loader, SHA checks, Web Locks, Pi harness and chat controls. Its
+development-only routes replace the executable digest and GPU probe; only the
+stand-in's bytes and model metadata enter its isolated IndexedDB. It checks
+queued model snapshots, transcript order, cancellation, conversation closure and
+automatic handoff between tabs with active and idle models.
+
+`assistant-design.feature` checks full-width model summaries and paired input
+alignment in dark/light themes at full/compact widths, readable loaded model
+rows, shared speech progress with reduced motion, matching error presentation,
+and progress/cancellation in the Dictate footer. Fixed decision/vision profiles
+expose no unsupported LLM execution fields; Strands names its backend in the row.
+
+Settings scope coverage verifies that only Global and Repository remain, including
+repository reset, reload and independent settings undo/redo. Source history
+coverage loads legacy file overrides and proves they cannot return during replay.
+
+`settings-tabs.feature` checks the category grouping, shared repository scope,
+preserved connection drafts, keyboard tab navigation, narrow layouts and selected
+category/scroll restoration after closing and reload. `selectSettingsTab` performs
+explicit category navigation in shared helpers; dropdown helpers reveal their
+own Settings section before opening the control. Minimap and Git configuration
+link scenarios continue covering the tabbed content through their existing flows.

@@ -6,67 +6,54 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
-import { openNavigationMenu, pageSelector, repositorySelector, selectPage, selectRepository } from "./navigation.helpers.mjs";
+import { openNavigationMenu, editorHeading, repositorySelector, selectPage, selectRepository } from "./navigation.helpers.mjs";
 
 const saved = page => expect(page.getByRole("status", { name: "Persistence status", exact: true }))
   .toHaveText("All changes saved", { timeout: 20_000 });
 
-Then("the repository and page dropdowns replace the old navigation controls", async function () {
+Then("the repository menu and static Editor heading fit their headers", async function () {
   const header = this.page.locator(".topbar");
   const repository = repositorySelector(this.page);
-  const page = pageSelector(this.page);
-  await expect(header.getByRole("button")).toHaveCount(2);
-  await expect(header.getByRole("combobox")).toHaveCount(0);
+  const heading = editorHeading(this.page);
   await expect(header.getByRole("navigation", { name: "Repository navigation", exact: true })).toBeVisible();
-  await expect(repository).toBeVisible();
-  await expect(page).toBeVisible();
-  await expect(this.page.locator("aside").getByRole("combobox", { name: "Repository", exact: true })).toHaveCount(0);
-  await expect(this.page.getByRole("tab")).toHaveCount(0);
-  await expect(this.page.getByRole("tablist", { name: "Repository views", exact: true })).toHaveCount(0);
-  await expect(this.page.locator("aside").getByText("REPOSITORY", { exact: true })).toHaveCount(0);
-  await expect(this.page.locator("aside").getByRole("button", { name: "New repository", exact: true })).toHaveCount(0);
-  await expect(this.page.locator("aside").getByRole("button", { name: "Import directory", exact: true })).toHaveCount(0);
-  const [outer, left, right] = await Promise.all([header.boundingBox(), repository.boundingBox(), page.boundingBox()]);
-  assert.ok(left.x >= outer.x && right.x + right.width <= outer.x + outer.width + 1,
-    "Both dropdowns must remain inside the header");
-  const wraps = await header.locator(".breadcrumb").evaluate(node => getComputedStyle(node).flexWrap === "wrap");
-  assert.ok((left.x + left.width <= right.x && Math.abs(left.y - right.y) <= 1)
-    || (wraps && right.y >= left.y + left.height),
-    "The page follows the repository without overlap, wrapping only when the header allows it");
+  await expect(repository).toBeVisible();await expect(heading).toBeVisible();
+  await expect(this.page.getByRole("button", { name: "Page", exact: true })).toHaveCount(0);
+  await expect(heading.locator("button, [aria-haspopup], .navigation-trigger")).toHaveCount(0);
+  const [outer, left, right, repositoryHeader] = await Promise.all([header.boundingBox(), repository.boundingBox(), heading.boundingBox(),
+    repository.evaluate(node=>{const box=node.closest('header').getBoundingClientRect();return {x:box.x,right:box.right};})]);
+  assert.ok(right.x>=outer.x&&right.x+right.width<=outer.x+outer.width+1,"Editor title stays inside its header");
+  assert.ok(left.x>=repositoryHeader.x&&left.x+left.width<=repositoryHeader.right+1,"Repository picker stays inside its header");
+  assert.ok(left.x+left.width<=right.x+1||right.y>=left.y+left.height,"Repository and Editor labels do not overlap");
 });
 
-Then("the empty header offers pages without an available repository", async function () {
+Then("the empty header offers repository actions and Settings", async function () {
   await expect(repositorySelector(this.page)).toBeEnabled();
   await expect(repositorySelector(this.page)).toContainText("Choose a repository");
   const menu = await openNavigationMenu(this.page, "Repository");
   await expect(menu.getByRole("menuitemradio")).toHaveCount(0);
   await expect(menu.getByRole("menuitem", { name: "New repository", exact: true })).toBeVisible();
-  await expect(menu.getByRole("menuitem", { name: "Import directory", exact: true })).toBeVisible();
-  await this.page.keyboard.press("Escape");
-  await expect(menu).toBeHidden();
+  await expect(menu.getByRole("menuitem", { name: "Import repository", exact: true })).toBeVisible();
+  await this.page.keyboard.press("Escape");await expect(menu).toBeHidden();
   await expect(repositorySelector(this.page)).toBeFocused();
-  await expect(pageSelector(this.page)).toBeEnabled();
-  await expect(pageSelector(this.page)).toHaveAttribute("data-value", "editor");
+  await expect(editorHeading(this.page)).toBeVisible();
+  await expect(this.page.getByRole("button",{name:"Settings",exact:true})).toBeEnabled();
 });
 
-When("I choose the header page {string} with the keyboard", async function (name) {
-  const selector = pageSelector(this.page);
-  await selector.focus();
-  await selector.press("Enter");
-  await expect(this.page.getByRole("menu", { name: "Page", exact: true })).toBeVisible();
-  await this.page.keyboard.press("Home");
-  const index = ["Editor", "Resources", "Vault", "Settings"].indexOf(name);
-  assert.ok(index >= 0);
-  for (let count = 0; count < index; count += 1) await this.page.keyboard.press("ArrowDown");
-  await this.page.keyboard.press("Enter");
-  await expect(this.page.getByRole("menu", { name: "Page", exact: true })).toBeHidden();
-  if (name !== "History") await expect(selector).toBeFocused();
+When("I open Settings from its toolbar button with the keyboard", async function () {
+  const toggle=this.page.getByRole("button",{name:"Settings",exact:true});
+  await toggle.focus();await toggle.press("Enter");await expect(toggle).toHaveAttribute("aria-expanded","true");
 });
 
-Then("the header page {string} is active", async function (name) {
-  if (name !== "History") await expect(pageSelector(this.page)).toHaveAttribute("data-value", name.toLowerCase());
+When("I close Settings with the keyboard", async function () {
+  const close=this.page.getByRole("button",{name:"Close Settings",exact:true});
+  await close.focus();await close.press("Enter");
+  await expect(this.page.locator('[data-settings-panel]')).toHaveCount(0);
+});
+
+Then("the {string} pane is visible", async function (name) {
+  await expect(editorHeading(this.page)).toBeVisible();
   await expect(this.page.getByRole("region", { name, exact: true })).toBeVisible();
-  await expect(this.page.locator("#panel-editor:visible, #panel-history:visible, #panel-resources:visible, #panel-vault:visible, #panel-settings:visible")).toHaveCount(await this.page.locator("[data-history-panel]:visible").count() ? 2 : 1);
+  await expect(this.page.locator("#panel-editor:visible, #panel-history:visible, #panel-resources:visible, #panel-vault:visible, #panel-settings:visible")).toHaveCount(1 + await this.page.locator("[data-history-panel]:visible, [data-vault-panel]:visible, [data-resources-panel]:visible, [data-settings-panel]:visible").count());
 });
 
 async function typeWithPendingWrites(page, value) {
@@ -130,7 +117,7 @@ When("I import a directory through the repository menu", async function () {
   const menu = await openNavigationMenu(this.page, "Repository");
   const [chooser] = await Promise.all([
     this.page.waitForEvent("filechooser"),
-    menu.getByRole("menuitem", { name: "Import directory", exact: true }).click(),
+    menu.getByRole("menuitem", { name: "Import repository", exact: true }).click(),
   ]);
   assert.equal(await chooser.element().getAttribute("webkitdirectory"), "");
   assert.equal(chooser.isMultiple(), true);

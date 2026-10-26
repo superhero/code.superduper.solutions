@@ -7,6 +7,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import * as Sheet from "$lib/components/ui/sheet";
   import { Button } from "$lib/components/ui/button";
   import MaterialIcon from "$lib/components/MaterialIcon.svelte";
+  import Devicon from "$lib/components/Devicon.svelte";
   import FileIcon from "$lib/components/FileIcon.svelte";
   import WidthDivider from "./WidthDivider.svelte";
   import NavigationDropdown from "$lib/components/NavigationDropdown.svelte";
@@ -24,7 +25,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       repository: RepositorySnapshot; settings: EditorSettings; initialCommit?: string; initialTab?: string;
       onaction(request: GitAction): Promise<void>; oncheckout(oid: string): Promise<boolean>; onremote(request: RemoteCommand): Promise<void>; onbranch(name: string): Promise<void>; onsettings(): void; onopendiff(path:string): void; onopenfile(path:string): void; onopencommitdiff(path:string,oid:string): void } = $props();
   const tabs = [{ value: "Changes", label: "Staging", icon: "difference" }, { value: "Commits", label: "Commits", icon: "history" },
-    { value: "Actions", label: "Actions", icon: "account_tree" }, { value: "Remotes", label: "Remotes", icon: "cloud" }, { value: "Stashes", label: "Stashes", icon: "inventory_2" }];
+    { value: "Actions", label: "Actions", icon: "account_tree" }, { value: "Remotes", label: "Remotes", icon: "cloud" }, { value: "Stashes", label: "Stashed", icon: "inventory_2" }];
   let status = $state.raw<GitStatus>(), failure = $state(""), busy = $state(false);
   let diff = $state.raw<GitDiff>(), diffKind = $state<"working" | "staged" | "commit">("working"), draft = $state("");
   let selected = $state.raw<GitCommitDetails>(), commitOid = $state("");
@@ -234,7 +235,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     const tab = panel.querySelector<HTMLElement>(".git-tab"), content = tab?.querySelector<HTMLElement>(".button-content");
     const icon = content?.querySelector<HTMLElement>(".material-symbols-rounded");
     if (!tab || !content || !icon) return;
-    // Centered tabs gain space as the pane grows; share the first icon's actual column.
+    // Share the first tab icon's column across interface font and size changes.
     const observer = new ResizeObserver(() => {
       const bounds = icon.getBoundingClientRect();
       if (bounds.width) panel.style.setProperty("--git-tab-icon-center", `${bounds.x + bounds.width / 2 - panel.getBoundingClientRect().x - panel.clientLeft + (tab.parentElement?.scrollLeft ?? 0)}px`);
@@ -246,24 +247,24 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </script>
 
 <Sheet.Pane bind:open {docked} {width} label={`Git · ${repository.name}`}>
-  {#snippet divider(moving: boolean)}<WidthDivider edge="left" label="Resize Git pane" minimum={320} maximum={maximumWidth} disabled={resizeDisabled || busy || moving}
+  {#snippet divider(moving: boolean)}<WidthDivider edge="left" label="Resize Git pane" minimum={Math.min(320,maximumWidth)} maximum={maximumWidth} disabled={resizeDisabled || busy || moving}
     onstart={onresizestart} onpreview={onresizepreview} onend={onresizeend}/>{/snippet}
   <div class="git-panel" data-git-panel data-hover="foreground" data-layout={docked ? "docked" : "overlay"} use:alignHeaderIcons>
     <header class="git-header">
-      <div class="pane-title"><MaterialIcon name="account_tree" size={16} /><h2 tabindex="-1" data-pane-heading>Git</h2></div>
+      <div class="pane-title"><Devicon name="git-plain" size={16} /><h2 tabindex="-1" data-pane-heading>Git</h2></div>
       <span class="git-status" role="status">{busy ? "Working…" : repository.head?.slice(0, 8) ?? "First commit"}</span>
     </header>
     <div class="git-context">
       <Button variant="ghost" size="icon-sm" aria-label="Close" tooltip="Close Git pane" onclick={() => open = false}><MaterialIcon name="close" size={18} /></Button>
     </div>
-    <nav class="git-tabs" aria-label="Git views" onwheel={scrollTabs} onfocusin={revealFocusedTab}>
-      {#each tabs as item}<Button class="git-tab" variant="ghost" aria-pressed={tab === item.value} disabled={busy} onclick={() => selectTab(item.value)}>
+    <nav class="git-tabs view-tabs tab-scroll" data-hover="foreground" aria-label="Git views" onwheel={scrollTabs} onfocusin={revealFocusedTab}>
+      {#each tabs as item}<Button class="git-tab view-tab" variant="ghost" aria-pressed={tab === item.value} disabled={busy} onclick={() => selectTab(item.value)}>
         <MaterialIcon name={item.icon} size={15} /><span>{item.label}</span>
       </Button>{/each}
     </nav>
     <div class="git-scroll">
       {#if failure}<div role="alert" class="git-error" in:fade={{ duration: motionDuration() }}><MaterialIcon name="error" size={18} /><p>{failure}</p></div>{/if}
-      {#if !status}<div class="empty-state" role="status"><MaterialIcon name="account_tree" size={28} /><p>Reading repository…</p></div>{:else}
+      {#if !status}<div class="empty-state" role="status"><Devicon name="git-plain" size={28} /><p>Reading repository…</p></div>{:else}
         {#if status.operation}
           <section class="git-card operation" aria-label="Git operation in progress">
             <div class="card-heading"><MaterialIcon name="merge" size={20} /><h3>{status.operation.label}</h3></div>
@@ -315,7 +316,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
             </div>
           {:else if tab === "Actions"}
             <section class="git-card git-form" aria-label="Local Git actions">
-              <div class="card-heading"><MaterialIcon name="account_tree" size={20} /><h3>Git operations</h3></div>
+              <div class="card-heading"><Devicon name="git-plain" size={20} /><h3>Git operations</h3></div>
               <div class="field dropdown-field"><label for="git-command">Operation</label><NavigationDropdown id="git-command" label="Git operation" placeholder="Choose operation" value={command} items={commands} disabled={busy || !!status.operation} onchange={value => { command = value as GitAction["kind"]; confirmed = false; }} matchTriggerWidth /></div>
               <div class="field dropdown-field"><label for="git-target">Target <span class="label-detail">({targetType})</span></label><NavigationDropdown id="git-target" label="Git target" value={actionTarget} items={targetItems} disabled={busy || !targetItems.length} placeholder={command === "recover" ? "Choose checkpoint" : targetType === "branch, tag or commit" ? "Choose target" : `Choose ${targetType}`} placeholderIcon={command === "recover" ? "restore" : targetType === "commit" ? "commit" : targetType === "tag" ? "label" : "account_tree"} onchange={value => { if (command === "recover") recoveryTarget = value; else target = value; confirmed = false; }} matchTriggerWidth /></div>
               {#if ["tag", "rename-branch"].includes(command)}<div class="field"><label for="git-new-name">New name</label><input id="git-new-name" bind:value={newName} disabled={busy} /></div>{/if}
@@ -352,7 +353,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
             {/snippet}
             <div class="card-heading"><MaterialIcon name={tab === "Stashes" ? "inventory_2" : "commit"} size={20} /><h3>{tab === "Changes" ? "Commit" : tab === "Stashes" ? "Stash" : "Commit details"}</h3></div>
             {#if tab !== "Changes"}{@render authorIdentity()}<div class="section-divider"></div>{/if}
-            <label>{tab === "Stashes" ? "Stash message" : "Commit subject"}<input aria-label="Commit subject" bind:value={subject} disabled={busy} placeholder={tab === "Stashes" ? "What are you setting aside?" : "What changed?"} /></label>
+            <label>{tab === "Stashes" ? "Stash message" : "Subject"}<input aria-label="Subject" bind:value={subject} disabled={busy} placeholder={tab === "Stashes" ? "What are you setting aside?" : "What changed?"} /></label>
             {#if tab === "Stashes"}
               <div class="stash-controls"><label class="confirmation"><input type="checkbox" bind:checked={includeUntracked} disabled={busy} /><span>Include untracked files</span></label><Button variant="secondary" size="sm" disabled={busy || !!status.operation || !name || !email} onclick={() => run({ kind: "stash-push", message: subject, includeUntracked })}><MaterialIcon name="add" size={16} />Stash changes</Button></div>
             {/if}
@@ -364,15 +365,16 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
             {/if}
           </section>
         {/if}
-        {#if tab === "Stashes"}
-            <section class="git-card" aria-label="Stashes">
-              <div class="card-heading"><MaterialIcon name="inventory_2" size={20} /><h3>Stashes</h3><span class="count">{status.stashes.length}</span></div>
+        {#if tab === "Stashes" && status.stashes.length > 0}
+            <section class="git-card stash-list" aria-label="Stashed work">
               {#each status.stashes as stash}<article class="saved-entry"><div class="entry-heading"><MaterialIcon name="inventory_2" size={17} /><strong>{stash.message}</strong><code>{stash.oid.slice(0, 8)}</code></div>
-                <div class="actions"><Button size="sm" variant="secondary" disabled={busy} onclick={() => { tab = "Commits"; void inspectCommit(stash.oid); }}>Inspect</Button>
+                <div class="actions stash-actions"><Button size="sm" variant="secondary" disabled={busy} onclick={() => { tab = "Commits"; void inspectCommit(stash.oid); }}>Inspect</Button>
                   <Button size="sm" variant="secondary" disabled={busy || !!status.operation} onclick={() => run({ kind: "stash-apply", target: stash.oid })}>Apply</Button>
                   <Button size="sm" variant="secondary" disabled={busy || !!status.operation} onclick={() => run({ kind: "stash-pop", target: stash.oid })}>Pop</Button>
-                  <Button size="sm" variant="ghost" disabled={busy} onclick={() => { target = stash.oid; command = "stash-drop"; confirmed = false; }}>Drop</Button>
-                  {#if command === "stash-drop" && target === stash.oid}<Button size="sm" disabled={busy} onclick={() => run({ kind: "stash-drop", target: stash.oid, force: true })}>Confirm drop</Button>{/if}</div>
+                  <Button size="sm" variant="ghost" disabled={busy} onclick={() => {
+                    if (command === "stash-drop" && target === stash.oid) void run({ kind: "stash-drop", target: stash.oid, force: true });
+                    else { target = stash.oid; command = "stash-drop"; confirmed = false; }
+                  }}>{command === "stash-drop" && target === stash.oid ? "Confirm drop" : "Drop"}</Button></div>
               </article>{/each}
             </section>
         {/if}
@@ -383,22 +385,19 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 <style>
   .git-panel { --git-divider: color-mix(in srgb, var(--color-surface) 20%, var(--color-background)); display: flex; flex-direction: column; height: 100%; min-width: 0; min-height: 0; background: var(--color-background); color: var(--color-foreground); font-size: .75rem; container: git-pane / inline-size; }
   .git-panel[data-layout="docked"] { border-left: 2px solid var(--git-divider); }
-  /* Account for the close glyph's inset in its 2rem button when matching the text's right edge. */
-  .git-header { height: var(--workbench-header-height, 48px); flex: 0 0 var(--workbench-header-height, 48px); min-height: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px calc(12px + 1rem - 5px) 6px calc(var(--git-tab-icon-center, calc(11px + .46875rem)) - .5rem); }
+  /* Mirror the left icon center and keep the status aligned with the close glyph. */
+  .git-header { height: var(--workbench-header-height, 48px); flex: 0 0 var(--workbench-header-height, 48px); min-height: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px calc(var(--git-tab-icon-center, calc(14px + .46875rem)) - 5px) 6px calc(var(--git-tab-icon-center, calc(14px + .46875rem)) - .5rem); }
   .pane-title { display: flex; align-items: center; gap: 9px; min-width: 0; }
   h2 { margin: 0; font-size: .6875rem; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .git-context { height: 40px; flex: 0 0 40px; padding: 4px 12px 4px calc(var(--git-tab-icon-center, calc(11px + .46875rem)) - .46875rem); display: flex; align-items: center; justify-content: flex-end; gap: 12px; background: var(--color-toolbar-background); color: var(--color-toolbar-foreground); }
+  .git-context { height: 40px; flex: 0 0 40px; padding: 4px calc(var(--git-tab-icon-center, calc(14px + .46875rem)) - 1rem) 4px calc(var(--git-tab-icon-center, calc(14px + .46875rem)) - .46875rem); display: flex; align-items: center; justify-content: flex-end; gap: 12px; background: var(--color-toolbar-background); color: var(--color-toolbar-foreground); }
   code { font-family: "JetBrains Mono", monospace; font-size: .625rem; white-space: nowrap; }
   .git-status { margin-left: auto; display: flex; gap: 7px; align-items: center; font-size: .5625rem; white-space: nowrap; }
   @media (max-width: 950px) { .git-status { font-size: .5rem; } }
-  .git-tabs { display: flex; min-width: 0; height: var(--workbench-tabs-height, 40px); flex: 0 0 var(--workbench-tabs-height, 40px); padding: 0; background: var(--color-surface); border-block: 2px solid var(--git-divider); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
-  .git-tabs :global(.git-tab) { flex: 1 0 auto; height: var(--workbench-tabs-content-height, 36px); padding: 6px 11px; border-radius: 0; background: var(--color-hover-background); font-size: .625rem; gap: 6px; }
-  .git-tabs :global(.git-tab[aria-pressed="true"]) { background: var(--color-background); }
-  .git-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 16px; scroll-padding-block: 16px; }
+  .git-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: var(--pane-gap); scroll-padding-block: var(--pane-gap); }
   .view-content { min-width: 0; }
-  .git-card { min-width: 0; padding: 18px; background: var(--color-surface); border-radius: 4px; }
-  .git-card + .git-card, .operation + .view-content, .view-content + .git-card { margin-top: 16px; }
-  .card-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; min-width: 0; }
+  .git-card { min-width: 0; padding: var(--pane-padding); background: var(--color-surface); border-radius: 4px; }
+  .git-card + .git-card, .operation + .view-content, .view-content + .git-card { margin-top: var(--pane-gap); }
+  .card-heading { display: flex; align-items: center; gap: 10px; margin-bottom: var(--pane-padding); min-width: 0; }
   .card-heading h3 { margin: 0; font-size: .8125rem; font-weight: 650; flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .card-heading > code, .count { margin-left: auto; }
   .count { font-size: .625rem; padding: 2px 7px; border-radius: 4px; background: var(--color-background); }
@@ -416,7 +415,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .file-state.added { color: var(--color-git-added); }.file-state.deleted, .file-state.conflicted { color: var(--color-git-removed); }
   .row-actions { flex-wrap: nowrap; }
   .empty-state { min-height: 108px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; text-align: center; padding: 20px 12px; }
-  .git-error { display: flex; align-items: flex-start; gap: 10px; background: var(--color-error-background, var(--color-surface)); color: var(--color-error-foreground, var(--color-foreground)); padding: 16px; border-radius: 4px; margin-bottom: 16px; overflow-wrap: anywhere; }
+  .git-error { display: flex; align-items: flex-start; gap: 10px; background: var(--color-error-background, var(--color-surface)); color: var(--color-error-foreground, var(--color-foreground)); padding: var(--pane-padding); border-radius: 4px; margin-bottom: var(--pane-gap); overflow-wrap: anywhere; }
   .git-error > :global(.material-symbols-rounded) { margin-top: 2px; }
   .operation-state { margin-bottom: 12px; }
   .conflict-row { margin-top: 18px; padding-top: 16px; background-image: repeating-linear-gradient(to right, var(--color-background) 0 6px, transparent 6px 14px); background-size: 100% 1px; background-repeat: no-repeat; }
@@ -454,7 +453,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .commit-form :global(.primary-action), .row-actions :global(button), .stash-controls :global(button), .section-actions :global(button), .commit-details .actions :global(button), .git-panel :global(.operation-action) { position: relative; }
   .commit-form :global(.primary-action:disabled)::after, .row-actions :global(button:disabled)::after, .stash-controls :global(button:disabled)::after, .section-actions :global(button:disabled)::after, .commit-details .actions :global(button:disabled)::after, .git-panel :global(.operation-action:disabled)::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: color-mix(in srgb, var(--color-surface) 50%, transparent); pointer-events: none; }
   .hint { font-size: .6875rem; }
-  .commit-browser { display: grid; gap: 16px; }
+  .commit-browser { display: grid; gap: var(--pane-gap); }
   .commit-list, .commit-files { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .commit-list { max-height: 260px; overflow: auto; }
   .commit-list button, .commit-files button { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px; border-radius: 4px; background: var(--color-background); color: inherit; text-align: left; }
@@ -462,15 +461,18 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .commit-subject, .commit-files button > span:not(.material-symbols-rounded) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .commit-author { margin-bottom: 16px; overflow-wrap: anywhere; }.commit-author span { display: block; }
   .commit-details pre { font: inherit; font-size: .75rem; white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 16px; }
-  .commit-details .section-divider { margin-block: 18px; }
+  .commit-details .section-divider { margin-block: var(--pane-padding); }
   .entry-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }.entry-heading strong { min-width: 0; flex: 1; overflow-wrap: anywhere; font-weight: 600; }
-  .saved-entry { margin-top: 16px; padding: 14px; border-radius: 4px; background: var(--color-background); }.saved-entry .actions :global(button) { background: var(--color-surface); }
+  .saved-entry { margin-top: var(--pane-gap); padding: var(--pane-padding); border-radius: 4px; background: var(--color-background); }.saved-entry .actions :global(button) { background: var(--color-surface); }
+  .stash-list .saved-entry:first-child { margin-top: 0; }
+  .stash-actions { flex-wrap: nowrap; align-items: stretch; }
+  .stash-actions :global(button) { flex: 1 1 0; min-width: 0; min-height: 2rem; height: auto; padding-inline: 4px; white-space: normal; }
   .stash-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .review-kind { display: block; margin-top: 4px; font-size: .625rem; font-weight: 400; }
   .comparison-labels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; background: var(--color-background); padding: 8px 12px; font-size: .625rem; }
   .comparison-labels span + span { padding-left: 12px; }
   .diff-review .actions, .diff-review > :global(.primary-action) { margin-top: 14px; }
-  @container git-pane (max-width: 420px) { .git-scroll { padding: 12px; }.git-card { padding: 14px; }.git-tabs :global(.git-tab) { padding-inline: 9px; }.git-tabs :global(.material-symbols-rounded) { display: none; }.identity { grid-template-columns: minmax(0, 1fr); }.card-heading { margin-bottom: 14px; } }
-  @container git-pane (min-width: 760px) { .git-scroll { padding: 24px; }.commit-browser { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }.git-card { padding: 24px; }.git-tabs :global(.git-tab) { flex: 0 0 auto; padding-inline: 24px; } }
+  @container git-pane (max-width: 420px) { .git-scroll { padding: var(--pane-gap); }.git-card { padding: var(--pane-padding); }.identity { grid-template-columns: minmax(0, 1fr); }.card-heading { margin-bottom: var(--pane-padding); } }
+  @container git-pane (min-width: 760px) { .git-scroll { padding: var(--pane-gap); }.commit-browser { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }.git-card { padding: var(--pane-padding); } }
   @media (prefers-reduced-motion: reduce) { .confirmation input::before { transition: none; } }
 </style>

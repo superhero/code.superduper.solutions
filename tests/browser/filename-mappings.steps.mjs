@@ -15,12 +15,12 @@ Given('a repository with a custom suffix file is imported',async function(){
   this.mappedSource='const answer = 42;\n';
   await writeFile(join(directory,'example.custom'),this.mappedSource);
   await writeFile(join(directory,'example.js'),'export const original = 42;');
-  await this.page.getByLabel('Import directory',{exact:true}).setInputFiles(directory);await saved(this.page);
+  await this.page.getByLabel('Import repository',{exact:true}).setInputFiles(directory);await saved(this.page);
   await this.page.getByRole('treeitem',{name:'example.custom',exact:true}).locator(':scope > .tree-row').click();await saved(this.page);
   await expect(tokens(this.page)).toHaveCount(0);
 });
 When('I map its suffix to JavaScript in personal settings',async function(){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Languages');await selectDropdown(this.page,'Settings scope','global');
   await expect(this.page.getByRole('button',{name:'Language mode',exact:true})).toHaveCount(0);
   await mapping(this.page).getByLabel('Filename suffix',{exact:true}).fill('*.CUSTOM');
   await selectDropdown(this.page,'Language for new suffix','javascript');
@@ -29,7 +29,7 @@ When('I map its suffix to JavaScript in personal settings',async function(){
 Then('its syntax updates without changing source files',async function(){
   await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(1);
   assert.equal(await this.page.locator('.cm-content').textContent(),this.mappedSource.trimEnd());
-  await expect(this.page.locator('.editor-status')).toContainText('javascript');
+  await expect(tokens(this.page).filter({hasText:/^const$/})).toHaveCount(1);
 });
 When('I reload the application with its filename mapping',async function(){
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
@@ -46,7 +46,7 @@ When('I override the suffix as plain text for this repository',async function(){
 });
 Then('its syntax clears and undo restores the inherited mapping',async function(){
   await expect(tokens(this.page)).toHaveCount(0);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(this.page.getByRole('button',{name:'Language for .custom',exact:true})).toHaveAttribute('data-value','inherit');
   await expect.poll(()=>tokens(this.page).count()).toBeGreaterThan(1);
 });
@@ -56,7 +56,7 @@ async function activateMappedTypescript(world,suffix){
   world.mappedTypedSource='const answer: string = 42;';
   await page.getByLabel('Code editor document',{exact:true}).click();
   await page.keyboard.press('Control+a');await page.keyboard.insertText(world.mappedTypedSource);await saved(page);
-  await selectPage(page,'Settings');await selectDropdown(page,'Settings scope','global');
+  await selectPage(page, 'Settings', 'Languages');await selectDropdown(page,'Settings scope','global');
   await mapping(page).getByLabel('Filename suffix',{exact:true}).fill(suffix);
   await selectDropdown(page,'Language for new suffix','typescript');
   await mapping(page).getByRole('button',{name:'Add',exact:true}).click();await saved(page);

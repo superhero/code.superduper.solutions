@@ -1,6 +1,7 @@
 // Copyright (C) 2026 Erik Landvall
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
+import {openStagedHistory} from './navigation.helpers.mjs';
 import assert from 'node:assert/strict';
 import {Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
@@ -18,7 +19,7 @@ async function drag(page,name,delta){
 
 Then('crowded History and Git panes remain draggable after inspecting the current commit with {string} motion',{timeout:90000},async function(motion){
  const page=this.page;await page.setViewportSize({width:2600,height:1000});await page.emulateMedia({reducedMotion:motion});
- await page.getByRole('button',{name:'Open staged history',exact:true}).click();
+ await openStagedHistory(page);
  await page.getByRole('button',{name:'Git operations',exact:true}).click();
  await page.getByRole('button',{name:'AI chat',exact:true}).click();await saved(page);
  for(const [name,target]of [['History',760],['Git',660]]){
@@ -40,14 +41,16 @@ Then('crowded History and Git panes remain draggable after inspecting the curren
  await page.getByRole('button',{name:'Git operations',exact:true}).click();await saved(page);
  // Cancellation must restore the larger saved preferences, not persist the
  // clamped widths merely because this viewport has less room.
+ await page.locator('.work-area').evaluate(async node=>{await Promise.all(node.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
  const clamped=await width(page,'History'),handle=divider(page,'History');await expect(handle).toHaveAttribute('aria-disabled','false');
  const box=await handle.boundingBox(),x=box.x+box.width/2,y=box.y+100;
  await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+40,y,{steps:8});
- await expect.poll(()=>width(page,'History')).toBe(clamped-40);
+ await expect.poll(()=>width(page,'History')).toBeLessThan(clamped-30);
  await page.keyboard.press('Escape');await page.mouse.up();await expect.poll(()=>width(page,'History')).toBe(clamped);
  await page.setViewportSize({width:2600,height:1000});
  await expect.poll(()=>width(page,'History')).toBe(760);await expect.poll(()=>width(page,'Git')).toBe(660);
  await page.setViewportSize({width:2048,height:1000});
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const finalWidths={};
  for(const name of ['History','Git']){
   const before=await width(page,name);

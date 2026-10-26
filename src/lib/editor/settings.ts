@@ -18,9 +18,9 @@ export { LANGUAGES, languageForPath } from "./languages.ts";
 /** Preferences stay outside source files; deliberate changes join application history. */
 export const PALETTES = ["default", "sunset", "alpine", "obsidian", "midnight-gold", "neon", "lantern", "spring", "bonfire", "harvest-moon", "blue-horizon", "golden-violet", "citrus", "sunflower", "garden-dusk", "autumn", "rainfall", "graphite-study", "steel-and-mist", "carbon", "heritage-noir"] as const;
 export const INTERFACE_FONTS = interfaceFontChoices;
-export const FILE_OVERRIDE_KEYS = ["indentSize", "tabSize", "indentWithTabs", "tabBehavior", "lineWrapping", "readOnly", "historyLimit"] as const;
 
 export interface EditorSettings {
+  showAIConnectionsButton: boolean;
   showAISendButton: boolean;
   aiEnterAction: "send" | "newline";
   aiInstructions: string;
@@ -58,18 +58,17 @@ export interface EditorSettings {
   showHistoryRedoButton: boolean;
   showUndoButton: boolean;
   showRedoButton: boolean;
-  showCommitHistoryButton: boolean;
-  showStagedHistoryButton: boolean;
   showZoomOutButton: boolean;
   showZoomInButton: boolean;
   showFormatButton: boolean;
   showDiffButton: boolean;
   showCommitButton: boolean;
-  showGitButton: boolean;
   showHistoryCommitButton: boolean;
   showHistoryGitButton: boolean;
   lineNumbers: boolean;
   minimap: boolean;
+  settingsMinimap: boolean;
+  historyMinimap: boolean;
   scrollbars: boolean;
   historyLimit: number;
   scrollSpeed: number;
@@ -88,17 +87,17 @@ export interface SettingsStore {
   version: 1;
   global: EditorSettings;
   repositories: Record<string, Partial<EditorSettings>>;
-  files: Record<string, Record<string, Partial<EditorSettings>>>;
 }
 
 export const DEFAULT_SETTINGS: Readonly<EditorSettings> = Object.freeze({
+  showAIConnectionsButton: false,
   showAISendButton: false, aiEnterAction: "send",
   aiInstructions: DEFAULT_INSTRUCTIONS, aiSkills: {}, aiTools: DEFAULT_TOOLS, aiModelContexts: {},
   colorMappings: {}, selectionOpacity: 20,
   showSettingsUndoButton: true, showSettingsRedoButton: true, showSettingsResetButton: false, showSettingsKeybindingsResetButton: false,
   showHistoryUndoButton: true, showHistoryRedoButton: true,
-  showUndoButton: true, showRedoButton: true, showCommitHistoryButton: true, showStagedHistoryButton: true, showZoomOutButton: true,
-  showZoomInButton: true, showFormatButton: true, showDiffButton: true, showCommitButton: true, showGitButton: true, showHistoryCommitButton: true, showHistoryGitButton: true,
+  showUndoButton: true, showRedoButton: true, showZoomOutButton: true,
+  showZoomInButton: true, showFormatButton: true, showDiffButton: true, showCommitButton: true, showHistoryCommitButton: true, showHistoryGitButton: true,
   languageMappings: {},
   keybindings: {},
   syntaxPackages: Object.fromEntries([...optionalSyntax.map(item=>[item.id,true] as const), ["handlebars-beta",false]]),
@@ -107,7 +106,7 @@ export const DEFAULT_SETTINGS: Readonly<EditorSettings> = Object.freeze({
   typeLibraries: {},
   palette: "bonfire", mode: "dark", fontSize: 13, lineHeight: 1.7,
   interfaceFont: "google:Geomini", interfaceSize: "medium", fontFamily: "google:JetBrains Mono", indentSize: 2, tabSize: 4, indentWithTabs: false,
-  tabBehavior: "indent", fileExplorerIcons: true, middleClickClosesTabs: true, editorFooter: false, lineWrapping: false, lineNumbers: true, minimap: true, scrollbars: false, historyLimit: 300, scrollSpeed: 1, smoothScrolling: true, foldGutter: true,
+  tabBehavior: "indent", fileExplorerIcons: true, middleClickClosesTabs: true, editorFooter: false, lineWrapping: false, lineNumbers: true, minimap: true, settingsMinimap: false, historyMinimap: false, scrollbars: false, historyLimit: 300, scrollSpeed: 1, smoothScrolling: true, foldGutter: true,
   highlightActiveLine: true, bracketMatching: true, closeBrackets: true,
   autocomplete: true, indentOnInput: true, highlightWhitespace: false,
   readOnly: false
@@ -183,20 +182,12 @@ export function normalizeSettings(value: unknown): SettingsStore {
         repositories[id] = normalizeOverrides(overrides);
     }
   }
-  const files: SettingsStore["files"] = {};
-  if (input.files && typeof input.files === "object" && !Array.isArray(input.files)) {
-    for (const [id, entries] of Object.entries(input.files)) {
-      if (id === "__proto__" || id === "constructor" || id === "prototype" || !entries || typeof entries !== "object" || Array.isArray(entries)) continue;
-      files[id] = Object.fromEntries(Object.entries(entries).map(([path, value]) => [path,
-        Object.fromEntries(Object.entries(normalizeOverrides(value)).filter(([key]) => (FILE_OVERRIDE_KEYS as readonly string[]).includes(key))) ]));
-    }
-  }
-  return { version: 1, global, repositories, files };
+  return { version: 1, global, repositories };
 }
 
 export function resolveSettings(settings: SettingsStore, repositoryId?: string, path?: string, fileConfiguration: Partial<EditorSettings> = {}): EditorSettings {
   return { ...settings.global, ...(repositoryId ? settings.repositories[repositoryId] : {}),
-    ...(path ? fileConfiguration : {}), ...(repositoryId && path ? settings.files[repositoryId]?.[path] : {}),
+    ...(path ? fileConfiguration : {}),
     aiSkills: mergeSkills(settings.global.aiSkills, repositoryId ? settings.repositories[repositoryId]?.aiSkills : {}),
     aiModelContexts: { ...settings.global.aiModelContexts, ...(repositoryId ? settings.repositories[repositoryId]?.aiModelContexts : {}) },
     colorMappings: { ...settings.global.colorMappings, ...(repositoryId ? settings.repositories[repositoryId]?.colorMappings : {}) },

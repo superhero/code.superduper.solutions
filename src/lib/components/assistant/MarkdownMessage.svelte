@@ -44,7 +44,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     overflow-x: auto;
     overflow-wrap: anywhere;
     font-synthesis: weight style;
-    scrollbar-width: thin;
+
   }
   .markdown-block + .markdown-block { margin-block-start: .9em; }
   .markdown-block + .markdown-block:has(> :global(:is(h1, h2))) { margin-block-start: 1.7em; }
@@ -77,28 +77,16 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .markdown-block :global(li > p + p) { margin-block-start: .6em; }
   .markdown-block :global(.task-list-item) { list-style: none; }
   .markdown-block :global(.task-list-item-checkbox) {
-    appearance: none;
-    display: inline-grid;
-    place-items: center;
-    inline-size: 1em;
-    block-size: 1em;
-    padding: 0;
-    margin: 0 .55em 0 -1.55em;
-    border: 0;
-    border-radius: 2px;
+    margin: 2px .55em 2px -1.55em;
     vertical-align: -.1em;
-    background: var(--color-background);
-    color: var(--color-foreground);
     font: inherit;
     opacity: 1;
   }
-  .markdown-block :global(.task-list-item-checkbox:checked) { background: var(--color-foreground); color: var(--color-background); }
-  .markdown-block :global(.task-list-item-checkbox:checked::before) { content: '✓'; font-size: .85em; font-weight: 700; line-height: 1; }
 
   .markdown-block :global(blockquote) { padding: .8em 1em; border: 0; border-radius: 4px; background: var(--color-background); text-align: start; }
   .markdown-block :global(code), .markdown-block :global(kbd) { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .9em; }
   .markdown-block :global(:not(pre) > code) { padding: 0; background: transparent; color: var(--color-toolbar-background); }
-  .markdown-block :global(pre) { max-width: 100%; padding: .9em 1em; border-radius: 4px; background: var(--color-background); white-space: pre; overflow-x: auto; text-align: start; tab-size: 2; scrollbar-width: thin; }
+  .markdown-block :global(pre) { max-width: 100%; padding: .9em 1em; border-radius: 4px; background: var(--color-background); white-space: pre; overflow-x: auto; text-align: start; tab-size: 2;  }
   .markdown-block :global(pre code) { display: block; padding: 0; background: transparent; color: inherit; line-height: 1.65; overflow-wrap: normal; }
   .markdown-block :global(.chat-code-line-highlight) { display: inline-block; min-width: 100%; background: color-mix(in srgb, var(--color-foreground) 12%, transparent); }
   .markdown-block :global(a) { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 50%, transparent); text-underline-offset: .18em; text-decoration-thickness: 1px; }
@@ -131,7 +119,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .markdown-block :global(.spoiler[aria-expanded="false"] *) { visibility: hidden; }
   .markdown-block :global(.spoiler[aria-expanded="true"]) { background: var(--color-background); }
 
-  .markdown-block :global(.chat-tab-list) { display: flex; gap: .2em; max-width: 100%; padding: .25em; border-radius: 4px; background: var(--color-background); overflow-x: auto; scrollbar-width: thin; }
+  .markdown-block :global(.chat-tab-list) { display: flex; gap: .2em; max-width: 100%; padding: .25em; border-radius: 4px; background: var(--color-background); overflow-x: auto;  }
   .markdown-block :global(.chat-tab-list button), .markdown-block :global(.chat-resource-load) { flex: 0 0 auto; padding: .35em .7em; border: 0; border-radius: 3px; background: var(--color-background); color: inherit; font: inherit; font-size: .9em; line-height: 1.6; cursor: pointer; }
   .markdown-block :global(.chat-tab-list button) { background: transparent; }
   .markdown-block :global(.chat-tab-list [aria-selected="true"]) { background: var(--color-surface); font-weight: 650; }
@@ -139,8 +127,6 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   .markdown-block :global([hidden]) { display: none !important; }
   .markdown-block :global(:is(button, summary, .spoiler, a):focus-visible) { outline: none; background: var(--color-focus-background); color: var(--color-focus-foreground); }
   .markdown-block :global(:is(button, summary, .spoiler, a)) { transition: color 120ms ease, background-color 120ms ease, text-decoration-color 120ms ease; }
-  .markdown-block :global(.chat-resource-load:hover:not(:focus-visible)) { background: var(--color-hover-background); }
-  .markdown-block :global(.chat-tab-list button:hover:not(:focus-visible)) { background: var(--color-surface); }
 
   .markdown-block :global(dl) { text-align: start; }
   .markdown-block :global(dt) { font-weight: 650; }

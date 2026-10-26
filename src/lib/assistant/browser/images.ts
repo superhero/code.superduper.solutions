@@ -13,6 +13,6 @@ export async function prepareImage(file: File, pixels: number): Promise<ChatImag
     canvas.width = Math.max(1, Math.floor(bitmap.width * scale)); canvas.height = Math.max(1, Math.floor(bitmap.height * scale));
     const context = canvas.getContext('2d'); if (!context) throw new Error('Image decoding is unavailable.');
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return { type: 'image', mimeType: 'image/png', data: canvas.toDataURL('image/png').split(',')[1]! };
+    return { type: 'image', mimeType: 'image/png', width: canvas.width, height: canvas.height, data: canvas.toDataURL('image/png').split(',')[1]! };
   } finally { bitmap.close(); }
 }

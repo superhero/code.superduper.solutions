@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {Then} from '@cucumber/cucumber';
 import {expect} from '@playwright/test';
 import {selectPage,selectDropdown} from './navigation.helpers.mjs';
+import {repositorySnapshot} from './repository-snapshot.helpers.mjs';
 const saved=page=>expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
 const editorFont=page=>page.locator('.cm-scroller').evaluate(element=>getComputedStyle(element).fontFamily);
 Then('interface font changes preserve the editor font across reload and undo',async function(){
@@ -21,7 +22,7 @@ Then('interface font changes preserve the editor font across reload and undo',as
   await selectDropdown(this.page,'Settings scope','repository');
   await selectDropdown(this.page,'Interface font','system');await saved(this.page);
   await expect(this.page.locator('html')).toHaveAttribute('data-interface-font','system');
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(this.page.locator('html')).toHaveAttribute('data-interface-font','serif');
   assert.equal(await editorFont(this.page),original);
   await selectDropdown(this.page,'Editor font','courier');await saved(this.page);
@@ -40,7 +41,7 @@ Then('interface size presets persist independently of editor text and support un
   const iconSize=locator=>locator.evaluate(element=>parseFloat(getComputedStyle(element).fontSize));
   const mediumSymbol=await iconSize(symbol),mediumFile=await iconSize(fileIcon);
 
-  const aligned=async()=>{const tops=await this.page.locator('#setting-interfaceFont, #setting-fontFamily').evaluateAll(nodes=>nodes.map(node=>node.getBoundingClientRect().top));assert.ok(Math.abs(tops[0]-tops[1])<1,'Interface and editor font selectors align');};
+  const aligned=async()=>{const boxes=await this.page.locator('#setting-interfaceFont, #setting-fontFamily').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return {top:b.top,left:b.left};}));assert.ok(Math.abs(boxes[0].top-boxes[1].top)<1||Math.abs(boxes[0].left-boxes[1].left)<1,'Font selectors align across columns or stacked Settings cards');};
   await aligned();
   await this.page.getByRole('radiogroup',{name:'Interface size',exact:true}).getByRole('radio',{name:'Small',exact:true}).check();await saved(this.page);
   assert.ok(await size()<medium);
@@ -65,7 +66,7 @@ Then('interface size presets persist independently of editor text and support un
   await selectDropdown(this.page,'Settings scope','repository');
   await this.page.getByRole('radiogroup',{name:'Interface size',exact:true}).getByRole('radio',{name:'Small',exact:true}).check();await saved(this.page);
   await expect(this.page.locator('html')).toHaveAttribute('data-interface-size','small');
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(this.page.locator('html')).toHaveAttribute('data-interface-size','large');
   await expect(this.page.locator('.cm-editor')).toHaveCSS('font-size',editorSize);
 });
@@ -75,7 +76,7 @@ Then('file explorer icons can be hidden persistently and restored by repository 
   const icons=tree.locator('.tree-row > .material-symbols-rounded, .tree-row > .devicon');
   const folder=tree.getByRole('treeitem',{name:'src',exact:true});
   await expect(icons.first()).toBeVisible();
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page,'Settings','Editor');await selectDropdown(this.page,'Settings scope','global');
   await this.page.getByRole('switch',{name:'File explorer icons',exact:true}).uncheck();await saved(this.page);
   await expect(icons).toHaveCount(1);
   await expect(icons).toHaveText(/expand_more|chevron_right/);
@@ -89,23 +90,27 @@ Then('file explorer icons can be hidden persistently and restored by repository 
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);
   await expect(icons).toHaveCount(1);
   await expect(icons).toHaveText(/expand_more|chevron_right/);
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page,'Settings','Editor');await selectDropdown(this.page,'Settings scope','global');
   await expect(this.page.getByRole('switch',{name:'File explorer icons',exact:true})).not.toBeChecked();
   await selectDropdown(this.page,'Settings scope','repository');
   await this.page.getByRole('switch',{name:'File explorer icons',exact:true}).check();await saved(this.page);
   await expect(icons).toHaveCount(2);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  await this.page.getByRole('button',{name:'Undo settings',exact:true}).click();await saved(this.page);
   await expect(icons).toHaveCount(1);
   await expect(icons).toHaveText(/expand_more|chevron_right/);
 });
 
-Then('middle-click tab closing supports undo and a persisted disabled setting',async function(){
+Then('middle-click tab closing preserves source and a persisted disabled setting',async function(){
   const tab=this.page.getByRole('button',{name:'Switch to notes.js',exact:true});
+  const before=await repositorySnapshot(this.page);
   await tab.click({button:'middle'});await saved(this.page);
   await expect(tab).toHaveCount(0);
-  await this.page.getByRole('button',{name:'Undo',exact:true}).click();await saved(this.page);
+  const after=await repositorySnapshot(this.page);
+  assert.equal(after.head,before.head);assert.equal(after.historyHead,before.historyHead);
+  assert.deepEqual(after.history,before.history);assert.deepEqual(after.files,before.files);
+  await this.page.getByRole('treeitem',{name:'notes.js',exact:true}).locator(':scope > .tree-row').click();await saved(this.page);
   await expect(tab).toBeVisible();
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page,'Settings','Editor');await selectDropdown(this.page,'Settings scope','global');
   const toggle=this.page.getByRole('switch',{name:'Middle-click closes tabs',exact:true});
   await expect(toggle).toBeChecked();await toggle.uncheck();await saved(this.page);
   await this.page.reload({waitUntil:'networkidle'});await saved(this.page);

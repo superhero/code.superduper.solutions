@@ -11,7 +11,7 @@ const region=formatterPane;
 const row=formatterRow;
 // Explicit UI installation is also used by the real-formatting provider scenarios.
 When('I view the formatter installation settings', async function () {
-  await selectPage(this.page, 'Settings');
+  await selectPage(this.page, 'Settings', 'Formatting');
   const scope = this.page.getByRole('button', { name: 'Settings scope', exact: true });
   if (await scope.getAttribute('data-value') !== 'global') {
     await scope.click(); await this.page.getByRole('menuitemradio', { name: 'Global defaults', exact: true }).click();
@@ -34,7 +34,7 @@ Then('all 38 formatters are offered without downloading their payloads', async f
   await expect(region(this.page).getByRole('button',{name:/^Install /})).toHaveCount(formats.length);
   assert.equal(new Set(formats.flatMap(format=>format.providers)).size,38);
   assert.equal(providers.length,38);
-  await expect(this.page.getByRole('region',{name:'Formatters',exact:true})).toHaveCount(0);
+  await expect(this.page.getByRole('region',{name:'Formatters',exact:true})).toHaveCount(1);
   assert.equal(this.requests.filter(item=>item.url.includes('/formatters/')).length,0);
 });
 Then('the {string} formatter package is installed', async function (name) {
@@ -58,6 +58,7 @@ When('I capture the installed {string} formatter package for storage migration',
   this.exportedFormatter=Buffer.from(bytes);
 });
 Then('the formatter license text is readable for {string}', async function(name){
+  await selectPage(this.page, 'Settings', 'Licenses');
   const notices=this.page.getByRole('region',{name:'Licenses and notices',exact:true});
   await notices.locator(':scope > details > summary').click();
   const notice=notices.locator('details').filter({has: this.page.locator('summary').filter({hasText:/^@dprint\/json/})}).last();

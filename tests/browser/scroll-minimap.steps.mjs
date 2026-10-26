@@ -23,7 +23,7 @@ async function othersStay(page,before,index){
 }
 
 When('I set minimap scroll speed to {float} with smoothing {word} and motion {word}',async function(speed,smoothing,motion){
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');
   const slider=this.page.getByRole('slider',{name:'Scroll speed',exact:true});
   await slider.evaluate((element,value)=>{element.value=String(value);element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}));},speed);
   await this.page.getByRole('switch',{name:'Smooth scrolling',exact:true}).setChecked(smoothing==='enabled');await saved(this.page);
@@ -114,7 +114,7 @@ Then('toggling minimaps preserves three independent scroll positions and wheel n
   });
   let before=await positions(this.page);
   for(const enabled of [false,true]){
-    await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+    await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');
     await this.page.getByRole('switch',{name:'Minimap',exact:true}).setChecked(enabled);await saved(this.page);
     await selectPage(this.page,'Editor');
     await expect(this.page.getByRole('group',{name:'Document minimap',exact:true})).toHaveCount(enabled?3:0);
@@ -134,7 +134,7 @@ When('I fill the primary pane with wrapped minimap source',async function(){
   await this.page.getByLabel('Code editor document',{exact:true}).click();
   await this.page.keyboard.insertText(Array.from({length:120},(_,index)=>`const wrapped${String(index).padStart(3,'0')} = "${words}";`).join('\n'));await saved(this.page);
   await this.page.keyboard.press('Control+Home');
-  await selectPage(this.page,'Settings');await selectDropdown(this.page,'Settings scope','global');
+  await selectPage(this.page, 'Settings', 'Editor');await selectDropdown(this.page,'Settings scope','global');
   await this.page.getByRole('switch',{name:'Line wrapping',exact:true}).check();await saved(this.page);
   await selectPage(this.page,'Editor');
 });

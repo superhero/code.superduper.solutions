@@ -222,6 +222,8 @@ jobs:
         id: browser
         timeout-minutes: 30
         run: npm --loglevel=error run test:browser
+      - name: Speech scenarios (Vitest and QuickPickle)
+        run: npm --loglevel=error run test:speech
 
       - name: Upload browser results and diagnostics
         if: ${{ !cancelled() && (steps.browser.outcome == 'success' || steps.browser.outcome == 'failure') }}
@@ -230,6 +232,7 @@ jobs:
           name: browser-test-report
           path: |
             tmp/test/cucumber-browser.json
+            tmp/test/cucumber-speech.json
             tmp/test/browser
           if-no-files-found: error
           overwrite: true

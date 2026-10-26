@@ -1,0 +1,6 @@
+# Copyright (C) 2026 Erik Landvall
+# SPDX-License-Identifier: AGPL-3.0-only
+# Pinned third-party payloads and patches retain their published bytes.
+src/public/browser-models/** -text
+src/public/speech/** -text
+build/browser-models/native/*/*.patch -text

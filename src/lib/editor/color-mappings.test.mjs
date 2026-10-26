@@ -70,7 +70,7 @@ Then("editor color mappings persist and inherit by role without becoming file pr
   assert.deepEqual(resolveSettings(store,"one").colorMappings, { ...store.global.colorMappings, semicolon:{source:"palette-8"} });
   assert.deepEqual(resolveSettings(store,"other").colorMappings, store.global.colorMappings);
   assert.deepEqual(resolveSettings(store,"one","main.js").colorMappings, resolveSettings(store,"one").colorMappings);
-  assert.deepEqual(store.files.one["main.js"], {});
+  assert.equal(Object.hasOwn(store,"files"), false);
   assert.deepEqual(normalizeSettings(JSON.parse(JSON.stringify(store))), store);
   assert.deepEqual(store, before);
   store.global.colorMappings.operator = {source:"palette-13"};
@@ -86,5 +86,5 @@ Then("selection opacity validates and inherits independently of color mappings",
   const store = normalizeSettings({global:{selectionOpacity:35},repositories:{one:{selectionOpacity:50}},files:{one:{"main.js":{selectionOpacity:90}}}});
   assert.equal(resolveSettings(store,"one","main.js").selectionOpacity,50);
   assert.equal(resolveSettings(store,"other").selectionOpacity,35);
-  assert.deepEqual(store.files.one["main.js"],{});
+  assert.equal(Object.hasOwn(store,"files"),false);
 });

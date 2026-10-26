@@ -138,7 +138,7 @@ Then("filename mappings normalize safely and choose the longest matching suffix"
 });
 Then("filename mappings inherit by suffix and route engines and formatters consistently", function () {
   const store=normalizeSettings({global:{languageMappings:{'.code':'javascript','.js':'python'}},repositories:{one:{languageMappings:{'.js':'text','.tsx':'tsx'}},two:{languageMappings:{'.other':'json'}}},files:{one:{'a.code':{languageMappings:{'.code':'rust'},language:'rust'}}}});
-  assert.deepEqual(store.files.one['a.code'],{});
+  assert.equal(Object.hasOwn(store,'files'),false);
   assert.deepEqual(resolveSettings(store,'one').languageMappings,{'.code':'javascript','.js':'text','.tsx':'tsx'});
   assert.equal(resolveSettings(store,'two').languageMappings['.js'],'python');
   const mode=mappedLanguageForPath('a.code',resolveSettings(store,'one').languageMappings);
