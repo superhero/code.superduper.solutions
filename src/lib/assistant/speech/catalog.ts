@@ -30,7 +30,7 @@ export function speechArtifacts(mode: SpeechMode): SpeechArtifact[] {
   if (lfm) return [...[...lfm.artifacts!, ...runtimes.lfm3].map(file => ({...file,type:file.kind === 'runtime' ? (file.id === 'ort-wasm' ? 'wasm' : 'js') : file.kind})), ...runtime.filter(file => file.id === 'capture-worklet')] as SpeechArtifact[];
   const encoder = mode === 'cpu' ? 'encoder-model.int8.onnx' : mode === 'gpu-fp16' ? 'encoder-model.fp16.onnx' : 'encoder-model.onnx';
   const names = [encoder, 'decoder_joint-model.int8.onnx', 'vocab.txt', ...(mode === 'gpu-fp32' ? ['encoder-model.onnx.data'] : [])];
-  return [...runtime, ...lock.files.filter(file => names.includes(file.file)).map(file => ({
+  return [...runtime.filter(file => file.id !== 'phonon-worker'), ...lock.files.filter(file => names.includes(file.file)).map(file => ({
     id: file.file, type: 'model', bytes: file.bytes, sha256: file.sha256,
     url: `https://huggingface.co/${lock.browserArtifact}/resolve/${lock.revision}/${file.file}`,
   })), ...ten.map(([id, name, sha256]) => ({ id, type: name.endsWith('.js') ? 'js' : 'wasm',

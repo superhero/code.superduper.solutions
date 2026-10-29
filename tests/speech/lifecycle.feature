@@ -50,3 +50,6 @@ Feature: Recoverable browser speech lifecycle
       | lfm3-audio |
       | lfm3-omni |
       | phonon |
+
+  Scenario: Existing Parakeet installations keep their runtime cache contract
+    Then the original Parakeet profiles do not require the optional Phonon bridge

@@ -162,3 +162,13 @@ Then('{string} captures without streaming and releases after final transcription
   expect(drafts).toEqual(['Recognized words.']);
   expect(worker.terminated).toBe(true);expect(service.state.phase).toBe('idle');
 });
+Then('the original Parakeet profiles do not require the optional Phonon bridge',async()=>{
+  const {speechArtifacts}=await import('../../src/lib/assistant/speech/catalog');
+  for(const mode of ['cpu','gpu-fp16','gpu-fp32']){
+    const files=speechArtifacts(mode);
+    expect(files.some(file=>file.url.includes('phonon-worker'))).toBe(false);
+    expect(files.some(file=>file.id==='worker')).toBe(true);
+    expect(files.some(file=>file.id==='features-worker')).toBe(true);
+  }
+  expect(speechArtifacts('phonon').some(file=>file.url.includes('phonon-worker'))).toBe(true);
+});
