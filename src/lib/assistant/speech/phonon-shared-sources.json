@@ -1,0 +1,23 @@
+{
+  "reference": "llm-sds-01 LM/LL",
+  "shared_sources": {
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/src/capture-worklet.js": "95ac9159c58809bb730a848604f97416c951ae3dbfee2b6de555b9430a04fb7a",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/src/live-decoder.js": "b14b909c162b60d25600ea58b6e231362176f9792ae832420fd846af61fae1a6",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/src/sentence-merger.js": "a933e21ea2d38f38b1ebd95ca08f4bb9a880e122a12174b1af0654ae7c493d4d",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/src/speech-activity.js": "bede7b1c26e82d8ff6264e4ec5577204b7fb10bf9f05faf23de199b9abc3c26f",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/src/ten-vad.js": "949a1d4a6ed3c3f79f8f32548233306c319828391ecb8d0297618c187da66adf",
+    "inference/attempts/ll-browser-phonon25-webgpu/runtime/phonon.worker.mjs": "cc0c7530402ca504f9f1b9eb2b765ae358644dae79892dd9a108029e67768e38",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/vendor/ten-vad/ten_vad.js": "6ad8404430c1fb33b5910032b971e1a4f1d4ca3c9bf76fe456f0b5dcd9e97c7e",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/vendor/ten-vad/ten_vad.wasm": "1ec0b9640683987e15a4e54e4ce5642b2447c6e5d82b1be889b5099c75434fc3",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/vendor/ten-vad/LICENSE": "03d862b922867b8c3406a0c17791e256ed3d76f197d88c1996c4aebfb79f688e",
+    "inference/attempts/ao-browser-parakeet-streaming/runtime/vendor/ten-vad/NOTICES": "83a1d666450e06c846be76efcdd311294c28d07417bed0cb119d6400ba3cdc3b"
+  },
+  "adapted_sources": {
+    "runtime/capture-worklet.js": "e3da1a70c215538ba4820faf6428d6fca8e0375b16de784c077ca8d4428820e6",
+    "runtime/live-decoder.js": "362ec222584a3ed3f21505f938d75b60fecfe0908047f286ddae27b5b929e412",
+    "runtime/sentence-merger.js": "0276dfc20270bb9092c96c4e28507212dc25cf155f2f67ea7ea83e3707b20319",
+    "runtime/speech-activity.js": "1dc7f5d2b20faadfdbe6618ca852f1b184cd3b043f068d34e7d7a1611e63c413",
+    "runtime/ten-vad.js": "31b55f262fc9b9e5dc38eda2c64f99bf8a840d16decd7b88be9707c772a4e808"
+  },
+  "model_unchanged": true
+}

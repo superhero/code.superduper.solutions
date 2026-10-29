@@ -9,6 +9,7 @@ import {resolve} from 'node:path';
 import {createHash, randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
 import {get as httpsGet} from 'node:https';
+import {observeSpeechMessages} from '../../speech/browser-harness.mjs';
 setDefaultTimeout(1800000);
 const directory = resolve(process.env.MODEL_LIVE_ARTIFACTS ?? 'tmp/test/model-live');
 let context, page, imports, fixtureServer, result = {cases: []};
@@ -22,12 +23,16 @@ BeforeAll({timeout:120000},async()=>{
     assert.equal(sha256,'aa81c2552465568567e670f3823117e633900d16bd6202346a72f3c8464c74c8','Use the pinned public JFK microphone fixture.');
     result.microphoneFixture={sha256,bytes:bytes.length};
   }
-  context=await chromium.launchPersistentContext(resolve(directory,'profile'),{channel:'chromium',headless:false,viewport:{width:1280,height:1000},reducedMotion:'reduce',args:['--no-sandbox','--enable-unsafe-webgpu','--enable-features=Vulkan,VulkanFromANGLE','--use-angle=vulkan','--ozone-platform=x11','--disk-cache-size=1','--enable-dawn-features=allow_unsafe_apis,vulkan_enable_f16_on_nvidia',...(process.env.MODEL_LIVE_SPEECH_FIXTURE?['--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${process.env.MODEL_LIVE_SPEECH_FIXTURE}`]:[])]});
+  context=await chromium.launchPersistentContext(resolve(directory,'profile'),{channel:'chromium',headless:false,viewport:{width:1280,height:1000},reducedMotion:'reduce',args:['--no-sandbox','--enable-unsafe-webgpu','--enable-features=Vulkan,VulkanFromANGLE','--use-angle=vulkan','--ozone-platform=x11','--disk-cache-size=1','--enable-dawn-features=allow_unsafe_apis,vulkan_enable_f16_on_nvidia',...(process.env.MODEL_LIVE_SPEECH_FIXTURE?['--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${process.env.MODEL_LIVE_SPEECH_FIXTURE}${process.env.MODEL_LIVE_PHONON_STREAMING==='1'?'%noloop':''}`]:[])]});
   // Long model checks retain one application version while independent source
   // edits can continue in the development server. Mock only its HMR transport.
   const origin=new URL(process.env.MODEL_LIVE_URL??'http://127.0.0.1:5175');
   await context.routeWebSocket(url=>url.host===origin.host,route=>{route.send(JSON.stringify({type:'connected'}));route.onMessage(()=>{});});
   page=context.pages()[0]??await context.newPage();
+  if(process.env.MODEL_LIVE_PHONON_STREAMING==='1') {
+    await observeSpeechMessages(page);
+    await page.addInitScript(()=>{globalThis.phononWindowEvents=[];const Original=Worker;globalThis.Worker=class extends Original{constructor(...args){super(...args);this.addEventListener('message',({data})=>{if(['inference','ready'].includes(data.type))globalThis.phononWindowEvents.push(structuredClone(data));});}};});
+  }
   if(process.env.MODEL_LIVE_PINNED_CACHE==='1') {
     fixtureServer=createServer((request,response)=>{
       const match=request.url.match(/^\/(LFM3-(?:VL|Audio|Omni)-2B-ONNX|d1-Omni-2B-ONNX)\/(onnx\/[\w./-]+)$/);
@@ -242,4 +247,60 @@ Then('the live d1-Omni profile passes the six reference classification checks',a
     assert.equal(answer.choice,expected);assert.equal(answer.output_tokens,0);
     assert.ok(Math.abs(Object.values(answer.probabilities).reduce((a,b)=>a+b,0)-1)<1e-6);
   }
+});
+
+Then('the live Phonon GPU stream preserves confirmed words across recordings and offline restart',async function(){
+  this.case.model='phonon-webgpu-streaming';
+  await context.grantPermissions(['microphone']);
+  await page.evaluate(async url=>Object.assign(modelLive,await import(url)),imports.speech);
+  await page.getByRole('button',{name:'Speech model',exact:true}).click();
+  await page.getByRole('menu',{name:'Speech model',exact:true}).locator('[data-value="phonon"]').click();
+  async function ready(){
+    await expect.poll(()=>page.evaluate(()=>({phase:modelLive.speech.state.phase,error:modelLive.speech.state.error})),{timeout:180000,intervals:[250,1000]}).toEqual({phase:'ready',error:''});
+  }
+  await ready();
+  const runtime=await page.evaluate(()=>modelLive.speech.state.runtime);
+  assert.equal(runtime.backend.gpu,true);this.case.runtime=runtime;
+  const transcripts=[],sessions=[];
+  for(let i=0;i<2;i++){
+    if(i)await page.getByRole('button',{name:'New chat',exact:true}).click();
+    const before=await page.evaluate(()=>speechRecognitionEvents.length);
+    await page.getByRole('button',{name:'Speech input',exact:true}).click();
+    await expect(page.getByRole('button',{name:'Stop dictation',exact:true})).toBeVisible();
+    await expect.poll(()=>page.evaluate(n=>speechRecognitionEvents.slice(n).filter(e=>e.type==='partial'&&e.text).length,before),{timeout:12000,intervals:[50,100]}).toBeGreaterThan(0);
+    await expect.poll(()=>page.evaluate(()=>modelLive.speech.state.seconds),{timeout:18000}).toBeGreaterThanOrEqual(12);
+    const partials=await page.evaluate(n=>speechRecognitionEvents.slice(n).filter(e=>e.type==='partial'),before);
+    let stable='';for(const event of partials){assert.ok(event.stableText.startsWith(stable));stable=event.stableText;}
+    await page.getByRole('button',{name:'Stop dictation',exact:true}).click();await ready();
+    const events=await page.evaluate(n=>speechRecognitionEvents.slice(n),before),final=events.findLast(e=>e.type==='result');
+    assert.ok(final);assert.ok(final.text.startsWith(stable));assert.equal(final.gpu.maxInFlight,1);assert.equal(final.gpu.errors.length,0);assert.ok(final.gpu.dispatches>0);
+    const normalized=final.text.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim().replace(/\s+/g,' ');
+    assert.equal(normalized,'and so my fellow americans ask not what your country can do for you ask what you can do for your country');
+    transcripts.push(final.text);sessions.push({partials:partials.length,final});assert.ok(partials.length>=2);
+  }
+  this.case.transcripts=transcripts;this.case.sessions=sessions;
+  const before=await page.evaluate(()=>speechRecognitionEvents.length);
+  await page.evaluate(()=>modelLive.speech.unload());
+  await context.setOffline(true);
+  await page.evaluate(()=>modelLive.speech.initialize());await ready();
+  assert.equal((await page.evaluate(()=>modelLive.speech.state.runtime)).backend.gpu,true);
+  // Silence is injected at the capture/worker boundary; the real TEN-VAD and scheduler remain active.
+  await page.evaluate(()=>globalThis.speechTestSilence=true);
+  await page.getByRole('button',{name:'Speech input',exact:true}).click();
+  await expect.poll(()=>page.evaluate(()=>modelLive.speech.state.seconds),{timeout:8000}).toBeGreaterThanOrEqual(4);
+  await page.getByRole('button',{name:'Stop dictation',exact:true}).click();await ready();
+  const silence=await page.evaluate(n=>speechRecognitionEvents.slice(n).findLast(e=>e.type==='result'),before);
+  assert.equal(silence.text,'');assert.equal(silence.speech.inferenceCalls,0);this.case.silence=silence;
+  await page.evaluate(()=>globalThis.speechTestSilence=false);
+  const windows=await page.evaluate(()=>phononWindowEvents.length);
+  await page.getByRole('button',{name:'Speech input',exact:true}).click();
+  await expect.poll(()=>page.evaluate(n=>phononWindowEvents.slice(n).some(e=>e.type==='inference'&&e.active),windows),{timeout:12000,intervals:[10,20]}).toBe(true);
+  const draft=await page.getByRole('textbox',{name:'Message AI',exact:true}).innerText();
+  await page.evaluate(()=>modelLive.speech.unload());await page.waitForTimeout(500);
+  assert.equal(await page.evaluate(()=>modelLive.speech.state.phase),'idle');
+  assert.equal(await page.getByRole('textbox',{name:'Message AI',exact:true}).innerText(),draft);
+  await page.evaluate(()=>modelLive.speech.initialize());await ready();await page.evaluate(()=>modelLive.speech.unload());
+  await context.setOffline(false);
+  assert.deepEqual(result.uploads,[]);assert.deepEqual(result.pageErrors,[]);
+  await page.screenshot({path:resolve(directory,'phonon-gpu-streaming.png')});
 });

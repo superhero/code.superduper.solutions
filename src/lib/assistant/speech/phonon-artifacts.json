@@ -2,15 +2,15 @@
   {
     "id": "phonon-js",
     "url": "speech/phonon/phonon_browser.mjs",
-    "bytes": 88965,
-    "sha256": "4a590d111b5c85ea9e69d155951d7d8014653082feaa32e1d23d9e62b8ec0899",
+    "bytes": 127994,
+    "sha256": "012eaa5c599d9859d308bd91b564d120d56c1152c12ddeee6fc77c78f6226668",
     "type": "mjs"
   },
   {
     "id": "phonon-wasm",
     "url": "speech/phonon/phonon_browser.wasm",
-    "bytes": 1450000,
-    "sha256": "72979bf0ad3a51e7ee0b7b2e41a64ac935d946e80ac7fcb567723fc0fb79f8da",
+    "bytes": 2935819,
+    "sha256": "0f474a6b12e87489774d4d7800a979fcb32be9e0d0e399593cf17aa6206a27eb",
     "type": "wasm"
   },
   {
@@ -40,5 +40,19 @@
     "bytes": 241719776,
     "sha256": "f0339284e385c89a73ebc860937f1c1c346311efee6a40d995f8623b2d8cf7a3",
     "type": "model"
+  },
+  {
+    "id": "ten-license",
+    "url": "speech/notices/TEN-VAD-LICENSE",
+    "bytes": 2239,
+    "sha256": "03d862b922867b8c3406a0c17791e256ed3d76f197d88c1996c4aebfb79f688e",
+    "type": "notice"
+  },
+  {
+    "id": "ten-notices",
+    "url": "speech/notices/TEN-VAD-NOTICES",
+    "bytes": 3751,
+    "sha256": "83a1d666450e06c846be76efcdd311294c28d07417bed0cb119d6400ba3cdc3b",
+    "type": "notice"
   }
 ]

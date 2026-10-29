@@ -67,4 +67,7 @@ Feature: Real browser-local inference in the editor
       | mode |
       | lfm3-audio |
       | lfm3-omni |
-      | phonon |
+
+  @browser-speech-live
+  Scenario: Phonon GPU streaming survives restart offline loading silence and cancellation
+    Then the live Phonon GPU stream preserves confirmed words across recordings and offline restart

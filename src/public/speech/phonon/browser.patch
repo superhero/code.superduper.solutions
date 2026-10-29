@@ -1,0 +1,42 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6b900f1..d9ae754 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -204,3 +204,17 @@ if(PARAKEET_BUILD_TESTS)
+   enable_testing()
+   add_subdirectory(tests)
+ endif()
++
++add_executable(phonon_browser phonon_browser.cpp)
++target_link_libraries(phonon_browser PRIVATE parakeet)
++target_include_directories(phonon_browser PRIVATE src third_party/ggml/include)
++target_link_options(phonon_browser PRIVATE
++  "-sMODULARIZE=1" "-sEXPORT_ES6=1" "-sEXPORT_NAME=createPhonon"
++  "-sENVIRONMENT=worker" "-sALLOW_MEMORY_GROWTH=1"
++  "-sINITIAL_MEMORY=134217728" "-sMAXIMUM_MEMORY=4294967296"
++  "-sSTACK_SIZE=8388608" "-sFORCE_FILESYSTEM=1"
++  "-sPTHREAD_POOL_SIZE=8" "-sEXIT_RUNTIME=0"
++  "-sJSPI" "-sJSPI_EXPORTS=['phonon_load','phonon_transcribe']"
++  "-sEXPORTED_RUNTIME_METHODS=['ccall','FS','UTF8ToString','HEAPF32','HEAPU8']"
++  "-sEXPORTED_FUNCTIONS=['_malloc','_free','_phonon_load','_phonon_transcribe','_phonon_error','_phonon_release','_phonon_free_string','_phonon_gpu_info']")
++set_target_properties(phonon_browser PROPERTIES SUFFIX ".mjs")
+diff --git a/src/model_loader.cpp b/src/model_loader.cpp
+index d9932e0..0353c40 100644
+--- a/src/model_loader.cpp
++++ b/src/model_loader.cpp
+@@ -195,7 +195,8 @@ bool ModelLoader::realize_weights(ggml_backend_t backend){
+             }
+         };
+         const unsigned hc = std::thread::hardware_concurrency();
+-        const size_t nth = std::min<size_t>(hc ? hc : 1u, 8u);
++        const size_t nth = 1; // Browser WebGPU objects belong to the owning worker.
++        (void)hc;
+         std::vector<std::thread> pool;
+         for (size_t t = 1; t < nth; ++t) pool.emplace_back(worker);
+         worker();
+diff --git a/third_party/ggml b/third_party/ggml
+--- a/third_party/ggml
++++ b/third_party/ggml
+@@ -1 +1 @@
+-Subproject commit e705c5fed490514458bdd2eaddc43bd098fcce9b
++Subproject commit e705c5fed490514458bdd2eaddc43bd098fcce9b-dirty

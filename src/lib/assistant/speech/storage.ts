@@ -85,3 +85,7 @@ export async function removeSpeech(mode: SpeechMode): Promise<void> {
     for (const file of speechArtifacts(mode)) if (!retained.has(file.sha256)) await cache.delete(key(file));
   });
 }
+/** Installed notices remain readable when the browser is offline. */
+export async function cachedSpeechNotice(file: SpeechArtifact): Promise<Response | undefined> {
+  return (await caches.open(CACHE)).match(key(file));
+}

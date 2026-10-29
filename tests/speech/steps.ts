@@ -172,3 +172,69 @@ Then('the original Parakeet profiles do not require the optional Phonon bridge',
   }
   expect(speechArtifacts('phonon').some(file=>file.url.includes('phonon-worker'))).toBe(true);
 });
+
+Then('Phonon awaits asynchronous native recognition and releases the WAV afterwards',async()=>{
+  const {transcribePhonon}=await import('../../src/lib/assistant/speech/runtime/phonon-stream.js');
+  let resolve;const pending=new Promise(r=>resolve=r),unlink=vi.fn(),free=vi.fn();
+  const engine={FS:{writeFile:vi.fn(),unlink},ccall:vi.fn(()=>pending),UTF8ToString:()=>JSON.stringify({words:[{w:'Hello',start:0,end:1}]}),_phonon_free_string:free};
+  const result=transcribePhonon(engine,new Float32Array(16000));
+  expect(engine.ccall.mock.calls[0].at(-1)).toEqual({async:true});
+  expect(unlink).not.toHaveBeenCalled();resolve(17);
+  expect((await result).words[0].w).toBe('Hello');expect(free).toHaveBeenCalledWith(17);expect(unlink).toHaveBeenCalledOnce();
+});
+Then('Phonon offsets native word times and rejects stale inference callbacks',async()=>{
+  const {createPhononDecoder}=await import('../../src/lib/assistant/speech/runtime/phonon-stream.js');
+  let valid=true;
+  const decoder=createPhononDecoder({vad:{reset:vi.fn(),process:()=>[]},transcribe:async()=>({words:[{w:'Tail',start:.2,end:.7}]}),valid:()=>valid,update:vi.fn(),finish:vi.fn(),error:vi.fn()});
+  expect((await decoder.infer(new Float32Array(16000),12.5)).words).toEqual([{text:'Tail',start_time:12.7,end_time:13.2}]);
+  valid=false;await expect(decoder.infer(new Float32Array(16000),12.5)).rejects.toThrow(/Stale/);
+});
+Then('Phonon serially drains coalesced speech without rewriting confirmed text',async()=>{
+  const {createPhononDecoder}=await import('../../src/lib/assistant/speech/runtime/phonon-stream.js');
+  let count=0,running=0,maximum=0,resolve,reject;const updates=[];
+  const done=new Promise((a,b)=>{resolve=a;reject=b;});
+  const decoder=createPhononDecoder({vad:{reset:()=>count=0,process:pcm=>{const start=count/16000;count+=pcm.length;return[{start,end:count/16000,speech:true}];}},valid:()=>true,
+    transcribe:async pcm=>{maximum=Math.max(maximum,++running);await new Promise(r=>setTimeout(r,10));running--;return{words:[{w:'Hello.',start:.1,end:.4},...(pcm.length>=48000?[{w:'Tail.',start:2.1,end:2.4}]:[])]};},
+    update:value=>updates.push(value),finish:resolve,error:reject});
+  decoder.push(new Float32Array(16000));await new Promise(r=>setTimeout(r,3));decoder.push(new Float32Array(32000));decoder.end(new Float32Array(0));
+  const final=await done;expect(count).toBe(48000);expect(decoder.count).toBe(48000);expect(maximum).toBe(1);expect(final.text).toContain('Tail.');
+  let stable='';for(const value of updates){expect(value.stableText.startsWith(stable)).toBe(true);stable=value.stableText;}
+});
+Then('silent Phonon capture finishes without native recognition',async()=>{
+  const {createPhononDecoder}=await import('../../src/lib/assistant/speech/runtime/phonon-stream.js');let finish;
+  const done=new Promise(r=>finish=r),transcribe=vi.fn();
+  const decoder=createPhononDecoder({vad:{reset:vi.fn(),process:pcm=>[{start:0,end:pcm.length/16000,speech:false}]},transcribe,valid:()=>true,update:vi.fn(),finish,error:e=>{throw e;}});
+  decoder.push(new Float32Array(4*16000));decoder.end(new Float32Array(0));
+  expect((await done).text).toBe('');expect(transcribe).not.toHaveBeenCalled();
+});
+Then('Phonon rejects missing JSPI and buffer capacity while retaining the same GGUF',async()=>{
+  const {phononCompatibility}=await import('../../src/lib/assistant/speech/phonon-compatibility.js');
+  const facts={secure:true,isolated:true,threads:true,wasm:true,simd:true,jspi:true,gpu:{compute:true,f16_compute:true,limits:{max_buffer_bytes:2147483648,max_storage_binding_bytes:2147483648}}};
+  expect(phononCompatibility(facts).ready).toBe(true);
+  expect(phononCompatibility({...facts,jspi:false}).ready).toBe(false);
+  expect(phononCompatibility({...facts,gpu:{...facts.gpu,limits:{max_buffer_bytes:1024,max_storage_binding_bytes:1024}}}).ready).toBe(false);
+  const {speechArtifacts}=await import('../../src/lib/assistant/speech/catalog');
+  const model=speechArtifacts('phonon').find(file=>file.id==='phonon-model');
+  expect(model.bytes).toBe(241719776);expect(model.sha256).toBe('f0339284e385c89a73ebc860937f1c1c346311efee6a40d995f8623b2d8cf7a3');
+});
+Then('Phonon flushes PCM and preserves stable words through Stop',async world=>{
+  let push,flushed;
+  const service=controller(world,()=>({start:async(_url,fn)=>{push=fn;return{};},stop:()=>new Promise(r=>flushed=r),close:vi.fn()}));
+  world.data.adapters.checkPhonon=async()=>({ready:true,rows:[]});
+  service.setMode('phonon');await service.initialize();const worker=world.data.workers[0];worker.emit({type:'ready'});
+  const committed=[];await service.record('phonon-owner',text=>committed.push(text));
+  const start=worker.sent.find(message=>message.type==='streamStart');push(new Float32Array(16000));
+  worker.emit({type:'partial',sessionId:start.sessionId,stableText:'Fixed words.',draftText:'Provisional'});
+  const stopping=service.stop('phonon-owner');
+  expect(worker.sent.some(message=>message.type==='streamEnd')).toBe(false);
+  push(new Float32Array(4000));flushed();await stopping;
+  const end=worker.sent.find(message=>message.type==='streamEnd');expect(end.pcm.length).toBe(20000);
+  worker.emit({type:'result',sessionId:start.sessionId,text:'Fixed words. Final.',stableText:'Fixed words. Final.',draftText:''});
+  expect(committed).toEqual(['Fixed words.','Final.']);expect(service.state.phase).toBe('ready');expect(world.data.workers).toHaveLength(1);
+});
+Then('Phonon includes the pinned TEN-VAD license and notices in its offline install',async()=>{
+  const {speechArtifacts}=await import('../../src/lib/assistant/speech/catalog');
+  const files=speechArtifacts('phonon');
+  expect(files.find(file=>file.id==='ten-license').sha256).toBe('03d862b922867b8c3406a0c17791e256ed3d76f197d88c1996c4aebfb79f688e');
+  expect(files.find(file=>file.id==='ten-notices').sha256).toBe('83a1d666450e06c846be76efcdd311294c28d07417bed0cb119d6400ba3cdc3b');
+});

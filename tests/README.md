@@ -66,3 +66,11 @@ MODEL_LIVE_PINNED_CACHE=1 is a test-only delivery override for already prepared,
 exact pinned ONNX graph files from the reference host. Installed-file SHA256
 verification remains active. It does not qualify public CDN delivery; metadata,
 tokenizer and normal production installs retain their pinned publisher URLs.
+
+Phonon GPU streaming uses the isolated sds-01 browser scenario in
+tests/browser/live/browser-models.feature, with MODEL_LIVE_PHONON_STREAMING=1
+and the pinned JFK microphone fixture. It checks two full recordings, partials
+before Stop, stable text, actual GPU dispatch/concurrency, offline Blob loading,
+silence, cancellation and reinitialization. The native model is unchanged.
+tests/speech/phonon.feature covers async native calls, timestamps, coalescing,
+capture flush, prerequisites and included notices with QuickPickle.

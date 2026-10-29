@@ -100,3 +100,18 @@ Then('the LFM3 and Phonon profiles expose consistent settings and dictation choi
   const speechMenu=page.getByRole('menu',{name:'Speech model',exact:true});
   for(const id of ['lfm3-audio','lfm3-omni','phonon'])await expect(speechMenu.locator('[data-value="'+id+'"]')).toBeVisible();
 });
+Then('the Phonon settings show GPU streaming compatibility and retain the shared model layout',async function(){
+  const page=this.page;await page.setViewportSize({width:620,height:1000});await selectPage(page,'Settings','AI');
+  const row=page.locator('[data-speech-mode="phonon"]');
+  await row.getByRole('button',{name:'Model settings',exact:true}).click();
+  await expect(row.getByRole('region',{name:'Model settings',exact:true})).toContainText('WebGPU · expanded F16/F32');
+  await row.getByRole('button',{name:'Detailed info',exact:true}).click();
+  await expect(row.getByRole('region',{name:'Detailed info',exact:true})).toContainText('Live speech');
+  await expect(row.getByRole('region',{name:'Detailed info',exact:true})).toContainText('55-second');
+  await row.getByRole('button',{name:'Browser compatibility',exact:true}).click();
+  await row.getByRole('button',{name:'Check this browser',exact:true}).click();
+  await expect(row.getByRole('region',{name:'Browser compatibility',exact:true})).toContainText('WebAssembly JSPI');
+  await expect(row.getByRole('region',{name:'Browser compatibility',exact:true})).toContainText('GPU buffer limits');
+  expect(await row.evaluate(node=>node.scrollWidth<=node.clientWidth+1)).toBe(true);
+  await mkdir(this.artifactDirectory,{recursive:true});await row.screenshot({path:this.artifactDirectory+'/phonon-gpu-settings.png'});
+});

@@ -52,6 +52,10 @@ export async function observeSpeechMessages(page) {
           if (['partial','result'].includes(data?.type) && typeof data.sessionId === 'string' && typeof data.text === 'string') globalThis.speechRecognitionEvents.push(structuredClone(data));
         });
       }
+      postMessage(message,...args) {
+        if(globalThis.speechTestSilence && ['streamChunk','streamEnd'].includes(message.type) && message.pcm) message.pcm.fill(0);
+        return super.postMessage(message,...args);
+      }
     };
   });
 }

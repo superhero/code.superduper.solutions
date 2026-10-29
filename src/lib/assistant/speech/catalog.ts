@@ -8,9 +8,10 @@ import runtimes from '../browser/runtime-artifacts.json';
 import {SPEECH_PROFILES} from '../browser/catalog';
 import type { SpeechArtifact, SpeechMode } from './types';
 export const lfmSpeechProfile = (mode: SpeechMode) => SPEECH_PROFILES.find(p => p.id === (mode === 'lfm3-audio' ? 'lh-browser-lfm3-audio' : mode === 'lfm3-omni' ? 'li-browser-lfm3-omni-audio' : ''));
-export const isBatchSpeech = (mode: SpeechMode) => mode === 'phonon' || !!lfmSpeechProfile(mode);
+export const isAdditionalSpeech = (mode: SpeechMode) => mode === 'phonon' || !!lfmSpeechProfile(mode);
+export const isBatchSpeech = (mode: SpeechMode) => !!lfmSpeechProfile(mode);
 export const speechModes: { id: SpeechMode; label: string; description: string }[] = [
-  { id: 'phonon', label: 'Phonon 2.5 · CPU', description: 'CPU · packed weights · transcription after stopping · up to 30 seconds' },
+  { id: 'phonon', label: 'Phonon 2.5 · WebGPU', description: 'WebGPU · live speech windows · packed download, expanded GPU weights · stops after 55 seconds' },
   { id: 'lfm3-audio', label: 'LFM3-Audio · 2B', description: 'WebGPU · transcription after stopping · up to 30 seconds' },
   { id: 'lfm3-omni', label: 'LFM3-Omni · 2B', description: 'WebGPU · transcription after stopping · up to 30 seconds' },
   { id: 'cpu', label: 'CPU · INT8', description: '670 MB model · CPU encoder and decoder' },
@@ -25,7 +26,7 @@ const ten = [
 // TEN is obtained unchanged from its publisher, separately from the AGPL application.
 import tenSizes from './ten-files.json';
 export function speechArtifacts(mode: SpeechMode): SpeechArtifact[] {
-  if (mode === 'phonon') return [...phonon, ...runtime.filter(f => ['phonon-worker','capture-worklet'].includes(f.id)).map(f => ({...f,id:f.id === 'phonon-worker' ? 'worker' : f.id}))];
+  if (mode === 'phonon') return [...phonon, ...tenArtifacts(), ...runtime.filter(f => ['phonon-worker','capture-worklet'].includes(f.id)).map(f => ({...f,id:f.id === 'phonon-worker' ? 'worker' : f.id}))];
   const lfm = lfmSpeechProfile(mode);
   if (lfm) return [...[...lfm.artifacts!, ...runtimes.lfm3].map(file => ({...file,type:file.kind === 'runtime' ? (file.id === 'ort-wasm' ? 'wasm' : 'js') : file.kind})), ...runtime.filter(file => file.id === 'capture-worklet')] as SpeechArtifact[];
   const encoder = mode === 'cpu' ? 'encoder-model.int8.onnx' : mode === 'gpu-fp16' ? 'encoder-model.fp16.onnx' : 'encoder-model.onnx';
@@ -33,8 +34,9 @@ export function speechArtifacts(mode: SpeechMode): SpeechArtifact[] {
   return [...runtime.filter(file => file.id !== 'phonon-worker'), ...lock.files.filter(file => names.includes(file.file)).map(file => ({
     id: file.file, type: 'model', bytes: file.bytes, sha256: file.sha256,
     url: `https://huggingface.co/${lock.browserArtifact}/resolve/${lock.revision}/${file.file}`,
-  })), ...ten.map(([id, name, sha256]) => ({ id, type: name.endsWith('.js') ? 'js' : 'wasm',
-    bytes: tenSizes[name], sha256, url: `https://raw.githubusercontent.com/TEN-framework/ten-vad/${tenRevision}/lib/Web/${name}`,
-  }))];
+  })), ...tenArtifacts()];
+}
+function tenArtifacts(): SpeechArtifact[] {
+  return ten.map(([id,name,sha256]) => ({id,type:name.endsWith('.js')?'js':'wasm',bytes:tenSizes[name],sha256,url:'https://raw.githubusercontent.com/TEN-framework/ten-vad/'+tenRevision+'/lib/Web/'+name}));
 }
 export const speechPins = lock;

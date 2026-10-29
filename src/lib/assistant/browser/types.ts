@@ -17,7 +17,7 @@ export interface BrowserProfile {
 }
 export interface BrowserFacts {
   secure: boolean; isolated: boolean; wasm: boolean; simd: boolean; memory64: boolean; threads: boolean; jspi: boolean;
-  browser: { name: string; version: string }; gpu: { compute: boolean; f16_compute: boolean };
+  browser: { name: string; version: string }; gpu: { compute: boolean; f16_compute: boolean; limits?: {max_buffer_bytes:number;max_storage_binding_bytes:number} };
 }
 export interface Compatibility { ready: boolean; summary: string; rows: { id: string; title: string; state: string; required: boolean; detail: string }[] }
 export interface LocalEngine {

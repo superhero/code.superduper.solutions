@@ -8,10 +8,12 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import MaterialIcon from '$lib/components/MaterialIcon.svelte';
   import ModelOperation from './ModelOperation.svelte';
   import { speech } from '$lib/assistant/speech/controller';
-  import { speechArtifacts, speechModes, speechPins, tenRevision, lfmSpeechProfile, isBatchSpeech } from '$lib/assistant/speech/catalog';
+  import { speechArtifacts, speechModes, speechPins, tenRevision, lfmSpeechProfile, isAdditionalSpeech } from '$lib/assistant/speech/catalog';
   import { probeBrowser } from '$lib/assistant/browser/reference/compatibility.js';
   import type { BrowserFacts } from '$lib/assistant/browser/types';
   import type { SpeechMode } from '$lib/assistant/speech/types';
+  import {phononCompatibility} from '$lib/assistant/speech/phonon-compatibility.js';
+  import {cachedSpeechNotice} from '$lib/assistant/speech/storage';
   import { speechNotices } from '$lib/assistant/speech/notices';
   let { mode }: { mode: SpeechMode } = $props();
   let status = $state(speech.state);
@@ -27,7 +29,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const modelTitle = $derived(mode === 'phonon' ? 'Phonon 2.5' : lfm?.title ?? 'Parakeet TDT v3');
   const precision = $derived(mode === 'phonon' ? 'Packed' : lfm ? 'Mixed' : mode === 'cpu' ? 'INT8' : mode === 'gpu-fp16' ? 'FP16' : 'FP32');
   const downloadSize = $derived(speechArtifacts(mode).reduce((total, file) => total + file.bytes, 0));
-  const compatibility = $derived(facts ? [
+  const compatibility = $derived(facts ? mode === 'phonon' ? phononCompatibility(facts).rows : [
     { title: 'Secure page', passed: facts.secure, detail: 'HTTPS or localhost is required.' },
     { title: 'Cross-origin isolation', passed: facts.isolated, detail: 'The page must supply COOP/COEP headers.' },
     { title: 'WebAssembly SIMD', passed: facts.wasm && facts.simd, detail: 'Required by the CPU decoder and speech detector.' },
@@ -46,15 +48,15 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     if (working) return;
     if (!current) speech.setMode(mode);
     if (action === 'install') await speech.install();
-    if (action === 'load') { const {runBrowserTurn} = await import('$lib/assistant/browser/runtime'); await runBrowserTurn(async (_load, unload) => {if (isBatchSpeech(mode)) await unload(); await speech.prepare(mode,new AbortController().signal);}); }
+    if (action === 'load') { const {runBrowserTurn} = await import('$lib/assistant/browser/runtime'); await runBrowserTurn(async (_load, unload) => {if (isAdditionalSpeech(mode)) await unload(); await speech.prepare(mode,new AbortController().signal);}); }
     if (action === 'remove') await speech.remove();
   }
   async function readNotices() {
     try {
-      if (isBatchSpeech(mode)) {
+      if (isAdditionalSpeech(mode)) {
         notices = [];
         for (const file of speechArtifacts(mode).filter(file => file.type === 'notice')) {
-          const response = await fetch(new URL(file.url, document.baseURI));
+          const response = await cachedSpeechNotice(file) ?? await fetch(new URL(file.url, document.baseURI));
           if (!response.ok) throw Error('Could not read model notices.');
           const bytes = await response.arrayBuffer();
           const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -73,7 +75,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     finally { probing = false; }
   }
 </script>
-<section class="model-unit" aria-label={isBatchSpeech(mode) ? `${modelTitle} · ${variant.label}` : `Parakeet TDT · 0.6B v3 · ${variant.label}`} data-speech-mode={mode} data-selected={current} data-hover="foreground">
+<section class="model-unit" aria-label={isAdditionalSpeech(mode) ? `${modelTitle} · ${variant.label}` : `Parakeet TDT · 0.6B v3 · ${variant.label}`} data-speech-mode={mode} data-selected={current} data-hover="foreground">
     <div class="model-row">
       <span class="model-name" title={modelTitle}>{modelTitle}</span>
       <span class="model-parameters" title="Parameter size">{mode === 'phonon' ? '—' : lfm ? '2B' : '0.6B'}</span>
@@ -96,7 +98,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       </div>
     </div>
     {#if current && status.stage && status.phase !== 'failed'}
-      <ModelOperation label={status.stage} icon={preparing ? status.phase === 'installing' ? 'downloading' : 'hourglass_top' : ['permission','recording','stopping'].includes(status.phase) ? 'mic' : 'check_circle'} active={preparing} progress={status.progress ? {message:status.stage, ...status.progress} : undefined} progressLabel={status.phase === 'installing' ? 'Speech model download' : 'Speech model loading'} detail={status.phase === 'loading' ? 'Startup can take up to 120 seconds.' : ''} />
+      <ModelOperation label={status.stage} icon={preparing ? status.phase === 'installing' ? 'downloading' : 'hourglass_top' : ['permission','recording','stopping'].includes(status.phase) ? 'mic' : 'check_circle'} active={preparing} progress={status.progress ? {message:status.stage, ...status.progress} : undefined} progressLabel={status.phase === 'installing' ? 'Speech model download' : 'Speech model loading'} detail={status.phase === 'loading' ? mode === 'phonon' ? 'GPU startup can take up to 60 seconds.' : 'Startup can take up to 120 seconds.' : ''} />
     {/if}
     {#if current && status.error || failure}<div role="alert" class="failure"><MaterialIcon name="error" size={17} /><p>{current && status.error || failure}</p></div>{/if}
     {#if compatibilityOpen}<div class="fold-panel" id={`speech-${mode}-compatibility`} role="region" aria-label="Browser compatibility" transition:slide={{ duration: foldDuration }}>
@@ -112,7 +114,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     </div>{/if}
     {#if settingsOpen}<div class="fold-panel" id={`speech-${mode}-model-settings`} role="region" aria-label="Model settings" transition:slide={{ duration: foldDuration }}>
       <div class="disclosure-content">
-        <dl><dt>Execution</dt><dd>{['cpu','phonon'].includes(mode) ? 'CPU' : 'WebGPU'}</dd><dt>Encoder</dt><dd>{precision}</dd><dt>Decoder</dt><dd>{mode === 'phonon' ? 'CPU · packed' : lfm ? 'WebGPU · Q4F16' : 'CPU · INT8'}</dd></dl>
+        <dl><dt>Execution</dt><dd>{mode === 'cpu' ? 'CPU' : 'WebGPU'}</dd><dt>Encoder</dt><dd>{precision}</dd><dt>Decoder</dt><dd>{mode === 'phonon' ? 'WebGPU · expanded F16/F32' : lfm ? 'WebGPU · Q4F16' : 'CPU · INT8'}</dd></dl>
         {#if mode === 'gpu-fp16'}<p class="warning">FP16 is experimental. Startup and transcription may fail on this browser.</p>{/if}
       </div>
     </div>{/if}
@@ -121,7 +123,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       <div class="disclosure-content">
     <p>Dictate into your AI draft. Audio is processed in memory and is never saved as a recording.</p>
     <p>{variant.description}. Storage size does not measure free RAM or GPU memory.</p>
-    {#if mode === 'phonon'}<p>Phonon 2.5 by Fermion Research, derived from NVIDIA Parakeet. Runtime-project packed GGUF conversion; CPU WebAssembly SIMD. Transcribes after stopping, up to 30 seconds. About 786 MiB allocated Wasm heap plus browser overhead; mobile unverified.</p>{:else if lfm}<p>{lfm.limitations}</p><dl><dt>Model</dt><dd><a href={`https://huggingface.co/${lfm.model}/tree/${lfm.revision}`} target="_blank" rel="noreferrer">{lfm.model}</a></dd><dt>Runtime</dt><dd>ONNX Runtime Web 1.30.0 · explicit GPU device</dd><dt>Capture</dt><dd>Transcription after stopping · up to 30 seconds</dd></dl>{:else}
+    {#if mode === 'phonon'}<p>Phonon 2.5 by Fermion Research, derived from NVIDIA Parakeet. Runtime-project packed GGUF conversion; WebGPU with JSPI and permitted CPU operations. Live speech uses serial, speech-aware windows with up to 30 seconds of context and a 55-second capture cap. Packed model files expand to about 1.4 GB of GPU weights. Mobile and longer recordings remain unqualified.</p>{:else if lfm}<p>{lfm.limitations}</p><dl><dt>Model</dt><dd><a href={`https://huggingface.co/${lfm.model}/tree/${lfm.revision}`} target="_blank" rel="noreferrer">{lfm.model}</a></dd><dt>Runtime</dt><dd>ONNX Runtime Web 1.30.0 · explicit GPU device</dd><dt>Capture</dt><dd>Transcription after stopping · up to 30 seconds</dd></dl>{:else}
     <dl><dt>Model</dt><dd><a href={`https://huggingface.co/${speechPins.publisherModel}/tree/${speechPins.publisherRevision}`} target="_blank" rel="noreferrer">NVIDIA Parakeet · CC BY 4.0</a></dd>
       <dt>ONNX conversion</dt><dd><a href={`https://huggingface.co/${speechPins.browserArtifact}/tree/${speechPins.revision}`} target="_blank" rel="noreferrer">ysdede · maintainer conversion</a></dd>
       <dt>Runtime</dt><dd>parakeet.js 1.4.4 · ONNX Runtime 1.30.0 · serial session initialization</dd>

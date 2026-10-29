@@ -23,3 +23,6 @@ Feature: Assistant controls follow the surrounding Settings design
 
   Scenario: New local AI profiles reuse the shared model controls
     Then the LFM3 and Phonon profiles expose consistent settings and dictation choices
+
+  Scenario: Phonon exposes the GPU streaming prerequisites and limits
+    Then the Phonon settings show GPU streaming compatibility and retain the shared model layout

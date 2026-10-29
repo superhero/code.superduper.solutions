@@ -145,14 +145,43 @@ LFM3-Audio 2B and LFM3-Omni 2B use their pinned ONNX WebGPU assets and explicit
 provider GPUDevice. They transcribe after stopping, up to 30 seconds, rather than
 using the Parakeet streaming feature pipeline.
 
-Phonon 2.5 uses parakeet.cpp CPU Wasm with the reference's packed SIMD kernel.
-The public runtime-project GGUF is 241,719,776 bytes; its SHA256 and revision
-are in phonon-artifacts.json. The reference's locally prepared 174 MB gzip has
-no published download URL, so this installer uses the identical uncompressed
-packed payload. It does not change the weights. Native binaries, MIT notices,
-the Fermion/NVIDIA CC BY 4.0 notice, build receipt and exact bridge/kernel/build
-inputs are retained. About 786 MiB allocated Wasm memory was observed in the
-reference, plus browser overhead; this is not a peak memory or mobile claim.
-Phonon transcribes after stopping (at most 30 seconds). Terminating its worker
-cancels synchronous decoding and releases the worker pool. Recordings remain
-transient. Loading another language model waits for batch dictation to finish.
+Phonon 2.5 now uses the LL WebGPU native build and LM speech-aware repeated
+windows. The public packed GGUF remains 241,719,776 bytes with the same checksum
+and cache key; existing weights are reused. The reference's 174 MB gzip remains
+a LAN-only generated artifact with no public immutable URL. Optional runtime
+files are replaced without changing the model or the cache database.
+
+Native load and transcription await JSPI ccall promises. Requirements include
+WebGPU FP16, at least 1,440,898,696 bytes per GPU buffer, 128 MiB per storage
+binding, JSPI, SIMD, shared memory and cross-origin isolation. The native backend
+must report GPU selection, and every recognition window must dispatch real GPU
+compute. GPU validation errors fail the operation. File sizes are not free
+memory estimates: packed weights expand to about 1.4 GB on GPU.
+
+The existing 16 kHz capture, TEN-VAD, LiveDecoder and SentenceMerger feed Phonon.
+Recognition is serial/coalesced while every PCM packet is retained. Native word
+times are offset from each window into the session timeline before merging.
+Confirmed text is appended once; provisional text remains separate. Stop awaits
+the capture flush and drains remaining windows without rewriting the full
+recording. Each restart creates a decoder and resets VAD; session and epoch IDs
+reject stale callbacks. Capture is capped at 55 seconds and window context at
+30 seconds; mobile and longer recordings remain unqualified.
+
+Unloading terminates the owning GPU worker and its pthreads, releases capture
+and keeps installed files. Blob URLs stay alive until that worker is terminated.
+TEN-VAD license/NOTICES and Fermion/NVIDIA CC BY 4.0 attribution accompany the
+optional runtime. phonon-shared-sources.json retains LM shared-source hashes
+and the editor adapters' hashes; build/phonon and the shipped build receipt own
+the exact LL native inputs and executable checksums.
+
+Editor verification on 2026-10-29 passed the GPU build in Chromium 153 on
+sds-01's RTX 3060: two microphone-fixture recordings each produced the exact
+normalized 22 expected words and 17 partial updates before Stop. Confirmed text
+stayed fixed, native concurrency peaked at one, GPU dispatches occurred and no
+GPU validation/page errors were observed. Reloading the installed native module,
+Wasm, model and TEN-VAD from Blob/cache URLs with the context offline passed.
+Synthetic silence through actual TEN-VAD produced no recognition calls; cancelling
+during a GPU window rejected stale updates and a fresh initialization succeeded.
+The test used an isolated development server and left the shared Vite service
+and foreign workloads unchanged. These are bounded fixture checks, not physical
+microphone, mobile or long-recording qualification.

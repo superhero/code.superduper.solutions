@@ -47,7 +47,7 @@ remain separate. build/browser-models.mjs verifies the new executable outputs
 and source revision; model-runtimes.mjs publishes its installed-artifact pins.
 
 Phonon uses the separate build/phonon inputs and src/public/speech/phonon
-receipt/binaries. These copied bridge/kernel inputs retain their exact reference
+receipt/binaries. These copied GPU bridge/build inputs retain their exact reference
 bytes for reproducibility. The speech build verifies each input/output digest.
 The owned cache loader adapts the generated module's single relative Wasm URL to
 the installed Blob URL; native binaries and packed model weights remain intact.

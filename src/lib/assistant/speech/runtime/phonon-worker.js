@@ -1,41 +1,75 @@
 // Copyright (C) 2026 Erik Landvall
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
+// Adapted from LL/LM Phonon GPU references; phonon-shared-sources.json owns provenance.
 import {patchPhononModule} from './phonon-loader.js';
-let engine, busy=false;
-self.addEventListener('error',event=>postMessage({type:'error',message:[event.message,event.error?.stack,event.filename].filter(Boolean).join('\n') || 'Phonon worker failed before returning a native error.'}));
-function wav(pcm) {
- if(!(pcm instanceof Float32Array)||!pcm.length||pcm.length>30*16000)throw Error('Provide up to 30 seconds of mono 16 kHz audio.');
- const bytes=new ArrayBuffer(44+pcm.length*2),v=new DataView(bytes);
- const text=(offset,value)=>[...value].forEach((c,i)=>v.setUint8(offset+i,c.charCodeAt(0)));
- text(0,'RIFF');v.setUint32(4,bytes.byteLength-8,true);text(8,'WAVE');text(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);text(36,'data');v.setUint32(40,pcm.length*2,true);
- pcm.forEach((x,i)=>v.setInt16(44+i*2,Math.round(Math.max(-1,Math.min(1,x))*(x<0?32768:32767)),true));return new Uint8Array(bytes);
+import {TenVad} from './ten-vad.js';
+import {createPhononDecoder,transcribePhonon} from './phonon-stream.js';
+let engine,vad,live,sessionId,loading=false;
+const diagnostics=[];
+const diagnostic=text=>{diagnostics.push(String(text).slice(0,1200));if(diagnostics.length>8)diagnostics.shift();};
+const gpu={dispatches:0,submissions:0,errors:[],peakBufferBytes:0,liveBufferBytes:0,inFlight:0,maxInFlight:0};
+function observeGPU() {
+  const sizes=new WeakMap(),create=GPUDevice.prototype.createBuffer,destroy=GPUBuffer.prototype.destroy;
+  GPUDevice.prototype.createBuffer=function(desc){const b=Reflect.apply(create,this,[desc]);sizes.set(b,desc.size);gpu.liveBufferBytes+=desc.size;gpu.peakBufferBytes=Math.max(gpu.peakBufferBytes,gpu.liveBufferBytes);return b;};
+  GPUBuffer.prototype.destroy=function(){const n=sizes.get(this)||0;gpu.liveBufferBytes-=n;sizes.delete(this);return Reflect.apply(destroy,this,[]);};
+  for(const name of ['dispatchWorkgroups','dispatchWorkgroupsIndirect']){
+    const original=GPUComputePassEncoder.prototype[name];
+    GPUComputePassEncoder.prototype[name]=function(...args){gpu.dispatches++;return Reflect.apply(original,this,args);};
+  }
+  const submit=GPUQueue.prototype.submit;
+  GPUQueue.prototype.submit=function(...args){gpu.submissions++;return Reflect.apply(submit,this,args);};
+  const request=GPUAdapter.prototype.requestDevice;
+  GPUAdapter.prototype.requestDevice=async function(...args){const device=await Reflect.apply(request,this,args);device.addEventListener('uncapturederror',event=>{gpu.errors.push(event.error.message);postMessage({type:'error',message:event.error.message});});return device;};
 }
-self.onmessage=async({data})=>{
- if(busy){postMessage({type:'error',message:'One Phonon operation at a time.'});return;}
- busy=true;
- try {
-  if(data.type==='load'){
-   const {urls}=data;
-   const source=await (await fetch(urls['phonon-js'])).text();
-   const moduleURL=URL.createObjectURL(new Blob([patchPhononModule(source,urls['phonon-wasm'])],{type:'text/javascript'}));
-   const {default:createPhonon}=await import(/* @vite-ignore */ moduleURL);
-   engine=await createPhonon({locateFile:()=>urls['phonon-wasm'],mainScriptUrlOrBlob:moduleURL,print:()=>{},printErr:text=>postMessage({type:'stage',stage:String(text).slice(0,1200)})});
-   const bytes=new Uint8Array(await (await fetch(urls['phonon-model'])).arrayBuffer());
-   const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
-   if(bytes.length!==241719776||hash!=='f0339284e385c89a73ebc860937f1c1c346311efee6a40d995f8623b2d8cf7a3')throw Error('Phonon model checksum differs.');
-   engine.FS.writeFile('/model.gguf',bytes,{canOwn:true});
-   if(!engine.ccall('phonon_load','number',['string'],['/model.gguf']))throw Error(engine.ccall('phonon_error','string',[],[]));
-   engine.FS.unlink('/model.gguf');postMessage({type:'ready'});
-  } else if(data.type==='streamEnd'){
-   engine.FS.writeFile('/input.wav',wav(data.pcm),{canOwn:true});let ptr;
-   try{
-    ptr=engine.ccall('phonon_transcribe','number',['string'],['/input.wav']);
-    if(!ptr)throw Error(engine.ccall('phonon_error','string',[],[]));
-    const result=JSON.parse(engine.UTF8ToString(ptr));
-    postMessage({type:'result',sessionId:data.sessionId,text:result.text,stableText:result.text,draftText:''});
-   } finally {if(ptr)engine._phonon_free_string(ptr);engine.FS.unlink('/input.wav');}
-  } else throw Error('Unsupported Phonon operation.');
- } catch(error){postMessage({type:'error',message:error.message});}
- finally {busy=false;}
+const send=(type,value={})=>postMessage({type,sessionId,...value});
+self.addEventListener('error',event=>send('error',{message:[event.message||event.error?.stack||'Phonon GPU worker failed.',...diagnostics].join('\n')}));
+async function load(urls) {
+  if(loading||engine)throw Error('Phonon is already loading or loaded.');loading=true;
+  try {
+    if(typeof WebAssembly.Suspending!=='function'||typeof WebAssembly.promising!=='function')throw Error('Phonon GPU requires WebAssembly JSPI.');
+    observeGPU();
+    send('stage',{stage:'Starting Phonon GPU runtime'});
+    const source=await (await fetch(urls['phonon-js'])).text();
+    const moduleURL=URL.createObjectURL(new Blob([patchPhononModule(source,urls['phonon-wasm'])],{type:'text/javascript'}));
+    const {default:createPhonon}=await import(/* @vite-ignore */ moduleURL);
+    engine=await createPhonon({locateFile:()=>urls['phonon-wasm'],mainScriptUrlOrBlob:moduleURL,print:()=>{},printErr:diagnostic});
+    const bytes=new Uint8Array(await (await fetch(urls['phonon-model'])).arrayBuffer());
+    const sha=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(bytes.length!==241719776||sha!=='f0339284e385c89a73ebc860937f1c1c346311efee6a40d995f8623b2d8cf7a3')throw Error('Phonon model checksum differs.');
+    send('stage',{stage:'Expanding and uploading Phonon weights to GPU'});
+    engine.FS.writeFile('/model.gguf',bytes,{canOwn:true});
+    try {if(!await engine.ccall('phonon_load','number',['string'],['/model.gguf'],{async:true}))throw Error(engine.ccall('phonon_error','string',[],[]));}
+    finally {engine.FS.unlink('/model.gguf');}
+    const backend=JSON.parse(engine.ccall('phonon_gpu_info','string',[],[]));
+    if(!backend.gpu)throw Error('Phonon did not select a GPU backend.');
+    vad=await TenVad.create(urls['ten-js'],new Uint8Array(await(await fetch(urls['ten-wasm'])).arrayBuffer()),urls['ten-wasm']);
+    send('ready',{runtime:{backend,gpu:{...gpu},streaming:'speech-aware repeated windows'}});
+  } finally {loading=false;}
+}
+self.onmessage=({data})=>{
+  if(data.type==='load'){void load(data.urls).catch(error=>send('error',{message:error.message}));return;}
+  if(data.type==='streamStart'){
+    if(!engine||!vad||live&&!live.ended){send('error',{message:'Finish the active Phonon session before restarting.'});return;}
+    sessionId=data.sessionId;const id=sessionId;
+    live=createPhononDecoder({vad,valid:()=>sessionId===id,
+      transcribe:async pcm=>{
+        gpu.maxInFlight=Math.max(gpu.maxInFlight,++gpu.inFlight);
+        send('inference',{active:true});
+        const timer=setTimeout(()=>send('error',{message:'Phonon GPU recognition exceeded 60 seconds.'}),60000);
+        try {
+          const before=gpu.dispatches,result=await transcribePhonon(engine,pcm);
+          if(gpu.dispatches<=before)throw Error('Phonon inference did not dispatch GPU work.');
+          if(gpu.errors.length)throw Error(gpu.errors.at(-1));
+          return result;
+        } finally {clearTimeout(timer);gpu.inFlight--;send('inference',{active:false});}
+      },
+      update:value=>send('partial',{...value,gpu:{...gpu}}),
+      finish:value=>send('result',{...value,gpu:{...gpu}}),
+      error:error=>send('error',{message:error.message}),
+    });return;
+  }
+  if(data.sessionId!==sessionId)return;
+  if(data.type==='streamChunk')live?.push(data.pcm);
+  else if(data.type==='streamEnd')live?.end(data.pcm);
 };

@@ -13,6 +13,7 @@ export interface Transcript {
 }
 export type SpeechPhase = 'idle' | 'installing' | 'removing' | 'loading' | 'ready' | 'permission' | 'recording' | 'stopping' | 'failed';
 export interface SpeechState {
+  runtime: Record<string,unknown> | undefined;
   mode: SpeechMode; phase: SpeechPhase; stage: string; error: string; transcript: string;
   seconds: number; progress: SpeechProgress | undefined; installed: SpeechMode[];
 }
