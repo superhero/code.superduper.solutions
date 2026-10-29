@@ -5,7 +5,7 @@ import {openDB} from 'idb';
 const BLOCK = 8 * 1024 * 1024;
 const nativeFetch = globalThis.fetch.bind(globalThis);
 /** Installed files only. Optional Transformers metadata probes receive a local 404. */
-export function useInstalledAssets({files, runtimeURLs}) {
+export function useInstalledAssets({files, runtimeURLs, fileURLs}) {
   const byURL = new Map(files.map(file => [new URL(file.url).href, file]));
   const blobs = new Set(Object.values(runtimeURLs));
   globalThis.__codeRuntimeURL = name => {
@@ -19,6 +19,7 @@ export function useInstalledAssets({files, runtimeURLs}) {
     if (blobs.has(url.href) || /^data:image\/(?:png|jpeg|webp);base64,/.test(url.href)) return nativeFetch(input, init);
     url.search = ''; url.hash = '';
     const file = byURL.get(url.href);
+    if (file && fileURLs?.[file.id]) return nativeFetch(fileURLs[file.id], init);
     if (!file) return new Response('File is not in the installed model.', {status: 404});
     const db = await openDB('code-browser-models', 1);
     if (!(await db.get('artifacts', file.sha256))) {db.close(); throw Error('Installed model file is incomplete. Reinstall the model.');}

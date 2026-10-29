@@ -56,7 +56,7 @@ export async function createWorkerEngine(profile: BrowserProfile, files: Artifac
   let info: unknown;
   try {
     const assets = {files, runtimeURLs};
-    info = await request('load', profile.category === 'vision' ? {assets, pin: {
+    info = await request('load', profile.category === 'vision' && profile.engine !== 'lfm3-onnx' ? {assets, pin: {
       repo: profile.model, revision: profile.revision, loader: 'published-session-names', dtype: {embed_tokens: 'fp16', vision_encoder: 'fp16', decoder_model_merged: 'q4'},
       sessionFiles: {embed_tokens: 'embed_tokens', vision_encoder: 'embed_images', decoder_model_merged: 'decoder'},
       chatTemplate: {filename: 'chat_template.jinja', bytes: 434, sha256: 'cf0af741b36248dfe460af825b0b3acb3c651cf7dd40a74c29447f60b75d2b9b'},

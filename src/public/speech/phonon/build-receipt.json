@@ -1,0 +1,22 @@
+{
+  "runtime": "parakeet.cpp WebAssembly CPU adapter",
+  "host": "sds-01",
+  "upstream": "43dce03cb3c36849d5e5a504076be3d9bea7b6c4",
+  "ggml": "e705c5fed490514458bdd2eaddc43bd098fcce9b",
+  "image": "emscripten/emsdk:4.0.20@sha256:33e992367f721747d8008c9141c04fa017139e3557a60e0c80be93a0870fe462",
+  "threads": 8,
+  "simd": true,
+  "packed_kernel": "local wasm-simd128; reference checked in the browser",
+  "memory_max_bytes": 2147483648,
+  "inputs": {
+    "build.sh": "5e58cdc5be07d8d82542067ae873db8a73da69075c7354e5ed209cc339635cf2",
+    "bridge.cpp": "2cc36185f74fbc2fda8f20f03eaa5760e70d92af3b1a194468e96f4dda0cdb4f",
+    "ternary_kernels_wasm.cpp": "b57f0515d584b8b2ac5d3aa7432b08ecf366fcdc3d636c6c25027261af6d5feb"
+  },
+  "files": {
+    "LICENSE-ggml": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+    "LICENSE-parakeet.cpp": "396cb1a512310cb4fabd73118114c8cb53c7352955a37b583e165f15af64f095",
+    "phonon_browser.mjs": "4a590d111b5c85ea9e69d155951d7d8014653082feaa32e1d23d9e62b8ec0899",
+    "phonon_browser.wasm": "72979bf0ad3a51e7ee0b7b2e41a64ac935d946e80ac7fcb567723fc0fb79f8da"
+  }
+}

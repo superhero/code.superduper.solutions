@@ -3,7 +3,7 @@
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 import type { BrowserConnectionPlugin, ContextUsage } from '../harness.ts';
 import { estimateContext } from '../configuration.ts';
-import { artifactsFor, profileById } from './catalog.ts';
+import { artifactsFor, profileById, VISION_PROFILES } from './catalog.ts';
 import { installedModels, installedFetch, readArtifact, readModelSettings } from './storage.ts';
 import { configuredProfile, defaultSettings } from './settings.js';
 import { probeBrowser, compatibilityFor } from './compatibility.js';
@@ -56,8 +56,8 @@ import.meta.hot?.dispose(() => {
 export const loadedModel = () => loaded?.id;
 export const runtimeBusy = () => work.busy || loading || generating;
 /** The scoped loader shares this turn's ownership, without a second queue entry. */
-export function runBrowserTurn<T>(run: (loadModel: typeof loadModelNow) => Promise<T>, signal?: AbortSignal, onQueued?: () => void): Promise<T> {
-  return schedule(() => run(loadModelNow), signal, onQueued);
+export function runBrowserTurn<T>(run: (loadModel: typeof loadModelNow, unloadModel: typeof unloadModelNow) => Promise<T>, signal?: AbortSignal, onQueued?: () => void): Promise<T> {
+  return schedule(() => run(loadModelNow, unloadModelNow), signal, onQueued);
 }
 export async function configuredBrowserProfile(id: string) {
   const profile = profileById(id), saved = await readModelSettings(id);
@@ -81,11 +81,16 @@ async function loadModelNow(id: string, progress: (event: Progress) => void, sig
     const pinned = profileById(id), saved = await readModelSettings(id);
     const settings = defaultSettings(pinned, saved.generation as Record<string, unknown> | undefined);
     if (context !== undefined) settings.context_tokens = context;
-    const profile = frozen?.profile ?? configuredProfile(pinned, settings), execution = frozen?.execution ?? executionSettings(saved.execution, pinned);
-    const key = frozen?.key ?? JSON.stringify([id, settings, execution]);
+    const chosenVision = pinned.vision_tool && VISION_PROFILES.some(p => p.id === saved.visionTool) ? String(saved.visionTool) : pinned.vision_tool;
+    const configured = configuredProfile(pinned, settings);
+    if (chosenVision) configured.vision_tool = chosenVision;
+    const profile = frozen?.profile ?? configured, execution = frozen?.execution ?? executionSettings(saved.execution, pinned);
+    const key = frozen?.key ?? JSON.stringify([id, settings, execution, profile.vision_tool]);
     if (loaded?.key === key && !loaded.engine.invalidated) return;
     signal.throwIfAborted();
     if (!(await installedModels()).includes(id)) throw new Error('Install this model in Settings → AI first.');
+    const {speech} = await import('../speech/controller');
+    await speech.releaseForLanguage(signal);
     await unloadModelNow();
     requestOwnership();
     progress({ message: 'Waiting for browser runtime…' });
@@ -106,7 +111,7 @@ async function loadModelNow(id: string, progress: (event: Progress) => void, sig
       if (digest !== file.sha256) throw new Error('Installed runtime checksum differs. Remove and reinstall this model.');
       return bytes;
     }
-    if (['litert-lm','transformers','strands-onnx'].includes(profile.engine)) {
+    if (['litert-lm','transformers','strands-onnx','lfm3-onnx'].includes(profile.engine)) {
       const runtimeURLs = await verifiedRuntimeURLs(files, urls);
       engine = await createWorkerEngine(profile, files, runtimeURLs, progress, signal);
     } else {
@@ -196,6 +201,20 @@ export async function browserVisionTool(id: string, conversation: readonly ChatM
   return {...control, reference: references.reference};
 }
 
+/** Standalone image inspection shares the runtime queue and releases its allocation. */
+export function inspectBrowserImage(id: string, image: ChatImage, question: string, signal: AbortSignal, progress: (event: Progress) => void = () => {}): Promise<unknown> {
+  return schedule(async () => {
+    if (profileById(id).category !== 'vision') throw new Error('Choose an image inspection model.');
+    if (!question.trim() || question.length > 2000 || !['image/png','image/jpeg','image/webp'].includes(image.mimeType) || image.data.length > 14 * 1024 * 1024) throw new Error('Provide a supported image and a question of up to 2,000 characters.');
+    const {ensureBrowserModelInstalled} = await import('./selection.ts');
+    await ensureBrowserModelInstalled(id, progress, signal);
+    await loadModelNow(id, progress, signal);
+    const current = loaded!;
+    try {return await (current.engine as WorkerEngine).generate([{role:'user',content:question}], {image,maxTokens:256,signal,onText:()=>{}});}
+    finally {if (loaded === current) await unloadModelNow();}
+  }, signal);
+}
+
 /** Native scoring is available for future workflow features; it never calls a chat parser. */
 export function scoreBrowserDecision(id: string, request: unknown, signal: AbortSignal, progress: (event: Progress) => void = () => {}): Promise<unknown> {
   return schedule(async () => {
@@ -204,7 +223,7 @@ export function scoreBrowserDecision(id: string, request: unknown, signal: Abort
     await loadModelNow(id, progress, signal);
     const current = loaded!;
     try {
-      if (current.profile.engine === 'strands-onnx') {
+      if (['strands-onnx','lfm3-onnx'].includes(current.profile.engine)) {
         return await (current.engine as WorkerEngine).request('decide', {state: input.state, question: input.questions!.q}, signal);
       }
       return await (current.engine as LocalEngine & {score(request: unknown, signal: AbortSignal): Promise<unknown>}).score(input, signal);

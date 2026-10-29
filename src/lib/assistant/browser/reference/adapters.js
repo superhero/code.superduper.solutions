@@ -4,6 +4,7 @@
 // Adapted from llm-sds-01/inference/evaluations/pi-browser/runtime/src/adapters.js.
 import {createAssistantMessageEventStream} from '@earendil-works/pi-ai/utils/event-stream';
 import {getCurrentSystemPrompt, getCurrentTools} from '@earendil-works/pi-ai/utils/transcript';
+import {splitLFM3Reasoning} from './lfm3-reasoning.js';
 import {executionPlans, loadWithFallback, abortableGeneration} from './execution.js';
 import {isWebML, isWllama, webmlLoadOptions, samplingOptions} from './settings.js';
 
@@ -111,12 +112,16 @@ export async function loadEngine(profile, onProgress, options = {}) {
           chat_template_kwargs: {enable_thinking: !!profile.settings.thinking}, abortSignal: signal,
           onData(chunk) {
             const delta = chunk.choices?.[0]?.delta;
-            if (delta?.content) { first ??= performance.now(); text += delta.content; onText(delta.content); }
-            if (delta?.reasoning_content) { reasoning += delta.reasoning_content; onThinking(delta.reasoning_content); }
+            if (delta?.content) { first ??= performance.now(); text += delta.content; if (profile.family !== 'lfm3') onText(delta.content); }
+            if (delta?.reasoning_content) { reasoning += delta.reasoning_content; if (profile.family !== 'lfm3') onThinking(delta.reasoning_content); }
             mergeToolDeltas(calls, delta?.tool_calls);
             finish = chunk.choices?.[0]?.finish_reason || finish;
             usage = chunk.usage || usage; timings = chunk.timings || timings;
           }}), signal, async () => { this.invalidated = true; await base.dispose(); });
+        if (profile.family === 'lfm3') {
+          const parsed = splitLFM3Reasoning(text, reasoning); text = parsed.text; reasoning = parsed.reasoning;
+          if (reasoning) onThinking(reasoning); if (text) onText(text);
+        }
         return {message: {role: 'assistant', content: text, ...(reasoning ? {reasoning_content: reasoning} : {}), ...(calls.length ? {tool_calls: calls.filter(Boolean)} : {})},
           finish_reason: signal?.aborted ? 'cancelled' : finish,
           native_settings: {...samplingOptions(generation, 'wllama'), enable_thinking: !!profile.settings.thinking, cache_prompt: !!profile.settings.prefix_cache},

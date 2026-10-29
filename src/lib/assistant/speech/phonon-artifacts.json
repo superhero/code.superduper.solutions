@@ -1,0 +1,44 @@
+[
+  {
+    "id": "phonon-js",
+    "url": "speech/phonon/phonon_browser.mjs",
+    "bytes": 88965,
+    "sha256": "4a590d111b5c85ea9e69d155951d7d8014653082feaa32e1d23d9e62b8ec0899",
+    "type": "mjs"
+  },
+  {
+    "id": "phonon-wasm",
+    "url": "speech/phonon/phonon_browser.wasm",
+    "bytes": 1450000,
+    "sha256": "72979bf0ad3a51e7ee0b7b2e41a64ac935d946e80ac7fcb567723fc0fb79f8da",
+    "type": "wasm"
+  },
+  {
+    "id": "ggml-license",
+    "url": "speech/phonon/LICENSE-ggml",
+    "bytes": 1078,
+    "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+    "type": "notice"
+  },
+  {
+    "id": "parakeet-cpp-license",
+    "url": "speech/phonon/LICENSE-parakeet.cpp",
+    "bytes": 1081,
+    "sha256": "396cb1a512310cb4fabd73118114c8cb53c7352955a37b583e165f15af64f095",
+    "type": "notice"
+  },
+  {
+    "id": "phonon-notice",
+    "url": "speech/phonon/NOTICE-phonon-2.5.txt",
+    "bytes": 6449,
+    "sha256": "fb7d593040bb0048fc499069a478d161de034f60df7ddd248b92e34b48890d1a",
+    "type": "notice"
+  },
+  {
+    "id": "phonon-model",
+    "url": "https://huggingface.co/mudler/parakeet-cpp-gguf/resolve/c77726e46ceaab96b5a5a3328915edb44c73209d/phonon-2.5-packed.gguf",
+    "bytes": 241719776,
+    "sha256": "f0339284e385c89a73ebc860937f1c1c346311efee6a40d995f8623b2d8cf7a3",
+    "type": "model"
+  }
+]

@@ -54,3 +54,15 @@ development adapters are outside the production coverage denominator.
 Keep new application logic in the measured scope. Expand behavior scenarios
 when a feature is introduced; do not exclude code to make a threshold pass.
 Review the scope whenever new adapters or components are added.
+
+LFM3 adapter checks live in named QuickPickle scenarios under tests/models/.
+Run npm run test:models for the focused ONNX device/readout/catalog checks.
+The regular test:speech profile also includes them alongside microphone lifecycle
+checks, so their outcomes enter the existing Cucumber-compatible report.
+
+Real LFM3/Phonon editor scenarios are in tests/browser/live/browser-models.feature.
+Run models serially on sds-01 under its shared attempt-isolation lock.
+MODEL_LIVE_PINNED_CACHE=1 is a test-only delivery override for already prepared,
+exact pinned ONNX graph files from the reference host. Installed-file SHA256
+verification remains active. It does not qualify public CDN delivery; metadata,
+tokenizer and normal production installs retain their pinned publisher URLs.

@@ -141,3 +141,24 @@ Then('a late permission response cannot start recording',world=>{expect(world.da
 Given('cached model restoration is still pending',world=>{world.data.closeURLs=vi.fn();controller(world,undefined,()=>new Promise(resolve=>world.data.restore=resolve));world.data.loading=world.data.controller.initialize();});
 When('I cancel model initialization',async world=>{world.data.controller.unload();world.data.restore({urls:{worker:'blob:late'},close:world.data.closeURLs});await world.data.loading;});
 Then('the late restored URLs are revoked and no worker starts',world=>{expect(world.data.closeURLs).toHaveBeenCalledOnce();expect(world.data.workers).toHaveLength(0);expect(world.data.controller.state.phase).toBe('idle');});
+Then('{string} captures without streaming and releases after final transcription', async (world, mode) => {
+  let push;
+  const service=controller(world,()=>({start:async(_url,chunk)=>{push=chunk;return{sampleRate:16000};},stop:async()=>{},close:vi.fn()}));
+  service.setMode(mode);
+  await service.initialize();
+  const worker=world.data.workers[0];worker.emit({type:'ready'});
+  const drafts=[];
+  await service.record('batch-owner',text=>drafts.push(text));
+  push(new Float32Array(16000));
+  expect(worker.sent.some(message=>['streamStart','streamChunk'].includes(message.type))).toBe(false);
+  await service.stop('batch-owner');
+  const end=worker.sent.find(message=>message.type==='streamEnd');
+  expect(end.pcm.length).toBe(16000);
+  let released=false;
+  const waiting=service.releaseForLanguage(new AbortController().signal).then(()=>released=true);
+  await Promise.resolve();expect(released).toBe(false);
+  worker.emit({type:'result',sessionId:end.sessionId,text:'Recognized words.',stableText:'Recognized words.',draftText:''});
+  await waiting;
+  expect(drafts).toEqual(['Recognized words.']);
+  expect(worker.terminated).toBe(true);expect(service.state.phase).toBe('idle');
+});

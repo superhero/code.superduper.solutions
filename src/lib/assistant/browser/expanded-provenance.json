@@ -17,7 +17,7 @@
   "src/lib/assistant/browser/reference/expanded/vision-tool.js": {
     "source": "examples/browser-assistant/src/vision-tool.js",
     "sha256": "221e6cbada13973af9456b8b627b3402814cf9c3d4a546e37de7b00d6d269329",
-    "adapted_sha256": "2749ab6ed15f4b662a5d157ee944fe700f3e9ca1c92013129d0efc72829292f2"
+    "adapted_sha256": "8ddd3469d0813693d442616159ace5385f39d767a444d5671b7b1889e09bf25d"
   },
   "src/lib/assistant/browser/reference/expanded/knowline-browser.mjs": {
     "source": "inference/evaluations/browser-decisions/runtime/knowline-browser.mjs",
@@ -163,5 +163,25 @@
     "source": "inference/evaluations/browser-decisions/runtime/pplx-publisher-NOTICE",
     "sha256": "381fb81e814716a5ef8e5eae26a08607d052cf12f019dba9da9e81298ef5cb75",
     "adapted_sha256": "381fb81e814716a5ef8e5eae26a08607d052cf12f019dba9da9e81298ef5cb75"
+  },
+  "src/lib/assistant/browser/reference/lfm3-reasoning.js": {
+    "source": "inference/evaluations/lfm3-browser/text/reasoning.js",
+    "sha256": "58c0c55f741207cd2cbf4c559d979910f2f1f4f0a5b1cd8e55dbac832ad2c85b",
+    "adapted_sha256": "58c0c55f741207cd2cbf4c559d979910f2f1f4f0a5b1cd8e55dbac832ad2c85b"
+  },
+  "src/lib/assistant/browser/reference/expanded/lfm3/ort-common.mjs": {
+    "source": "inference/evaluations/lfm3-browser/multimodal/ort-common.mjs",
+    "sha256": "9e424c2355065cc5205705d3829e3b7ad6c7dc51fbf32d6de67518c28bed74c6",
+    "adapted_sha256": "9e424c2355065cc5205705d3829e3b7ad6c7dc51fbf32d6de67518c28bed74c6"
+  },
+  "src/lib/assistant/browser/reference/expanded/lfm3/preprocess.mjs": {
+    "source": "inference/evaluations/lfm3-browser/multimodal/preprocess.mjs",
+    "sha256": "501a18795bef4e2c945f81288a278541dbb3b3f87b76ef197cb7db97b4e3c29d",
+    "adapted_sha256": "501a18795bef4e2c945f81288a278541dbb3b3f87b76ef197cb7db97b4e3c29d"
+  },
+  "src/lib/assistant/browser/reference/expanded/lfm3/protocol.mjs": {
+    "source": "inference/evaluations/lfm3-browser/decisions/protocol.mjs",
+    "sha256": "e8512a933f7813d53b967fad7c8cd4c097d7e05ee2261ed791996e2f2dda2dd7",
+    "adapted_sha256": "d8c4fe9756666de6e9d247a399b7fd5cc20b22856ca243faab74b7bac2f74304"
   }
 }

@@ -1,0 +1,8 @@
+[
+  {"id":"billing","state":"I was charged twice for the same order. Please refund the duplicate payment.","question":{"type":"choice","instructions":"Which team should handle this message?","criteria":{"billing":"Payments, duplicate charges and refunds","shipping":"Missing parcels and deliveries","technical":"Application failures and login problems"}},"expected":"billing"},
+  {"id":"shipping","state":"My parcel was due Monday but never arrived. Please find the delivery.","question":{"type":"choice","instructions":"Which team should handle this message?","criteria":{"billing":"Payments, duplicate charges and refunds","shipping":"Missing parcels and deliveries","technical":"Application failures and login problems"}},"expected":"shipping"},
+  {"id":"refund-yes","state":"Please refund my duplicate payment.","question":{"type":"noul","instructions":"Is the customer requesting a refund?"},"expected":"yes"},
+  {"id":"refund-no","state":"I am happy with my purchase and do not want a refund. Thank you!","question":{"type":"noul","instructions":"Is the customer requesting a refund?"},"expected":"no"},
+  {"id":"repeat-billing","repeat":"billing","control":"identical prompt repeated without answer cache"},
+  {"id":"permuted-billing","state":"I was charged twice for the same order. Please refund the duplicate payment.","question":{"type":"choice","instructions":"Which team should handle this message?","criteria":{"technical":"Application failures and login problems","shipping":"Missing parcels and deliveries","billing":"Payments, duplicate charges and refunds"}},"expected":"billing","control":"same correct semantic label moves A to C"}
+]

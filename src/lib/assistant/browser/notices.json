@@ -13,5 +13,17 @@
     "bytes": 26796,
     "sha256": "73fea91dc1a115240c564071eb05738832837bb5e51eb043b817739b8c86f2ca",
     "scope": "Pinned publisher model card declares MIT; its linked parent LICENSE is unavailable. Runtime MIT notice is packaged separately."
+  },
+  {
+    "family": "lfm3",
+    "file": "LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+    "bytes": 10574,
+    "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c"
+  },
+  {
+    "family": "lfm3",
+    "file": "LiquidAI-LFM3-30adf9d64781-LICENSE",
+    "bytes": 10574,
+    "sha256": "30adf9d6478191fb87f2424f63ba0728598335aaf99cd2848ef17e8e545fe94b"
   }
 ]

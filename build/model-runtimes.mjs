@@ -33,13 +33,13 @@ async function generate() {
       file.parts = [];
       for (let offset = 0; offset < bytes.length; offset += partSize) {
         const part = bytes.subarray(offset,offset+partSize), url = `${filename}.part-${String(file.parts.length+1).padStart(3,'0')}`;
-        assets.set(url,part); file.parts.push({url,bytes:part.length});
+        assets.set(url,part); file.parts.push({url,bytes:part.length,sha256:digest(part)});
       }
       file.url = file.parts[0].url;
     }
     (catalog[group] ??= []).push(file);
   }
-  for (const [group, entry, format] of [['litert','litert-worker.js','iife'],['vision','vision-worker.js','iife'],['strands-cpu','strands-worker.js','iife'],['strands-gpu','strands-native-device-worker.js','iife'],['decision','decisions.js','es']]) {
+  for (const [group, entry, format] of [['litert','litert-worker.js','iife'],['vision','vision-worker.js','iife'],['strands-cpu','strands-worker.js','iife'],['strands-gpu','strands-native-device-worker.js','iife'],['decision','decisions.js','es'],['lfm3','lfm3-worker.js','iife']]) {
     const notices = commonNotices.slice();
     const bundle = await rolldown({input:resolve(root,source,entry), platform:'browser', ...(format === 'iife' ? {transform:{define:{'import.meta.url':'self.location.href'}}} : {}),
       plugins:[{name:'installed-model-runtime',
@@ -65,7 +65,7 @@ async function generate() {
       publish('litert',name,await readFile(resolve(root,'node_modules/@litert-lm/core/wasm',name)),ext);
     }
   }
-  for (const group of ['vision','strands-cpu','strands-gpu']) {
+  for (const group of ['vision','strands-cpu','strands-gpu','lfm3']) {
     const directory = group === 'vision' ? 'node_modules/@huggingface/transformers/node_modules/onnxruntime-web' : 'node_modules/onnxruntime-web';
     const version = JSON.parse(await readFile(resolve(root,directory,'package.json'))).version;
     if (version !== (group === 'vision' ? '1.31.0-dev.20260914-8d85527a0' : '1.30.0')) throw Error('ONNX engine pin changed.');
@@ -92,6 +92,14 @@ async function generate() {
         catalog[group].push({id:name,url:'browser-models/notices/'+name,bytes:bytes.length,sha256:digest(bytes),kind:'notice'});
       }
     }
+  }
+  const lfmDirectory = resolve(root, 'src/public/browser-models/wllama-lfm3');
+  const lfmReceipt = JSON.parse(await readFile(resolve(lfmDirectory, 'build-receipt.json')));
+  catalog['wllama-lfm3'] = [];
+  for (const [name,id,kind] of [['index.js','wllama-js','runtime'],['wllama.wasm','wllama-wasm','runtime'],['LICENCE','wllama-license','notice']]) {
+    const bytes = await readFile(resolve(lfmDirectory,name));
+    if (digest(bytes) !== lfmReceipt.files[name]) throw Error('LFM3 native runtime changed: ' + name);
+    catalog['wllama-lfm3'].push({id,url:'browser-models/wllama-lfm3/'+name,bytes:bytes.length,sha256:digest(bytes),kind});
   }
   delete catalog.decision;
   return {assets,catalog};

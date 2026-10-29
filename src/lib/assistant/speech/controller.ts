@@ -1,6 +1,7 @@
 // Copyright (C) 2026 Erik Landvall
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
+import {lfmSpeechProfile, isBatchSpeech} from './catalog';
 import { cachedSpeechURLs, installedSpeech, installSpeech, removeSpeech } from './storage';
 import { SpeechCapture } from './capture';
 import { LiveFeatures } from './runtime/live-features.js';
@@ -71,6 +72,10 @@ export class SpeechController {
       signal.addEventListener('abort', abort, { once: true });
     });
   }
+  async releaseForLanguage(signal: AbortSignal): Promise<void> {
+    if (!isBatchSpeech(this.state.mode)) return;
+    await this.waitUntilIdle(signal); this.unload();
+  }
   setMode(mode: SpeechMode): void {
     if (!['idle', 'ready', 'failed'].includes(this.state.phase)) return;
     this.unload(); this.set({ mode });
@@ -103,8 +108,8 @@ export class SpeechController {
         else if (data.type === 'partial' || data.type === 'result') this.transcript(data as Transcript & { type: string });
         else if (data.type === 'error') this.fail(new Error(data.message));
       };
-      worker.onerror = event => { event.preventDefault(); if (epoch === this.epoch) this.fail(new Error(event.message || 'Speech worker failed.')); };
-      worker.postMessage({ type: 'load', mode: this.state.mode, urls: resources.urls });
+      worker.onerror = event => { event.preventDefault(); if (epoch === this.epoch) this.fail(new Error(event.message || `Speech worker failed during ${this.state.stage}.`)); };
+      worker.postMessage({ type: 'load', mode: this.state.mode, urls: resources.urls, baseURL:globalThis.location?.href, ...(lfmSpeechProfile(this.state.mode) ? {speech:true, profile:lfmSpeechProfile(this.state.mode)} : {}) });
     } catch (error) { if (epoch === this.epoch) this.fail(error); }
   }
   async record(owner: string, commit: (text: string) => void): Promise<void> {
@@ -114,22 +119,25 @@ export class SpeechController {
     this.set({ phase: 'permission', transcript: '', seconds: 0, error: '', stage: 'Allow microphone access' });
     const capture = this.capture = this.adapters.createCapture();
     try {
-      const featureWorker = this.adapters.createWorker(this.resources.urls['features-worker']!);
-      this.features = new LiveFeatures(128, null, featureWorker);
-      featureWorker.addEventListener('error', event => { if (id === this.sessionId) this.fail(new Error(event.message || 'Speech feature worker failed.')); });
-      const port = this.features.connect(); this.worker.postMessage({ type: 'streamStart', sessionId: id, featurePort: port }, [port]);
+      const stopped = isBatchSpeech(this.state.mode);
+      if (!stopped) {
+        const featureWorker = this.adapters.createWorker(this.resources.urls['features-worker']!);
+        this.features = new LiveFeatures(128, null, featureWorker);
+        featureWorker.addEventListener('error', event => { if (id === this.sessionId) this.fail(new Error(event.message || 'Speech feature worker failed.')); });
+        const port = this.features.connect(); this.worker.postMessage({ type: 'streamStart', sessionId: id, featurePort: port }, [port]);
+      }
       await capture.start(this.resources.urls['capture-worklet']!, pcm => {
         if (id !== this.sessionId || epoch !== this.epoch) return;
         try {
-          if (this.chunks.reduce((sum, chunk) => sum + chunk.length, 0) + pcm.length > 60 * 16000) throw new Error('Recording reached the 60 second limit.');
-          this.chunks.push(pcm.slice()); this.features!.push(pcm);
-          this.worker!.postMessage({ type: 'streamChunk', sessionId: id, pcm }, [pcm.buffer]);
+          if (this.chunks.reduce((sum, chunk) => sum + chunk.length, 0) + pcm.length > (stopped ? 30 : 60) * 16000) throw new Error('Recording limit reached.');
+          this.chunks.push(pcm.slice()); this.features?.push(pcm);
+          if (!stopped) this.worker!.postMessage({ type: 'streamChunk', sessionId: id, pcm }, [pcm.buffer]);
           this.set({ seconds: this.chunks.reduce((sum, chunk) => sum + chunk.length, 0) / 16000 });
         } catch (error) { this.fail(error); }
       }, () => { void this.stop(owner); });
       if (epoch !== this.epoch || id !== this.sessionId) { capture.close(); return; }
-      this.set({ phase: 'recording', stage: 'Listening · stops after 55 seconds' });
-      this.recordingTimer = setTimeout(() => { void this.stop(owner); }, 55_000);
+      this.set({ phase: 'recording', stage: stopped ? 'Recording · transcribes after stop · up to 30 seconds' : 'Listening · stops after 55 seconds' });
+      this.recordingTimer = setTimeout(() => { void this.stop(owner); }, stopped ? 29_000 : 55_000);
     } catch (error) { if (epoch === this.epoch && id === this.sessionId) this.fail(error); }
   }
   async stop(owner: string): Promise<void> {
@@ -145,7 +153,7 @@ export class SpeechController {
       if (id !== this.sessionId || !this.worker) return;
       const pcm = new Float32Array(this.chunks.reduce((sum, chunk) => sum + chunk.length, 0));
       let offset = 0; for (const chunk of this.chunks) { pcm.set(chunk, offset); offset += chunk.length; }
-      this.worker.postMessage({ type: 'streamEnd', sessionId: id, pcm }, [pcm.buffer]);
+      this.worker.postMessage({ type: 'streamEnd', sessionId: id, pcm, speech:!!lfmSpeechProfile(this.state.mode) }, [pcm.buffer]);
       this.chunks = [];
     } catch (error) { if (id === this.sessionId) this.fail(error); }
   }

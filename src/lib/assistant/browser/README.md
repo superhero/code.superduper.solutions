@@ -1,6 +1,6 @@
 # Installable browser models
 
-Settings → AI groups eight browser language models in the LLM pane. Each joined row shows
+Settings → AI groups nine browser language models in the LLM pane. Each joined row shows
 the model name, parameter size, weight quantization and download size, followed by
 installation/loading controls and buttons that expand compatibility, settings and
 detailed information below that model. Remove uses the Delete icon.
@@ -241,3 +241,39 @@ recovery message and retains the native allocator cause. Native and worker
 decision deadlines terminate stalled scoring and clear invalidated runtime state.
 These are scoped functional checks; the larger original Bonsai/Ornith profiles
 retain their earlier reference results rather than new editor hardware runs.
+
+## LFM3 additions (2026-10-29)
+
+The reference catalog in llm-sds-01/examples/browser-lfm3/catalog.json
+qualifies LFM3 1.7B QAD Q4_0 text, VL 2B image input, Audio 2B speech
+input, Omni 2B image/speech input and d1-Omni 2B native text classification.
+The text profile keeps its own Wllama build with llama.cpp
+19cce6919992fdffd92e0ac152caaf1e2b8f254e; existing profiles retain their
+original binaries. Native tool calls survive unchanged. The first trained
+reasoning boundary separates reasoning from visible answers; thinking off is
+requested, rather than guaranteed. Context is bounded to 4,096 tokens.
+
+The separate ONNX worker reuses the reference preprocessing, decoder/cache loop
+and calibrated native decision readout. Every execution provider receives the
+explicit GPUDevice with shader-f16 and available subgroups, without experimental
+subgroup-matrix features. Input prefill is capped at 1,024 tokens. Model metadata,
+graphs, external data and notices install on demand with pinned checksums.
+Codec/depth graphs for speech generation are excluded. Language-model settings
+can select any on-demand image inspection profile.
+
+Audio and Omni speech recognition appear in dictation and transcribe after
+stopping, up to 30 seconds of mono 16 kHz capture. The original Parakeet streaming
+paths remain. Plain d1-2B and Base are excluded from the supported catalog;
+speech generation, video, mobile and multimodal tool calling remain unqualified.
+Reference qualification is bounded evidence, not acceptance of this editor's
+adapter; editor-specific verification must be reported separately.
+
+Editor checks on 2026-10-29 passed real LFM3 text/Pi tool use, VL and Omni
+red-square descriptions, the six reference d1-Omni classifications, and
+Audio/Omni/Phonon microphone-fixture transcription on sds-01 (Chromium 153,
+RTX 3060; Phonon uses CPU). Each added recognizer produced the expected public
+JFK speech with about 9.1% word error on this capture. These narrow checks do not
+qualify general model quality, real microphone hardware or mobile devices.
+ONNX graph tests used checksum-verified prepared reference files through a
+test-only streaming delivery override; tokenizers/metadata and Phonon's raw
+packed model downloaded from their pinned public URLs.

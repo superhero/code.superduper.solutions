@@ -20,3 +20,6 @@ Feature: Assistant controls follow the surrounding Settings design
 
   Scenario: Dictation preparation provides progress without crowding the toolbar
     Then the dictation footer shows loading progress and preserves its draft when cancelled
+
+  Scenario: New local AI profiles reuse the shared model controls
+    Then the LFM3 and Phonon profiles expose consistent settings and dictation choices

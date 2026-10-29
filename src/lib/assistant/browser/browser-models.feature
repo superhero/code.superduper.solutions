@@ -57,7 +57,7 @@ Feature: Pinned installable browser inference with the existing Pi agent
       | iy-browser-shared-wllama-ornith-q8 |
 
   Scenario: Verified language vision and native decision profiles remain separate and fully pinned
-    Then the expanded catalog exposes eight LLMs one LFM vision tool and nine native decision profiles
+    Then the expanded catalog exposes nine LLMs three vision profiles and ten native decision profiles
   Scenario: New language engines preserve their qualified settings and text-only loading
     Then Gemma rejects unsupported controls and MiniCPM loads without a vision projector
   Scenario: Offline vision tokenizers probe the installed model commit
@@ -77,3 +77,9 @@ Feature: Pinned installable browser inference with the existing Pi agent
     Then a blocked native decision stops at its scoring deadline and releases its worker
   Scenario: GPU memory failures explain recovery and preserve their native cause
     Then native GPU exhaustion suggests freeing memory without hiding its allocator diagnostic
+
+  Scenario: LFM3 preserves its isolated native runtime and separates trained reasoning
+    Then LFM3 retains its accepted pins and keeps reasoning out of visible answers
+
+  Scenario: The image tool accepts only qualified pinned LFM3 image profiles
+    Then the image tool accepts both LFM3 image pins and rejects an altered revision

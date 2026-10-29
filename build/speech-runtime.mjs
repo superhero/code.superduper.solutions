@@ -33,6 +33,14 @@ async function generate() {
     if (JSON.parse(await readFile(`node_modules/${name}/package.json`)).version !== version)
       throw new Error(`Speech runtime requires ${name} ${version}.`);
   }
+  const phononRoot = 'src/public/speech/phonon/';
+  const receipt = JSON.parse(await readFile(phononRoot+'build-receipt.json'));
+  for (const [name, hash] of Object.entries(receipt.files)) {
+    if (digest(await readFile(phononRoot+name)) !== hash) throw Error('Phonon runtime pin differs: '+name);
+  }
+  for (const [name, hash] of Object.entries(receipt.inputs)) {
+    if (digest(await readFile('build/phonon/'+name)) !== hash) throw Error('Phonon build recipe differs: '+name);
+  }
   const assets = new Map(), catalog = [];
   const notices = await Promise.all(['LICENSE', 'LICENSE-ADDITIONAL-TERMS'].map(async name => ({ name, version: 'application', text: await readFile(name, 'utf8') })));
   notices.push({ name: 'ONNX Runtime third-party notices', version: '1.30.0', text: await readFile('build/licenses/onnxruntime-1.30.0-ThirdPartyNotices.txt', 'utf8') });
@@ -53,6 +61,14 @@ async function generate() {
       publish(id, Buffer.from(chunks[0].code), 'js');
     } finally { await bundle.close(); }
   }
+  // Only owned bridge modules are bundled here; native MIT payloads retain their pinned bytes and notices separately.
+  const phononBundle = await rolldown({input:'src/lib/assistant/speech/runtime/phonon-worker.js',platform:'browser'});
+  try {
+    const {output} = await phononBundle.generate({format:'es',minify:true,codeSplitting:false});
+    const chunks = output.filter(file=>file.type==='chunk');
+    if (chunks.length!==1 || chunks[0].imports.length) throw Error('Phonon bridge must be standalone.');
+    publish('phonon-worker',Buffer.from(chunks[0].code),'js');
+  } finally {await phononBundle.close();}
   publish('capture-worklet', await readFile('src/lib/assistant/speech/runtime/capture-worklet.js'), 'js');
   // ORT 1.30 exposes WebGPU initialization in its matching Asyncify pair.
   for (const type of ['mjs', 'wasm']) publish(`ort-${type}`, await readFile(`node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.${type}`), type);

@@ -4,3 +4,4 @@
 src/public/browser-models/** -text
 src/public/speech/** -text
 build/browser-models/native/*/*.patch -text
+src/public/speech/phonon/** -text

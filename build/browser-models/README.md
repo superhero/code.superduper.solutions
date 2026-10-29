@@ -40,3 +40,16 @@ Reference owners are llm-sds-01's
 `inference/evaluations/browser-decision-context/runtime/native/`.
 Use the recorded Wllama/llama.cpp/Emscripten/Dawn revisions and container digest;
 review those records before rebuilding. No model weights belong in this folder.
+
+LFM3 1.7B uses its isolated wllama-lfm3 directory and the exact native/lfm3
+recipe inputs from the reference trial. The original chat and decision binaries
+remain separate. build/browser-models.mjs verifies the new executable outputs
+and source revision; model-runtimes.mjs publishes its installed-artifact pins.
+
+Phonon uses the separate build/phonon inputs and src/public/speech/phonon
+receipt/binaries. These copied bridge/kernel inputs retain their exact reference
+bytes for reproducibility. The speech build verifies each input/output digest.
+The owned cache loader adapts the generated module's single relative Wasm URL to
+the installed Blob URL; native binaries and packed model weights remain intact.
+The bridge is bundled independently from the pinned native module. Its runtime
+MIT notices and model CC BY 4.0 notice travel with the optional installation.

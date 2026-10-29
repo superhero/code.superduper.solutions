@@ -5,8 +5,8 @@ import {compatibilityFor as nativeCompatibility} from './reference/compatibility
 export {probeBrowser} from './reference/compatibility.js';
 export function compatibilityFor(facts, profile, mode = 'auto') {
   if (!facts) return {ready: false, rows: [], summary: 'Run the browser capability checks.'};
-  if (profile.category !== 'decision' && profile.category !== 'vision' && profile.engine !== 'litert-lm') return nativeCompatibility(facts,profile,mode);
-  const rows = [], native = profile.category === 'decision' && profile.engine !== 'strands-onnx';
+  if (profile.category !== 'decision' && profile.category !== 'vision' && profile.engine !== 'litert-lm' && profile.engine !== 'lfm3-onnx') return nativeCompatibility(facts,profile,mode);
+  const rows = [], native = profile.category === 'decision' && !['strands-onnx','lfm3-onnx'].includes(profile.engine);
   const cpu = profile.runtime_id === 'strands-cpu', needsGPU = !cpu;
   const add = (id,title,pass,required,detail) => rows.push({id,title,state:pass ? 'pass' : required ? 'fail' : 'info',required,detail});
   add('secure','Secure page',facts.secure,true,'A secure browser context is required.');

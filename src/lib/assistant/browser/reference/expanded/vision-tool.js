@@ -38,8 +38,10 @@ function validateImage(record) {
 /** Pi tool that swaps model allocations while its caller keeps the agent alive. */
 export function createVisionTool({profile, getImage, suspendText, resumeText, onState = () => {}, loadVision = () => { throw Error('Install the vision model first.'); },
   timeouts = {}}) {
-  if (profile?.model !== MODEL || profile.revision !== REVISION || profile.engine !== 'transformers' || profile.kind !== 'vision' ||
-      profile.settings?.preprocessing !== 'letterbox-white-square-v1' || profile.settings?.text_only === true) throw new Error('inspect_image requires the verified LFM2.5-VL 1.6B letterbox profile.');
+  const lfm3Revision = {'LiquidAI/LFM3-VL-2B-ONNX':'51ee393407d30ca84fb9b37bef4d0459f6803b2b', 'LiquidAI/LFM3-Omni-2B-ONNX':'7d6bd3fd59a0622e5ce7fefc141145a8bba1435a'}[profile?.model];
+  const lfm3 = lfm3Revision && profile.revision === lfm3Revision && profile.engine === 'lfm3-onnx' && profile.category === 'vision' && profile.input_mode === 'vision';
+  const legacy = profile?.model === MODEL && profile.revision === REVISION && profile.engine === 'transformers' && profile.kind === 'vision' && profile.settings?.preprocessing === 'letterbox-white-square-v1' && profile.settings?.text_only !== true;
+  if (!legacy && !lfm3) throw new Error('inspect_image requires the verified LFM2.5-VL 1.6B letterbox profile or a pinned LFM3 image profile.');
   for (const [name, callback] of Object.entries({getImage, suspendText, resumeText, loadVision})) if (typeof callback !== 'function') throw new Error(`${name} must be a function.`);
   const limits = {validate: 5000, suspend: 30000, load: Math.min(profile.settings.load_timeout_ms || 1200000, 1200000),
     generate: Math.min(profile.settings.response_timeout_ms || 180000, 180000), release: 10000, resume: 1200000, ...timeouts};

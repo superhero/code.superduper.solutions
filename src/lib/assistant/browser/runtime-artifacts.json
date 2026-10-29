@@ -2,10 +2,10 @@
   "litert": [
     {
       "id": "worker",
-      "bytes": 39037,
-      "sha256": "1ce27b1485780249324136fe856d820299312ccd1471715595af84ded7920359",
+      "bytes": 39085,
+      "sha256": "a62c33fab8b8c57f0019e1c6abd67fe32453a5bd2e3d05057e0fa8ce7c83fa41",
       "kind": "runtime",
-      "url": "browser-models/runtimes/litert/worker-1ce27b148578.js"
+      "url": "browser-models/runtimes/litert/worker-a62c33fab8b8.js"
     },
     {
       "id": "notices",
@@ -30,11 +30,13 @@
       "parts": [
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_internal.wasm-83e8af6e4dee.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "e60da312c67efb813ca1038fd719eddd23e0979ed3558965a22052e1657ea260"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_internal.wasm-83e8af6e4dee.wasm.part-002",
-          "bytes": 5135492
+          "bytes": 5135492,
+          "sha256": "7bdf643a896c7d4077cd3c30897d7845a9df98795153890d3a73b442c65a5b22"
         }
       ]
     },
@@ -54,15 +56,18 @@
       "parts": [
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_asyncify_internal.wasm-91b1e77b1713.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "50ecbb43c164b8842ae8043b299b08b1d5e251d56eb1786b37a3850827352d63"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_asyncify_internal.wasm-91b1e77b1713.wasm.part-002",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "93fe0ca1fd0e2a10dfa365e470f4ae04f40d87dae427db29b6e52d150c77ea77"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_asyncify_internal.wasm-91b1e77b1713.wasm.part-003",
-          "bytes": 863362
+          "bytes": 863362,
+          "sha256": "fdf39b9e308e46ce12f0bf46daa3cdee2cdbd4025b0cbc832aa32a799ecd0e20"
         }
       ]
     },
@@ -82,11 +87,13 @@
       "parts": [
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_compat_internal.wasm-1f82e9f8fd60.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "f993560c6076dd6b379c11328c13eec03d57fa4f65462b7e3a4e30ba6231e03f"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_compat_internal.wasm-1f82e9f8fd60.wasm.part-002",
-          "bytes": 4953058
+          "bytes": 4953058,
+          "sha256": "b1fff8cf8358c38273e5d2f6349ee81cfc4b34af5892f9a8c2993ac05f0d543a"
         }
       ]
     },
@@ -106,15 +113,18 @@
       "parts": [
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_compat_asyncify_internal.wasm-6eaace6df0ed.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "55c2d1fa711cb8bd92e96eff015555d1da69d7d75a004038604788ef43abd5bf"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_compat_asyncify_internal.wasm-6eaace6df0ed.wasm.part-002",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "1aeef9444b57de97fd561b104ff16898135e5b0d914f583cf8aaa528090e4fcc"
         },
         {
           "url": "browser-models/runtimes/litert/litertlm_wasm_compat_asyncify_internal.wasm-6eaace6df0ed.wasm.part-003",
-          "bytes": 680656
+          "bytes": 680656,
+          "sha256": "6998713e3f34ff15a0ab84ef11992ac0f8cf8e587b47e742c2a8a9de7877d58d"
         }
       ]
     }
@@ -122,10 +132,10 @@
   "vision": [
     {
       "id": "worker",
-      "bytes": 601451,
-      "sha256": "da2de78c45ba9e2e4b94108511f4956421f477d22ec042ef68b253d19df50869",
+      "bytes": 601499,
+      "sha256": "7afcdcd8d7e8f6e568c4596f9bdeb64e309a3bce1b7eed1b68e76fed8cddece4",
       "kind": "runtime",
-      "url": "browser-models/runtimes/vision/worker-da2de78c45ba.js"
+      "url": "browser-models/runtimes/vision/worker-7afcdcd8d7e8.js"
     },
     {
       "id": "notices",
@@ -150,11 +160,13 @@
       "parts": [
         {
           "url": "browser-models/runtimes/vision/ort-wasm-49871f5a4409.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "921ff93051bf01bf70bf9850aa7da194d44b542b4908a441d38e119c0597e95f"
         },
         {
           "url": "browser-models/runtimes/vision/ort-wasm-49871f5a4409.wasm.part-002",
-          "bytes": 10084561
+          "bytes": 10084561,
+          "sha256": "5c013f14a05518307ecd13a8df4d9c26e45f6f05d28344a64ad2f16fc0ed636b"
         }
       ]
     }
@@ -162,10 +174,10 @@
   "strands-cpu": [
     {
       "id": "worker",
-      "bytes": 120638,
-      "sha256": "036f9fac77f32e752333bbfacabc5e9fac970dafa2f1ccdee7c521b90e344219",
+      "bytes": 120686,
+      "sha256": "47584ff47c31ec5d7d069969b5e354a322049aea1d7fdb2c5723e2e9594e56c9",
       "kind": "runtime",
-      "url": "browser-models/runtimes/strands-cpu/worker-036f9fac77f3.js"
+      "url": "browser-models/runtimes/strands-cpu/worker-47584ff47c31.js"
     },
     {
       "id": "notices",
@@ -190,11 +202,13 @@
       "parts": [
         {
           "url": "browser-models/runtimes/strands-cpu/ort-wasm-39f9f0894d47.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "9f3196f1ef3506d7cabb9558f2fac779571b225007b744e766d8e63228750d3a"
         },
         {
           "url": "browser-models/runtimes/strands-cpu/ort-wasm-39f9f0894d47.wasm.part-002",
-          "bytes": 10004698
+          "bytes": 10004698,
+          "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
         }
       ]
     }
@@ -202,10 +216,10 @@
   "strands-gpu": [
     {
       "id": "worker",
-      "bytes": 122382,
-      "sha256": "9908121de172f97323bcae7db15a649435bfc7b68f20ac5867094f98df077b28",
+      "bytes": 122430,
+      "sha256": "b867d2e6fe1078bc5dedf66b0e2cda0658a6f99da92abac32d8fb05b7be8d085",
       "kind": "runtime",
-      "url": "browser-models/runtimes/strands-gpu/worker-9908121de172.js"
+      "url": "browser-models/runtimes/strands-gpu/worker-b867d2e6fe10.js"
     },
     {
       "id": "notices",
@@ -230,11 +244,55 @@
       "parts": [
         {
           "url": "browser-models/runtimes/strands-gpu/ort-wasm-39f9f0894d47.wasm.part-001",
-          "bytes": 16777216
+          "bytes": 16777216,
+          "sha256": "9f3196f1ef3506d7cabb9558f2fac779571b225007b744e766d8e63228750d3a"
         },
         {
           "url": "browser-models/runtimes/strands-gpu/ort-wasm-39f9f0894d47.wasm.part-002",
-          "bytes": 10004698
+          "bytes": 10004698,
+          "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
+        }
+      ]
+    }
+  ],
+  "lfm3": [
+    {
+      "id": "worker",
+      "bytes": 625248,
+      "sha256": "5122319cc408462280433d5518cb1d648536917ec2f1135f57013f6bed8919c2",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/lfm3/worker-5122319cc408.js"
+    },
+    {
+      "id": "notices",
+      "bytes": 399571,
+      "sha256": "439b24790a6e2fdcad8a0a6f7787aee83dd1804e1396e136bcf8f0bca9201ad0",
+      "kind": "notice",
+      "url": "browser-models/runtimes/lfm3/notices-439b24790a6e.json"
+    },
+    {
+      "id": "ort-mjs",
+      "bytes": 53057,
+      "sha256": "3d1c85995364bb643302fc6fd877a0c3ba5ae72401815e0f24828a53d9191e28",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/lfm3/ort-mjs-3d1c85995364.mjs"
+    },
+    {
+      "id": "ort-wasm",
+      "bytes": 26781914,
+      "sha256": "39f9f0894d478800487ed9f7dbe92618498db320cf55c8e3d89adff8dce658da",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/lfm3/ort-wasm-39f9f0894d47.wasm.part-001",
+      "parts": [
+        {
+          "url": "browser-models/runtimes/lfm3/ort-wasm-39f9f0894d47.wasm.part-001",
+          "bytes": 16777216,
+          "sha256": "9f3196f1ef3506d7cabb9558f2fac779571b225007b744e766d8e63228750d3a"
+        },
+        {
+          "url": "browser-models/runtimes/lfm3/ort-wasm-39f9f0894d47.wasm.part-002",
+          "bytes": 10004698,
+          "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
         }
       ]
     }
@@ -405,6 +463,29 @@
       "url": "browser-models/notices/pplx-publisher-NOTICE",
       "bytes": 132,
       "sha256": "381fb81e814716a5ef8e5eae26a08607d052cf12f019dba9da9e81298ef5cb75",
+      "kind": "notice"
+    }
+  ],
+  "wllama-lfm3": [
+    {
+      "id": "wllama-js",
+      "url": "browser-models/wllama-lfm3/index.js",
+      "bytes": 386851,
+      "sha256": "dd3f61e58bb87a016f40d0f0b0bcbe3c5238d472267df15108c882c36e8ae86d",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-wasm",
+      "url": "browser-models/wllama-lfm3/wllama.wasm",
+      "bytes": 9454987,
+      "sha256": "f06a9a262f717409dfbcc44e2331d10053cf644ab603750cfb85df796465d0bf",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-license",
+      "url": "browser-models/wllama-lfm3/LICENCE",
+      "bytes": 1071,
+      "sha256": "5866e3bd7e3cbd3f7c8bea6efd8a1e7fa7cc8de68c30f428aff7c6584a0fb720",
       "kind": "notice"
     }
   ]

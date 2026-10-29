@@ -73,3 +73,30 @@ Then('speech and language model errors use the same divided alert layout',async 
   const styles=await Promise.all([language,speech].map(row=>row.getByRole('alert').evaluate(node=>{const s=getComputedStyle(node);return{background:s.backgroundColor,color:s.color,padding:s.padding,gap:s.gap,divider:s.borderTopWidth,icon:node.querySelector('.material-symbols-rounded').textContent};})));
   expect(styles[1]).toEqual(styles[0]);expect(styles[0].divider).toBe('1px');expect(styles[0].icon).toBe('error');await mkdir(this.artifactDirectory,{recursive:true});await speech.screenshot({path:`${this.artifactDirectory}/speech-error.png`});
 });
+
+Then('the LFM3 and Phonon profiles expose consistent settings and dictation choices',async function(){
+  const page=this.page;await page.setViewportSize({width:620,height:1000});await selectPage(page,'Settings','AI');
+  for(const id of ['le-browser-lfm3-text','lg-browser-lfm3-vl','li-browser-lfm3-omni','lk-browser-lfm3-d1-omni']){
+    const row=page.locator('[data-model-id="'+id+'"]');
+    await expect(row).toBeVisible();expect(await row.evaluate(node=>node.scrollWidth<=node.clientWidth+1)).toBe(true);
+    await expect(row.getByRole('button',{name:/^Install /})).toBeVisible();
+  }
+  for(const id of ['lfm3-audio','lfm3-omni','phonon']){
+    const row=page.locator('[data-speech-mode="'+id+'"]');
+    await expect(row).toBeVisible();expect(await row.evaluate(node=>node.scrollWidth<=node.clientWidth+1)).toBe(true);
+    await row.getByRole('button',{name:'Detailed info',exact:true}).click();
+    await expect(row.getByRole('region',{name:'Detailed info',exact:true})).toContainText(/30 seconds/);
+  }
+  const row=page.locator('[data-model-id="le-browser-lfm3-text"]');
+  await row.getByRole('button',{name:'Model settings',exact:true}).click();
+  await row.getByRole('button',{name:'Image inspection model',exact:true}).click();
+  const menu=page.getByRole('menu',{name:'Image inspection model',exact:true});
+  await expect(menu.locator('[data-value]')).toHaveCount(3);
+  await menu.locator('[data-value="li-browser-lfm3-omni"]').click();
+  await expect(row.getByRole('button',{name:'Image inspection model',exact:true})).toContainText('LFM3-Omni');
+  await mkdir(this.artifactDirectory,{recursive:true});await row.screenshot({path:this.artifactDirectory+'/lfm3-settings.png'});
+  await page.getByRole('button',{name:'AI chat',exact:true}).click();
+  await page.getByRole('button',{name:'Speech model',exact:true}).click();
+  const speechMenu=page.getByRole('menu',{name:'Speech model',exact:true});
+  for(const id of ['lfm3-audio','lfm3-omni','phonon'])await expect(speechMenu.locator('[data-value="'+id+'"]')).toBeVisible();
+});

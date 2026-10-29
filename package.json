@@ -27,7 +27,8 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json",
     "test:speech": "node build/test-speech.mjs",
     "test:speech:live": "SPEECH_LIVE=1 node build/test-speech.mjs",
-    "models:generate": "node build/model-runtimes.mjs --generate"
+    "models:generate": "node build/model-runtimes.mjs --generate",
+    "test:models": "vitest run --config vitest.models.config.mjs"
   },
   "devDependencies": {
     "@cucumber/cucumber": "13.3.0",

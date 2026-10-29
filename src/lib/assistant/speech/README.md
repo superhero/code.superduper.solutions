@@ -138,3 +138,21 @@ The original stereo/44.1 kHz WAV passed through normal 16 kHz capture conversion
 Offline ORT 1.30 uses its matching Asyncify factory/Wasm pair; the legacy JSEP
 factory lacks WebGPU initialization. FP16 remains experimental; one fixture
 does not establish broad transcription quality or universal startup reliability.
+
+## Additional recognizers
+
+LFM3-Audio 2B and LFM3-Omni 2B use their pinned ONNX WebGPU assets and explicit
+provider GPUDevice. They transcribe after stopping, up to 30 seconds, rather than
+using the Parakeet streaming feature pipeline.
+
+Phonon 2.5 uses parakeet.cpp CPU Wasm with the reference's packed SIMD kernel.
+The public runtime-project GGUF is 241,719,776 bytes; its SHA256 and revision
+are in phonon-artifacts.json. The reference's locally prepared 174 MB gzip has
+no published download URL, so this installer uses the identical uncompressed
+packed payload. It does not change the weights. Native binaries, MIT notices,
+the Fermion/NVIDIA CC BY 4.0 notice, build receipt and exact bridge/kernel/build
+inputs are retained. About 786 MiB allocated Wasm memory was observed in the
+reference, plus browser overhead; this is not a peak memory or mobile claim.
+Phonon transcribes after stopping (at most 30 seconds). Terminating its worker
+cancels synchronous decoding and releases the worker pool. Recordings remain
+transient. Loading another language model waits for batch dictation to finish.

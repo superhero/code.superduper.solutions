@@ -1724,5 +1724,745 @@
         "kind": "data"
       }
     ]
+  },
+  {
+    "id": "le-browser-lfm3-text",
+    "title": "LFM3 · 1.7B · Q4",
+    "kind": "text",
+    "engine": "wllama",
+    "family": "lfm3",
+    "model": "LiquidAI/LFM3-1.7B-GGUF",
+    "revision": "bad5729bba61d076fff20d2548e62526665af215",
+    "file": "LFM3-1.7B-QAD-Q4_0.gguf",
+    "weight_bytes": 1049615680,
+    "weight_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+    "whole_file_checksum_verified": false,
+    "format": "Publisher QAD Q4_0 GGUF; mixed integer quantization; no local conversion.",
+    "precision": "Official QAD Q4_0",
+    "source_authorization": "User requested compact official LFM3 browser trials.",
+    "runtime_source": {
+      "package": "@wllama/wllama",
+      "version": "3.12.0-source",
+      "source_revision": "3bb2a46f0dab0b924e8cd992b85e8881c3d3a859",
+      "llama_cpp": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+      "original_llama_cpp": "5aeac37a35b44fde4bdffaec9159f2fcb253b622",
+      "license": "MIT",
+      "change": "Official upstream LFM3 support PR31252; no weight conversion.",
+      "build": "../../evaluations/lfm3-browser/text/native/build.sh",
+      "browser_engine": "./ornith-lfm3/engine.mjs"
+    },
+    "architecture": "lfm3",
+    "model_layers": 24,
+    "gguf_block_count": 24,
+    "settings": {
+      "context_tokens": 4096,
+      "max_new_tokens": 256,
+      "smoke_max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "thinking": false,
+      "enable_thinking": false,
+      "temperature": 0,
+      "sampling_mode": "greedy",
+      "top_k": 50,
+      "top_p": 0.8,
+      "min_p": 0,
+      "seed": 42,
+      "prefix_cache": false,
+      "model_disk_cache": false,
+      "concurrency": 1,
+      "response_timeout_ms": 180000,
+      "chat_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000,
+      "check_timeout_ms": 180000,
+      "max_model_turns": 6,
+      "max_tool_calls": 8,
+      "execution_mode": "auto",
+      "nvidia_f16_override": true,
+      "gpu_layers": 99,
+      "cpu_threads": 4,
+      "batch_tokens": 128,
+      "micro_batch_tokens": 64,
+      "flash_attention": true,
+      "cache_type_k": "f16",
+      "cache_type_v": "f16",
+      "range_chunk_bytes": 8388608,
+      "range_lru_bytes_per_file": 67108864,
+      "range_parallel": 2,
+      "mtp": false,
+      "gpu_fallback_layers": 8,
+      "text_only": true,
+      "pi_tools_enabled": true,
+      "pi_check_timeout_ms": 180000
+    },
+    "projector": null,
+    "input": [
+      "text"
+    ],
+    "license": {
+      "id": "lfm1.0",
+      "publisher_repository": "LiquidAI/LFM3-1.7B-GGUF"
+    },
+    "status": "working",
+    "execution": "Visiting browser; pinned source Wllama requests all supported GPU layers first, with explicit memory-allocation fallback to hybrid/CPU. Static Swarm and Playwright pinned sds-01. Actual per-node placement unmeasured; JS sampling/CPU work allowed. No phone qualification.",
+    "publisher_sampling": {
+      "general": {
+        "temperature": 0.1,
+        "top_k": 50,
+        "repetition_penalty": 1.1
+      },
+      "smoke_difference": "Greedy temperature 0 for comparability; top_k=50, top_p=0.8, min_p=0, seed=42. Shared sampling helper does not send a repetition-penalty override; runtime default is not independently measured."
+    },
+    "qualified_pi_controller": true,
+    "measured_run_id": "lfm3-assistant-1793249230123839213",
+    "finding_summary": "Passed actual combined-page READY, hidden-code Pi read/result, ordered skill-before-note exact report, image rejection and unload. Five-entry LFM3 landing UI/link also passed. Native reasoning is separated; greedy decoding effective temperature0.",
+    "thinking_interpretation": "Thinking off is requested at load and per-generation; source-level kwargs forwarding verified. Model emitted reasoning-like prefixes despite this request. LFM3 transport separates that prefix from answer text; clean display does not prove nonreasoning computation.",
+    "category": "llm",
+    "runtime_id": "wllama-lfm3",
+    "parameters": "1.7B",
+    "quantization": "QAD Q4_0",
+    "limitations": "Verified desktop text, native Pi tools and progressive skills. Reasoning is separated from the answer; 4,096-token tested context. Mobile unverified.",
+    "evidence": {
+      "attempt": "le-browser-lfm3-text",
+      "run_id": "lfm3-assistant-1793249230123839213",
+      "scope": "Passed actual combined-page READY, hidden-code Pi read/result, ordered skill-before-note exact report, image rejection and unload. Five-entry LFM3 landing UI/link also passed. Native reasoning is separated; greedy decoding effective temperature0."
+    },
+    "artifacts": [
+      {
+        "id": "LFM3-1.7B-QAD-Q4_0.gguf",
+        "url": "https://huggingface.co/LiquidAI/LFM3-1.7B-GGUF/resolve/bad5729bba61d076fff20d2548e62526665af215/LFM3-1.7B-QAD-Q4_0.gguf",
+        "bytes": 1049615680,
+        "sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+        "bytes": 10574,
+        "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+        "kind": "notice"
+      }
+    ],
+    "vision_tool": "lg-browser-lfm3-vl"
+  },
+  {
+    "id": "lh-browser-lfm3-audio",
+    "title": "LFM3-Audio · 2B",
+    "engine": "lfm3-onnx",
+    "family": "lfm3-onnx",
+    "model": "LiquidAI/LFM3-Audio-2B-ONNX",
+    "revision": "df2b3ed2ea10824030b3ff29ee46705754e72b99",
+    "file": "onnx/decoder_q4f16.onnx",
+    "weight_bytes": 1924176480,
+    "weight_sha256": "c68ddaf64339aa2bc6c841b0ec0da3be89027849991cbd7e546d3d3156094921",
+    "projector": null,
+    "category": "speech",
+    "runtime_id": "lfm3",
+    "input_mode": "audio",
+    "parameters": "2B",
+    "quantization": "Mixed Q4F16",
+    "artifacts": [
+      {
+        "id": "onnx/audio_encoder.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/onnx/audio_encoder.onnx",
+        "bytes": 162507,
+        "sha256": "c68ddaf64339aa2bc6c841b0ec0da3be89027849991cbd7e546d3d3156094921",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/audio_encoder.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/onnx/audio_encoder.onnx_data",
+        "bytes": 510351360,
+        "sha256": "d5fed72d461d7c052f2e65c79421f955fe02c55b220caeba69b40201cffb0358",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/onnx/decoder_q4f16.onnx",
+        "bytes": 274325,
+        "sha256": "5f207e9d27d0f5ae6ee1a53609e75cca1740ce72df0702496bd4f1b2f20d2e38",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/onnx/decoder_q4f16.onnx_data",
+        "bytes": 1413388288,
+        "sha256": "b296939c604313a69a14829839c7542875792c6b30054986ec1c633dc16ae555",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+        "bytes": 10574,
+        "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+        "kind": "notice"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/chat_template.jinja",
+        "bytes": 9328,
+        "sha256": "8769fc2ac03684665a009b1908fee359e418329019dd83dbc57152167e448099",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/config.json",
+        "bytes": 6243,
+        "sha256": "1eb2a8349a1ec9eda2ed8e8bb1a8788007ae2ae9baa38a7d959743c5379d30d8",
+        "kind": "data"
+      },
+      {
+        "id": "generation_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/generation_config.json",
+        "bytes": 382,
+        "sha256": "fa4a9e00378a7c93d199787e6a219bdf48d4bbe85f563b6450c461de5f394853",
+        "kind": "data"
+      },
+      {
+        "id": "preprocessor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/preprocessor_config.json",
+        "bytes": 466,
+        "sha256": "6c991f650c2ec718ffe752c78ac2af66b2085b05b25bff3b8fef57310cc100ee",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/processor_config.json",
+        "bytes": 773,
+        "sha256": "c5cbf344413ace2f8a8d3518f7eaf1a64c9bea9767999a6ad8266e8d7dca5666",
+        "kind": "data"
+      },
+      {
+        "id": "special_tokens_map.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/special_tokens_map.json",
+        "bytes": 92,
+        "sha256": "7946f864cbfb62a1b041bda937244210a1a87f4a6cab3a48b791131b2cd57f88",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/tokenizer.json",
+        "bytes": 17908634,
+        "sha256": "41927bd314d17d7d7fadb44e10cd0919f7b71528d7741596d8cbd15c6945ec44",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Audio-2B-ONNX/resolve/df2b3ed2ea10824030b3ff29ee46705754e72b99/tokenizer_config.json",
+        "bytes": 674,
+        "sha256": "89ecfb695110334b5f7883aeca8e6b9a2e53b71701adf16db8b700c7f857ef16",
+        "kind": "data"
+      }
+    ],
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000
+    },
+    "runtime_source": {
+      "package": "onnxruntime-web",
+      "version": "1.30.0",
+      "device": "explicit provider GPUDevice"
+    },
+    "limitations": "One synthetic image / public speech fixture. Speech output, video, Pi tools/skills and phones unverified.",
+    "evidence": {
+      "attempt": "lh-browser-lfm3-audio",
+      "run_id": "lfm3-multimodal-browser-1793248486897724113",
+      "scope": "Speech input → text"
+    }
+  },
+  {
+    "id": "li-browser-lfm3-omni",
+    "title": "LFM3-Omni · 2B",
+    "engine": "lfm3-onnx",
+    "family": "lfm3-onnx",
+    "model": "LiquidAI/LFM3-Omni-2B-ONNX",
+    "revision": "7d6bd3fd59a0622e5ce7fefc141145a8bba1435a",
+    "file": "onnx/decoder_q4f16.onnx",
+    "weight_bytes": 2120460081,
+    "weight_sha256": "abde0cdde89473120a23a05c38ec3f2a2dc7bf27b48166d37919eabff7326a3e",
+    "projector": null,
+    "category": "vision",
+    "runtime_id": "lfm3",
+    "input_mode": "vision",
+    "parameters": "2B",
+    "quantization": "Mixed Q4F16",
+    "artifacts": [
+      {
+        "id": "onnx/audio_encoder.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/audio_encoder.onnx",
+        "bytes": 162507,
+        "sha256": "abde0cdde89473120a23a05c38ec3f2a2dc7bf27b48166d37919eabff7326a3e",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/audio_encoder.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/audio_encoder.onnx_data",
+        "bytes": 510351360,
+        "sha256": "da44a01a0c788c79a64f431848dd90443211916257447ac4dfb5a2d3d64cd241",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/decoder_q4f16.onnx",
+        "bytes": 278229,
+        "sha256": "3cc0daf4b27ce50369b5f8f8622f90f911f36977d19dd25adf76720faf405550",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/decoder_q4f16.onnx_data",
+        "bytes": 1413388288,
+        "sha256": "e661c08241056ca0a62e84f8437274100a54c3f864ddd8a5c5f755c1f5b8167c",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/vision_encoder_q8.onnx",
+        "bytes": 126353,
+        "sha256": "5447beba4d5c66315fc561372d71f7d56c6a201c966639c8f029e53f6c0dd483",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/vision_encoder_q8.onnx_data",
+        "bytes": 196153344,
+        "sha256": "0ce96611c5c60e6285dfebc915ed261199fff8a123668bee8954b8e1f4ca6e8b",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+        "bytes": 10574,
+        "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+        "kind": "notice"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/chat_template.jinja",
+        "bytes": 13513,
+        "sha256": "ea74cc1d14319ed436dc0f37632893004d436913113e7605267f2b01694d65e4",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/config.json",
+        "bytes": 5912,
+        "sha256": "17e3792551ef56b37e85bbd1e6e968f70dc5b4b14c96f1339d0be85e0ba46875",
+        "kind": "data"
+      },
+      {
+        "id": "generation_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/generation_config.json",
+        "bytes": 392,
+        "sha256": "5f069cac2df137d9ac81bdd7aee88d48052a3897f9761cc9ba2f357f93405b85",
+        "kind": "data"
+      },
+      {
+        "id": "preprocessor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/preprocessor_config.json",
+        "bytes": 536,
+        "sha256": "b374b9eee801720cbfda748b6461390f0c39ca7365d3dfde18ea6b5c18f330e3",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/processor_config.json",
+        "bytes": 2374,
+        "sha256": "dd756829f85a10d343c4488c7d3479d3dc782e6f35721b7dae2fb588f781fc4a",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/tokenizer.json",
+        "bytes": 17908634,
+        "sha256": "41927bd314d17d7d7fadb44e10cd0919f7b71528d7741596d8cbd15c6945ec44",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/tokenizer_config.json",
+        "bytes": 674,
+        "sha256": "ee4860abad5b84284f816d2812fc23a7477ce827ed6b4708af9a02c68ed00c7c",
+        "kind": "data"
+      },
+      {
+        "id": "video_preprocessor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/video_preprocessor_config.json",
+        "bytes": 706,
+        "sha256": "1ed75befc55ce0eda07fdcd7ad02c08605a973fcb1aebfbd0b86bb5221ae7c97",
+        "kind": "data"
+      }
+    ],
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000
+    },
+    "runtime_source": {
+      "package": "onnxruntime-web",
+      "version": "1.30.0",
+      "device": "explicit provider GPUDevice"
+    },
+    "limitations": "One synthetic image / public speech fixture. Speech output, video, Pi tools/skills and phones unverified.",
+    "evidence": {
+      "attempt": "li-browser-lfm3-omni",
+      "run_id": "lfm3-multimodal-browser-1793248486897724113",
+      "scope": "Image description, Speech input → text"
+    }
+  },
+  {
+    "id": "li-browser-lfm3-omni-audio",
+    "title": "LFM3-Omni · 2B",
+    "engine": "lfm3-onnx",
+    "family": "lfm3-onnx",
+    "model": "LiquidAI/LFM3-Omni-2B-ONNX",
+    "revision": "7d6bd3fd59a0622e5ce7fefc141145a8bba1435a",
+    "file": "onnx/decoder_q4f16.onnx",
+    "weight_bytes": 2120460081,
+    "weight_sha256": "abde0cdde89473120a23a05c38ec3f2a2dc7bf27b48166d37919eabff7326a3e",
+    "projector": null,
+    "category": "speech",
+    "runtime_id": "lfm3",
+    "input_mode": "audio",
+    "parameters": "2B",
+    "quantization": "Mixed Q4F16",
+    "artifacts": [
+      {
+        "id": "onnx/audio_encoder.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/audio_encoder.onnx",
+        "bytes": 162507,
+        "sha256": "abde0cdde89473120a23a05c38ec3f2a2dc7bf27b48166d37919eabff7326a3e",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/audio_encoder.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/audio_encoder.onnx_data",
+        "bytes": 510351360,
+        "sha256": "da44a01a0c788c79a64f431848dd90443211916257447ac4dfb5a2d3d64cd241",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/decoder_q4f16.onnx",
+        "bytes": 278229,
+        "sha256": "3cc0daf4b27ce50369b5f8f8622f90f911f36977d19dd25adf76720faf405550",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/decoder_q4f16.onnx_data",
+        "bytes": 1413388288,
+        "sha256": "e661c08241056ca0a62e84f8437274100a54c3f864ddd8a5c5f755c1f5b8167c",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/vision_encoder_q8.onnx",
+        "bytes": 126353,
+        "sha256": "5447beba4d5c66315fc561372d71f7d56c6a201c966639c8f029e53f6c0dd483",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/onnx/vision_encoder_q8.onnx_data",
+        "bytes": 196153344,
+        "sha256": "0ce96611c5c60e6285dfebc915ed261199fff8a123668bee8954b8e1f4ca6e8b",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+        "bytes": 10574,
+        "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+        "kind": "notice"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/chat_template.jinja",
+        "bytes": 13513,
+        "sha256": "ea74cc1d14319ed436dc0f37632893004d436913113e7605267f2b01694d65e4",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/config.json",
+        "bytes": 5912,
+        "sha256": "17e3792551ef56b37e85bbd1e6e968f70dc5b4b14c96f1339d0be85e0ba46875",
+        "kind": "data"
+      },
+      {
+        "id": "generation_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/generation_config.json",
+        "bytes": 392,
+        "sha256": "5f069cac2df137d9ac81bdd7aee88d48052a3897f9761cc9ba2f357f93405b85",
+        "kind": "data"
+      },
+      {
+        "id": "preprocessor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/preprocessor_config.json",
+        "bytes": 536,
+        "sha256": "b374b9eee801720cbfda748b6461390f0c39ca7365d3dfde18ea6b5c18f330e3",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/processor_config.json",
+        "bytes": 2374,
+        "sha256": "dd756829f85a10d343c4488c7d3479d3dc782e6f35721b7dae2fb588f781fc4a",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/tokenizer.json",
+        "bytes": 17908634,
+        "sha256": "41927bd314d17d7d7fadb44e10cd0919f7b71528d7741596d8cbd15c6945ec44",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/tokenizer_config.json",
+        "bytes": 674,
+        "sha256": "ee4860abad5b84284f816d2812fc23a7477ce827ed6b4708af9a02c68ed00c7c",
+        "kind": "data"
+      },
+      {
+        "id": "video_preprocessor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-Omni-2B-ONNX/resolve/7d6bd3fd59a0622e5ce7fefc141145a8bba1435a/video_preprocessor_config.json",
+        "bytes": 706,
+        "sha256": "1ed75befc55ce0eda07fdcd7ad02c08605a973fcb1aebfbd0b86bb5221ae7c97",
+        "kind": "data"
+      }
+    ],
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000
+    },
+    "runtime_source": {
+      "package": "onnxruntime-web",
+      "version": "1.30.0",
+      "device": "explicit provider GPUDevice"
+    },
+    "limitations": "One synthetic image / public speech fixture. Speech output, video, Pi tools/skills and phones unverified.",
+    "evidence": {
+      "attempt": "li-browser-lfm3-omni",
+      "run_id": "lfm3-multimodal-browser-1793248486897724113",
+      "scope": "Image description, Speech input → text"
+    }
+  },
+  {
+    "id": "lg-browser-lfm3-vl",
+    "title": "LFM3-VL · 2B",
+    "engine": "lfm3-onnx",
+    "family": "lfm3-onnx",
+    "model": "LiquidAI/LFM3-VL-2B-ONNX",
+    "revision": "51ee393407d30ca84fb9b37bef4d0459f6803b2b",
+    "file": "onnx/decoder_q4f16.onnx",
+    "weight_bytes": 1510801491,
+    "weight_sha256": "4c4612fbbef959f6ef7a931901bf0356072227e0ec588cc6ccfb115005237210",
+    "projector": null,
+    "category": "vision",
+    "runtime_id": "lfm3",
+    "input_mode": "vision",
+    "parameters": "2B",
+    "quantization": "Mixed Q4F16",
+    "artifacts": [
+      {
+        "id": "onnx/decoder_q4f16.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/onnx/decoder_q4f16.onnx",
+        "bytes": 273090,
+        "sha256": "4c4612fbbef959f6ef7a931901bf0356072227e0ec588cc6ccfb115005237210",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/onnx/decoder_q4f16.onnx_data",
+        "bytes": 1314248704,
+        "sha256": "e23b0f5975449165b52b2fb7f16c53cfe90d2574aa86d4f14f8dd2765ca44c26",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/onnx/vision_encoder_q8.onnx",
+        "bytes": 126353,
+        "sha256": "ea9421f2a7fa8bc401bee96b1077be522b8d448e82e46c9117f2bc90eb01caac",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/vision_encoder_q8.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/onnx/vision_encoder_q8.onnx_data",
+        "bytes": 196153344,
+        "sha256": "0339112e074698c5e895b53114467fbfe17f0f0ee6577c316b02ccbcd44694f4",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-30adf9d64781-LICENSE",
+        "bytes": 10574,
+        "sha256": "30adf9d6478191fb87f2424f63ba0728598335aaf99cd2848ef17e8e545fe94b",
+        "kind": "notice"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/chat_template.jinja",
+        "bytes": 12129,
+        "sha256": "f45005c50cd2a97329722bf3a2dee9f16c04cdf825a589b280fb7e99e6827818",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/config.json",
+        "bytes": 2905,
+        "sha256": "18a02e8b5963e38c98683e2c948705ea45220d75f017e9b4bdd9cf54692e6dc3",
+        "kind": "data"
+      },
+      {
+        "id": "generation_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/generation_config.json",
+        "bytes": 355,
+        "sha256": "08622a2580962f8ca4b15acaf85c9ddf6a3d8de1be132e5572f40c433b53dbf9",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/processor_config.json",
+        "bytes": 1535,
+        "sha256": "d3d5c3f9dc3d3f25c3177ba8bb05938b53c51799244af1ca6406cde78924b84e",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/tokenizer.json",
+        "bytes": 17908258,
+        "sha256": "a39eed58008cbcbc09e5b629b81338a654269c64cd13348aaa6090f4db75c7e7",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM3-VL-2B-ONNX/resolve/51ee393407d30ca84fb9b37bef4d0459f6803b2b/tokenizer_config.json",
+        "bytes": 1759,
+        "sha256": "0117c195c81c937dbef42e384fa2850aebd066d14b7ea8345cabfbb5c05e584c",
+        "kind": "data"
+      }
+    ],
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000
+    },
+    "runtime_source": {
+      "package": "onnxruntime-web",
+      "version": "1.30.0",
+      "device": "explicit provider GPUDevice"
+    },
+    "limitations": "One synthetic image / public speech fixture. Speech output, video, Pi tools/skills and phones unverified.",
+    "evidence": {
+      "attempt": "lg-browser-lfm3-vl",
+      "run_id": "lfm3-multimodal-browser-1793248486897724113",
+      "scope": "Image description"
+    }
+  },
+  {
+    "id": "lk-browser-lfm3-d1-omni",
+    "title": "d1-Omni · 2B",
+    "engine": "lfm3-onnx",
+    "family": "lfm3-onnx",
+    "model": "LiquidAI/d1-Omni-2B-ONNX",
+    "revision": "2552a495cd0fc6d82f7911110f07bca7a05c11c6",
+    "file": "onnx/decoder_q4f16.onnx",
+    "weight_bytes": 1567751132,
+    "weight_sha256": "59bed92a6ec5df6462aa02ad8ac5be342afecfa8525539852a9a5deb48d7f221",
+    "projector": null,
+    "category": "decision",
+    "runtime_id": "lfm3",
+    "input_mode": "vision",
+    "parameters": "2B",
+    "quantization": "Mixed Q4F16",
+    "artifacts": [
+      {
+        "id": "onnx/decoder_q4f16.onnx",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/onnx/decoder_q4f16.onnx",
+        "bytes": 276444,
+        "sha256": "59bed92a6ec5df6462aa02ad8ac5be342afecfa8525539852a9a5deb48d7f221",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4f16.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/onnx/decoder_q4f16.onnx_data",
+        "bytes": 1567474688,
+        "sha256": "bf8a038340291e07e6864243016eae55e9c183523d446fca608b5d82acceed1f",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "browser-models/notices/LiquidAI-LFM3-4d28ca14dedc-LICENSE",
+        "bytes": 10574,
+        "sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+        "kind": "notice"
+      },
+      {
+        "id": "calibration.json",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/calibration.json",
+        "bytes": 4819,
+        "sha256": "182270f679ee9b8ead5d2d3f37ea5f297839126baaced22e4cd57d48cfaf1772",
+        "kind": "data"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/chat_template.jinja",
+        "bytes": 13349,
+        "sha256": "f421a240f2ef17f7b0991ec15411a99a2e4855c4a12f447c9587786626c6389c",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/config.json",
+        "bytes": 5802,
+        "sha256": "cebf53b6bb8835cefe9b415d9619c23398ab8326d6385ee80f98fef0caad7169",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/processor_config.json",
+        "bytes": 1928,
+        "sha256": "2288d34b7c0579593258b1c083de4ab8328a842fdb0190977363e573dbdcd0e5",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/tokenizer.json",
+        "bytes": 17908634,
+        "sha256": "41927bd314d17d7d7fadb44e10cd0919f7b71528d7741596d8cbd15c6945ec44",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/d1-Omni-2B-ONNX/resolve/2552a495cd0fc6d82f7911110f07bca7a05c11c6/tokenizer_config.json",
+        "bytes": 625,
+        "sha256": "3cff70d801d7c2086ffa2979046051b2727f160acb2eaeb3a77512be41c6a29e",
+        "kind": "data"
+      }
+    ],
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 256,
+      "load_timeout_ms": 1200000,
+      "turn_timeout_ms": 180000
+    },
+    "runtime_source": {
+      "package": "onnxruntime-web",
+      "version": "1.30.0",
+      "device": "explicit provider GPUDevice"
+    },
+    "limitations": "Single-question choices only. Vision, audio, extraction, phones and long context untested.",
+    "evidence": {
+      "attempt": "lk-browser-lfm3-d1-omni",
+      "run_id": "lfm3-decisions-browser-1793248407545214852",
+      "scope": "Text classification: 6/6 checks"
+    }
   }
 ]

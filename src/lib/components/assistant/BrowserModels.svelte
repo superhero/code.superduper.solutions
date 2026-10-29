@@ -8,7 +8,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import NavigationDropdown from '$lib/components/NavigationDropdown.svelte';
   import MaterialIcon from '$lib/components/MaterialIcon.svelte';
   import ModelOperation from './ModelOperation.svelte';
-  import { profileById, downloadBytes } from '$lib/assistant/browser/catalog';
+  import { profileById, downloadBytes, VISION_PROFILES } from '$lib/assistant/browser/catalog';
   import { installedModels, removeModel, subscribeModels, readModelSettings, saveModelSettings } from '$lib/assistant/browser/storage';
   import { installBrowserModel } from '$lib/assistant/browser/installer';
   import { defaultSettings, configuredProfile } from '$lib/assistant/browser/settings.js';
@@ -23,11 +23,12 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   let operation = $state<ModelAction>('install');
   let generation = $state<Record<string, number | boolean | string>>({}), execution = $state({ ...DEFAULT_EXECUTION });
   let facts = $state<BrowserFacts>(), probing = $state(false), ready = $state(false), controller = $state<AbortController>();
+  let visionTool = $state('');
   let epoch = 0;
   let pendingSettings = Promise.resolve();
   let settingsOpen = $state(false), infoOpen = $state(false), compatibilityOpen = $state(false), foldDuration = $state(0);
   const profile = $derived(profileById(selected));
-  const engineLabel = $derived(({webml:'WebML',wllama:'Wllama','litert-lm':'LiteRT-LM',transformers:'Transformers.js','strands-onnx':'ONNX Runtime Web','wllama-knowline':'Wllama · KnowLine','wllama-elephant':'Wllama · Elephant','wllama-pplx':'Wllama · Perplexity'})[profile.engine]);
+  const engineLabel = $derived(({'lfm3-onnx':'ONNX Runtime Web',webml:'WebML',wllama:'Wllama','litert-lm':'LiteRT-LM',transformers:'Transformers.js','strands-onnx':'ONNX Runtime Web','wllama-knowline':'Wllama · KnowLine','wllama-elephant':'Wllama · Elephant','wllama-pplx':'Wllama · Perplexity'})[profile.engine]);
   const modelName = $derived(profile.engine === 'strands-onnx'
     ? `${profile.title.split(' · ')[0]} · ${profile.runtime_id === 'strands-cpu' ? 'CPU' : 'WebGPU'}`
     : profile.title.split(' · ')[0]);
@@ -53,6 +54,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     try {
       const saved = await readModelSettings(id);
       if (request !== epoch) return;
+      visionTool = typeof saved.visionTool === 'string' ? saved.visionTool : profileById(id).vision_tool ?? '';
       generation = defaultSettings(profileById(id), saved.generation as Record<string, unknown> | undefined);
       execution = executionSettings(saved.execution, profileById(id)); ready = true;
     } catch (error) { failure = error instanceof Error ? error.message : 'Could not read model settings.'; }
@@ -65,7 +67,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   }
   function saveSettings() {
     try {
-      const id = selected, settings = { generation: $state.snapshot(generation), execution: $state.snapshot(execution) };
+      const id = selected, settings = { generation: $state.snapshot(generation), execution: $state.snapshot(execution), visionTool };
       configuredProfile(profile, settings.generation); executionSettings(settings.execution, profile);
       if (profile.engine === 'webml' && !['auto','gpu'].includes(settings.execution.mode)) throw new Error('WebML supports GPU execution only.');
       failure = '';
@@ -144,13 +146,14 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   </div>{/if}
   {#if settingsOpen}<div class="fold-panel" id={`${selected}-settings`} role="region" aria-label="Model settings" transition:slide={{ duration: foldDuration }}>
     <div class="disclosure-content">{#if ready}<div class="settings">
-      {#if profile.category === 'decision'}<p class="model-footnote">Native decision scoring · one question · 1,024-token input limit. This model is available for decision features.</p>{:else if profile.category === 'vision'}<p class="model-footnote">Used by Gemma and MiniCPM to inspect images on demand. FP16 / Q4 · 1,024 context tokens · 256 output tokens.</p>{:else if profile.engine === 'litert-lm'}<p class="model-footnote">GPU inference · greedy decoding · reasoning and prompt caching off.</p>{/if}
+      {#if profile.category === 'decision'}<p class="model-footnote">Native decision scoring · one question · 1,024-token input limit. This model is available for decision features.</p>{:else if profile.category === 'vision'}<p class="model-footnote">Inspects images on demand through the language model’s image tool. 1,024 context tokens · 256 output tokens.</p>{:else if profile.engine === 'litert-lm'}<p class="model-footnote">GPU inference · greedy decoding · reasoning and prompt caching off.</p>{/if}
       {#if (profile.category ?? 'llm') === 'llm' && profile.engine === 'wllama'}
         <div><span class="field-label">Execution</span><NavigationDropdown label="Browser execution" placeholder="Choose execution" value={execution.mode} disabled={busy || runtimeWorking} items={[{value:"auto",icon:"memory",label:"GPU preferred, allocation fallback"},{value:"gpu",icon:"memory",label:"GPU"},{value:"hybrid",icon:"memory",label:"GPU + CPU"},{value:"cpu",icon:"memory",label:"CPU"}]} onchange={value => { execution.mode = value as typeof execution.mode; saveSettings(); }} /></div>
         <label>GPU layer budget<input type="number" min="1" max={(profile.model_layers ?? 33) + 1} value={execution.gpuLayers} disabled={busy || runtimeWorking} oninput={event => { execution.gpuLayers = event.currentTarget.valueAsNumber; saveSettings(); }} /></label>
         {#if profile.projector}<label class="toggle"><input type="checkbox" data-slot="checkbox" role="switch" checked={execution.visionGpu} disabled={busy || runtimeWorking} onchange={event => { execution.visionGpu = event.currentTarget.checked; saveSettings(); }} />Vision on GPU in hybrid mode</label>{/if}
       {/if}
-      {#each Object.entries(generation).filter(([key]) => labels[key]) as [key, value]}
+      {#if profile.vision_tool}<div><span class="field-label">Image inspection model</span><NavigationDropdown label="Image inspection model" placeholder="Choose a vision model" value={visionTool} disabled={busy || runtimeWorking} items={VISION_PROFILES.map(p => ({value:p.id,label:p.title,icon:'image'}))} onchange={value => {visionTool=value;saveSettings();}} /></div>{/if}
+      {#each Object.entries(generation).filter(([key]) => labels[key] && (profile.family !== 'lfm3' || !['thinking','sampling_mode','temperature','top_k','top_p','min_p'].includes(key))) as [key, value]}
         {#if typeof value === 'boolean'}<label class="toggle"><input type="checkbox" data-slot="checkbox" role="switch" checked={value} disabled={busy || runtimeWorking} onchange={event => { generation[key] = event.currentTarget.checked; saveSettings(); }} />{labels[key]}</label>
         {:else if typeof value === 'number'}<label>{labels[key]}<input type="number" step="any" value={value} disabled={busy || runtimeWorking} oninput={event => { generation[key] = event.currentTarget.valueAsNumber; saveSettings(); }} /></label>
         {:else}<div><span class="field-label">{labels[key]}</span><NavigationDropdown label={labels[key]!} placeholder="Choose a value" {value} disabled={busy || runtimeWorking} items={(key === 'sampling_mode' ? ['greedy','sample'] : ['f16','f32','q8_0','q4_0']).map(value => ({value,label:value,icon:"tune"}))} onchange={value => { generation[key] = value; saveSettings(); }} /></div>{/if}

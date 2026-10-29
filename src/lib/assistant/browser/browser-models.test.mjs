@@ -270,9 +270,9 @@ Then('the {string} browser profile loads and streams through its native API cont
   await engine.dispose();assert.equal(seen.disposed,true);
 });
 
-Then('the expanded catalog exposes eight LLMs one LFM vision tool and nine native decision profiles', function () {
-  assert.equal(ALL_BROWSER_PROFILES.length,8); assert.equal(VISION_PROFILES.length,1); assert.equal(DECISION_PROFILES.length,9);
-  assert.equal(ALL_MODEL_PROFILES.length,18); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,18);
+Then('the expanded catalog exposes nine LLMs three vision profiles and ten native decision profiles', function () {
+  assert.equal(ALL_BROWSER_PROFILES.length,9); assert.equal(VISION_PROFILES.length,3); assert.equal(DECISION_PROFILES.length,10);
+  assert.equal(ALL_MODEL_PROFILES.length,24); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,24);
   for (const profile of ALL_MODEL_PROFILES) for (const file of artifactsFor(profile)) {
     assert.ok(file.bytes>0); assert.match(file.sha256,/^[a-f0-9]{64}$/);
     if(file.kind==='weights') assert.match(file.url,/\/resolve\/[a-f0-9]{40}\//);
@@ -334,4 +334,31 @@ Then('a blocked decision worker stops at its configured scoring deadline',async 
     const engine=await createWorkerEngine(profile,[],{worker:'blob:fixture'},()=>{},signal());
     await assert.rejects(engine.request('decide',{state:'test',question:{}},signal()),/timed out/);assert.equal(terminated,true);assert.equal(engine.invalidated,true);
   }finally{if(prior===undefined)delete globalThis.Worker;else globalThis.Worker=prior;}
+});
+
+Then('LFM3 retains its accepted pins and keeps reasoning out of visible answers', async function () {
+  const {splitLFM3Reasoning} = await import('./reference/lfm3-reasoning.js');
+  const profile = ALL_BROWSER_PROFILES.find(p => p.family === 'lfm3');
+  assert.equal(profile.runtime_id, 'wllama-lfm3');
+  assert.equal(profile.runtime_source.llama_cpp, '19cce6919992fdffd92e0ac152caaf1e2b8f254e');
+  assert.equal(profile.weight_bytes, 1049615680);
+  assert.equal(profile.projector, null);
+  assert(artifactsFor(profile).some(f => f.id === 'wllama-wasm' && f.url.includes('wllama-lfm3/')));
+  for (const p of ALL_BROWSER_PROFILES.filter(p => p.engine === 'wllama' && p.family !== 'lfm3'))
+    assert(!artifactsFor(p).some(f => f.url.includes('wllama-lfm3/')));
+  assert.deepEqual(splitLFM3Reasoning('Paris</think>Paris'), {text:'Paris', reasoning:'Paris'});
+  assert.deepEqual(splitLFM3Reasoning('<think>secret'), {text:'', reasoning:'secret'});
+  assert.deepEqual(splitLFM3Reasoning('<div>answer</div>'), {text:'<div>answer</div>', reasoning:''});
+  const settings = await import('./settings.js');
+  assert.throws(() => settings.defaultSettings(profile, {context_tokens:8192}), /4,096/);
+  assert.throws(() => settings.defaultSettings(profile, {thinking:true}), /thinking off/);
+});
+
+Then('the image tool accepts both LFM3 image pins and rejects an altered revision', async function () {
+  const {createVisionTool}=await import('./reference/expanded/vision-tool.js');
+  const adapters={getImage:()=>null,suspendText:async()=>{},resumeText:async()=>true};
+  for(const profile of VISION_PROFILES.filter(p=>p.engine==='lfm3-onnx')){
+    assert.doesNotThrow(()=>createVisionTool({profile,...adapters}));
+    assert.throws(()=>createVisionTool({profile:{...profile,revision:'0'.repeat(40)},...adapters}),/pinned LFM3/);
+  }
 });

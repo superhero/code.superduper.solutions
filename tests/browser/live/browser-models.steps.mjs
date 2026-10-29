@@ -7,9 +7,11 @@ import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createHash, randomUUID} from 'node:crypto';
+import {createServer} from 'node:http';
+import {get as httpsGet} from 'node:https';
 setDefaultTimeout(1800000);
 const directory = resolve(process.env.MODEL_LIVE_ARTIFACTS ?? 'tmp/test/model-live');
-let context, page, imports, result = {cases: []};
+let context, page, imports, fixtureServer, result = {cases: []};
 function record(type, value) {console.log(JSON.stringify({type, ...value}));}
 async function save() {await writeFile(resolve(directory,'model-results.json'),JSON.stringify(result,null,2)+'\n');}
 BeforeAll({timeout:120000},async()=>{
@@ -26,7 +28,33 @@ BeforeAll({timeout:120000},async()=>{
   const origin=new URL(process.env.MODEL_LIVE_URL??'http://127.0.0.1:5175');
   await context.routeWebSocket(url=>url.host===origin.host,route=>{route.send(JSON.stringify({type:'connected'}));route.onMessage(()=>{});});
   page=context.pages()[0]??await context.newPage();
-  const requests=[];page.on('request',request=>{if(request.url().includes('/assistant/browser/runtime.ts'))requests.push(request.url());});
+  if(process.env.MODEL_LIVE_PINNED_CACHE==='1') {
+    fixtureServer=createServer((request,response)=>{
+      const match=request.url.match(/^\/(LFM3-(?:VL|Audio|Omni)-2B-ONNX|d1-Omni-2B-ONNX)\/(onnx\/[\w./-]+)$/);
+      if(!match||match[2].includes('..')){response.writeHead(404).end();return;}
+      const port=match[1].startsWith('d1-')?8449:8448;
+      const upstream=httpsGet('https://192.168.1.173:'+port+'/models/'+match[1]+'/'+match[2],{rejectUnauthorized:false,headers:request.headers.range?{range:request.headers.range}:{}},source=>{
+        record('fixture-stream-start',{model:match[1],path:match[2],status:source.statusCode});
+        response.writeHead(source.statusCode,{...source.headers,'access-control-allow-origin':'*','access-control-expose-headers':'content-range, content-length, accept-ranges','cross-origin-resource-policy':'cross-origin'});
+        let bytes=0,last=0;source.on('data',chunk=>{bytes+=chunk.length;if(bytes-last>128*1024*1024){last=bytes;record('fixture-stream-progress',{model:match[1],path:match[2],bytes});}});
+        source.on('error',error=>response.destroy(error));
+        source.pipe(response);
+      });
+      upstream.setTimeout(30000,()=>upstream.destroy(Error('Pinned fixture stream stalled.')));
+      upstream.on('error',error=>{response.destroy(error);});response.on('close',()=>upstream.destroy());
+    });
+    await new Promise(resolve=>fixtureServer.listen(0,'127.0.0.1',resolve));
+    const revisions={'LFM3-VL-2B-ONNX':'51ee393407d30ca84fb9b37bef4d0459f6803b2b','LFM3-Audio-2B-ONNX':'df2b3ed2ea10824030b3ff29ee46705754e72b99','LFM3-Omni-2B-ONNX':'7d6bd3fd59a0622e5ce7fefc141145a8bba1435a','d1-Omni-2B-ONNX':'2552a495cd0fc6d82f7911110f07bca7a05c11c6'};
+    await context.route('https://huggingface.co/LiquidAI/**/resolve/**/onnx/**',async route=>{
+      const url=new URL(route.request().url()),match=url.pathname.match(/^\/LiquidAI\/(LFM3-(?:VL|Audio|Omni)-2B-ONNX|d1-Omni-2B-ONNX)\/resolve\/([a-f0-9]{40})\/(onnx\/.+)$/);
+      if(!match||revisions[match[1]]!==match[2]){await route.continue();return;}
+      const port=match[1].startsWith('d1-')?8449:8448;
+      const source='https://192.168.1.173:'+port+'/models/'+match[1]+'/'+match[3];
+      record('pinned-fixture-delivery',{model:match[1],revision:match[2],path:match[3],source});
+      await route.fulfill({status:307,headers:{location:'http://127.0.0.1:'+fixtureServer.address().port+'/'+match[1]+'/'+match[3],'access-control-allow-origin':'*'}});
+    });
+  }
+  const requests=[],speechRequests=[];page.on('request',request=>{if(request.url().includes('/assistant/browser/runtime.ts'))requests.push(request.url());if(request.url().includes('/assistant/speech/controller.ts'))speechRequests.push(request.url());});
   result.pageErrors=[];result.networkErrors=[];result.uploads=[];page.on('pageerror',error=>result.pageErrors.push(error.message));
   page.on('request',request=>{if(request.method()==='POST'){const url=new URL(request.url());result.uploads.push({host:url.hostname,path:url.pathname});}});
   page.on('requestfailed',request=>{const url=new URL(request.url());if(url.hostname.includes('hf.co')||url.hostname.includes('huggingface.co')){const error={host:url.hostname,path:url.pathname,error:request.failure()?.errorText};result.networkErrors.push(error);record('network-error',error);}});
@@ -36,7 +64,7 @@ BeforeAll({timeout:120000},async()=>{
   await page.getByRole('button',{name:'AI chat',exact:true}).click();
   for(let attempt=0;;attempt++){
     const runtime=requests.at(-1)??new URL('/lib/assistant/browser/runtime.ts',page.url()).href;
-    imports={runtime};
+    imports={runtime,speech:speechRequests.at(-1)??new URL('/lib/assistant/speech/controller.ts',page.url()).href};
     try{
       await page.evaluate(async({runtime})=>{
         const [{BrowserAgentHarness},catalog,selection]=await Promise.all([import('/lib/assistant/harness.ts'),import('/lib/assistant/browser/catalog.ts'),import('/lib/assistant/browser/selection.ts')]);
@@ -48,7 +76,8 @@ BeforeAll({timeout:120000},async()=>{
       if(!await page.evaluate(()=>Boolean(globalThis.modelLive)))throw Error('Execution context was destroyed during dependency warmup');
       break;
     }catch(error){
-      if(attempt>=2 || !/Execution context was destroyed/.test(error.message))throw error;
+      if(attempt>=2 || !/Execution context was destroyed|Failed to fetch dynamically imported module/.test(error.message))throw error;
+      if(/Failed to fetch dynamically imported module/.test(error.message)) await page.reload({waitUntil:'networkidle'});
       await page.waitForLoadState('networkidle');
       await expect(page.getByRole('status',{name:'Persistence status',exact:true})).toHaveText('All changes saved');
       if(!(await page.getByRole('textbox',{name:'Message AI',exact:true}).isVisible()))await page.getByRole('button',{name:'AI chat',exact:true}).click();
@@ -74,7 +103,7 @@ After(async function({result:status}){
   await page.evaluate(async()=>{globalThis.modelLiveController?.abort();globalThis.modelLive?.speech?.unload();await globalThis.modelLive?.runtime.unloadBrowserModel();}).catch(()=>{});
   record('case-result',this.case);await save();
 });
-AfterAll(async()=>{await context?.close();await save();});
+AfterAll(async()=>{await context?.close();fixtureServer?.closeAllConnections();if(fixtureServer)await new Promise(resolve=>fixtureServer.close(resolve));await save();});
 async function choose(id){
   if(await page.evaluate(id=>modelLive.runtime.loadedModel()===id,id))return;
   await page.getByRole('button',{name:'AI model',exact:true}).click();
@@ -150,7 +179,7 @@ Then('loading the live auxiliary profile {string} leaves a fresh chat without an
 Then('the live speech profile {string} dictates a known recording into the composer',async function(mode){
   if(!process.env.MODEL_LIVE_SPEECH_FIXTURE)throw Error('Real speech checks require MODEL_LIVE_SPEECH_FIXTURE: the public-domain JFK WAV.');
   this.case.model='parakeet-'+mode;await context.grantPermissions(['microphone']);
-  await page.evaluate(async()=>{Object.assign(modelLive,await import('/lib/assistant/speech/controller.ts'));});
+  await page.evaluate(async url=>{Object.assign(modelLive,await import(url));},imports.speech);
   await page.getByRole('button',{name:'New chat',exact:true}).click();
   await page.getByRole('button',{name:'Speech model',exact:true}).click();
   await page.getByRole('menu',{name:'Speech model',exact:true}).locator(`[data-value="${mode}"]`).click();
@@ -165,7 +194,7 @@ Then('the live speech profile {string} dictates a known recording into the compo
     }
     throw Error('Speech preparation or recognition exceeded its test deadline.');
   }
-  await ready(1500000);
+  await ready(['lfm3-audio','lfm3-omni','phonon'].includes(mode)?300000:1500000);
   await page.getByRole('button',{name:'Speech input',exact:true}).click();
   const stop=page.getByRole('button',{name:'Stop dictation',exact:true});await expect(stop).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>modelLive.speech.state.seconds),{timeout:25000}).toBeGreaterThanOrEqual(11);
@@ -178,4 +207,39 @@ Then('the live speech profile {string} dictates a known recording into the compo
   this.case.wordErrorRate=previous[actual.length]/expected.length;assert.ok(this.case.wordErrorRate<=.25,JSON.stringify(this.case));
   assert.ok(!await page.evaluate(async()=>(await indexedDB.databases()).some(db=>db.name==='code-speech-diagnostics')));
   assert.deepEqual(result.uploads,[]);await page.screenshot({path:resolve(directory,'speech-'+mode+'.png')});
+});
+
+Then('the live LFM3 image profile {string} describes a colored shape',async function(id){
+  this.case.model=id;
+  const image=await page.evaluate(()=>{
+    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
+    const c=canvas.getContext('2d');c.fillStyle='white';c.fillRect(0,0,256,256);c.fillStyle='red';c.fillRect(32,32,192,192);
+    return {type:'image',mimeType:'image/png',data:canvas.toDataURL('image/png').split(',')[1],width:256,height:256};
+  });
+  const answer=await page.evaluate(async({id,image})=>{
+    globalThis.modelLiveController=new AbortController();
+    return modelLive.runtime.inspectBrowserImage(id,image,'Name the color and shape shown. Answer in one short sentence.',modelLiveController.signal,event=>void modelLiveProgress({id,...event}));
+  },{id,image});
+  this.case.answer=answer;assert.match(answer.text??answer.message?.content,/red/i);assert.match(answer.text??answer.message?.content,/square/i);
+  assert.equal(await page.evaluate(()=>modelLive.runtime.loadedModel()),undefined);
+});
+Then('the live d1-Omni profile passes the six reference classification checks',async function(){
+  const cases=JSON.parse(await readFile('/workspace/tests/models/d1-cases.json','utf8'));
+  this.case.model='lk-browser-lfm3-d1-omni';
+  const answers=await page.evaluate(async cases=>{
+    const id='lk-browser-lfm3-d1-omni',controller=globalThis.modelLiveController=new AbortController();
+    await modelLive.ensureBrowserModelInstalled(id,event=>void modelLiveProgress({id,...event}),controller.signal);
+    const answers=[];
+    for(const c of cases){
+      const actual=c.repeat?cases.find(x=>x.id===c.repeat):c;
+      const answer=await modelLive.runtime.scoreBrowserDecision(id,{state:actual.state,questions:{q:actual.question}},controller.signal,event=>void modelLiveProgress({id,...event}));
+      answers.push({id:c.id,expected:actual.expected,answer});
+    }
+    await modelLive.runtime.unloadBrowserModel();return answers;
+  },cases);
+  this.case.answers=answers;
+  for(const {expected,answer} of answers){
+    assert.equal(answer.choice,expected);assert.equal(answer.output_tokens,0);
+    assert.ok(Math.abs(Object.values(answer.probabilities).reduce((a,b)=>a+b,0)-1)<1e-6);
+  }
 });

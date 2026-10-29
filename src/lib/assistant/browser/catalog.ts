@@ -10,7 +10,8 @@ const additions = expanded as unknown as readonly BrowserProfile[];
 export const BROWSER_PROFILES: readonly BrowserProfile[] = [...pins as unknown as readonly BrowserProfile[], ...additions.filter(profile => profile.category === 'llm')];
 export const VISION_PROFILES = additions.filter(profile => profile.category === 'vision');
 export const DECISION_PROFILES = additions.filter(profile => profile.category === 'decision');
-export const ALL_MODEL_PROFILES = [...BROWSER_PROFILES, ...VISION_PROFILES, ...DECISION_PROFILES];
+export const SPEECH_PROFILES = additions.filter(profile => profile.category === 'speech');
+export const ALL_MODEL_PROFILES = [...BROWSER_PROFILES, ...VISION_PROFILES, ...DECISION_PROFILES, ...SPEECH_PROFILES];
 const wllama = [
   { id: 'wllama-js', url: 'browser-models/wllama/index.js', bytes: 386851, sha256: '0df764726d349c47085ac79703557b45e8c8411a09ed4f5ad7e439571c611b2f', kind: 'runtime' },
   { id: 'wllama-wasm', url: 'browser-models/wllama/wllama.wasm', bytes: 9324918, sha256: '68d7d381d505da43b890912552870ec6db54ce18862ce695c6f80cff142c395f', kind: 'runtime' },

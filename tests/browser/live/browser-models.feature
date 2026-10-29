@@ -12,6 +12,7 @@ Feature: Real browser-local inference in the editor
       | kg-browser-assistant-gemma4-e2b |
       | kh-browser-assistant-minicpm5-2b |
       | gw-browser-pi-bonsai2-2b |
+
   Scenario Outline: A separate LFM image tool restores the selected language model
     Then the live "<model>" reads a fresh image code and continues after vision cleanup
     Examples:
@@ -45,3 +46,25 @@ Feature: Real browser-local inference in the editor
       | cpu |
       | gpu-fp16 |
       | gpu-fp32 |
+
+  Scenario: LFM3 text completes a real Pi tool exchange
+    Then the live editor prepares "le-browser-lfm3-text" and completes a text and native tool exchange
+
+  Scenario Outline: LFM3 image profile <model> understands real image pixels
+    Then the live LFM3 image profile "<model>" describes a colored shape
+    Examples:
+      | model |
+      | lg-browser-lfm3-vl |
+      | li-browser-lfm3-omni |
+
+  Scenario: d1-Omni preserves its six native classification checks
+    Then the live d1-Omni profile passes the six reference classification checks
+
+  @browser-speech-live
+  Scenario Outline: Batch speech model <mode> recognizes the microphone fixture
+    Then the live speech profile "<mode>" dictates a known recording into the composer
+    Examples:
+      | mode |
+      | lfm3-audio |
+      | lfm3-omni |
+      | phonon |

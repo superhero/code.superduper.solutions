@@ -8,7 +8,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import ModelProgress from './ModelProgress.svelte';
   import NavigationDropdown from '$lib/components/NavigationDropdown.svelte';
   import { speech } from '$lib/assistant/speech/controller';
-  import { speechModes, speechArtifacts } from '$lib/assistant/speech/catalog';
+  import { speechModes, speechArtifacts, lfmSpeechProfile, isBatchSpeech } from '$lib/assistant/speech/catalog';
   import type { SpeechMode } from '$lib/assistant/speech/types';
   let { owner, disabled = false, ontext, onactive }: { owner: string; disabled?: boolean; ontext: (text: string) => void; onactive: (active: boolean) => void } = $props();
   let status = $state(speech.state);
@@ -29,7 +29,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     const controller = request = new AbortController(), origin = owner;
     try {
       const { runBrowserTurn } = await import('$lib/assistant/browser/runtime');
-      await runBrowserTurn(() => speech.prepare(mode, controller.signal, () => { if (request === controller) queued = false; }), controller.signal);
+      await runBrowserTurn(async (_load, unload) => { if (isBatchSpeech(mode)) await unload(); return speech.prepare(mode, controller.signal, () => { if (request === controller) queued = false; }); }, controller.signal);
       if (dictate && !disposed && !disabled && owner === origin && !controller.signal.aborted && speech.state.mode === mode && speech.state.phase === 'ready') void speech.record(origin, ontext);
     } catch (error) {
       if (!disposed && !controller.signal.aborted) failure = error instanceof Error ? error.message : 'Speech preparation failed.';
@@ -45,7 +45,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   <div class="speech-tools">
     <Button variant="ghost" size="sm" class="dictate" disabled={(disabled || working) && !mine && !preparing || mine && status.phase === 'stopping'} aria-label={mine ? recording ? 'Stop dictation' : 'Speech input' : preparing ? 'Cancel speech loading' : 'Speech input'} aria-pressed={recording} onclick={act}><MaterialIcon name={recording ? 'stop_circle' : preparing && !mine ? 'close' : 'mic'} size={16} />{caption}</Button>
     <NavigationDropdown label="Speech model" side="top" value={selected.id} placeholder="Choose speech model" {items} {disabled} onchange={() => {}} onchoose={value => void prepare(value as SpeechMode)}>
-      {#snippet itemLabel(item)}<span>Parakeet TDT v3 · {item.label}</span><small>{status.mode === item.value && ['ready','permission','recording','stopping'].includes(status.phase) ? 'Loaded' : status.installed.includes(item.value as SpeechMode) ? 'Installed' : `Install · ${(speechArtifacts(item.value as SpeechMode).reduce((sum, file) => sum + file.bytes, 0) / 1e9).toFixed(2)} GB`}</small>{/snippet}
+      {#snippet itemLabel(item)}<span>{isBatchSpeech(item.value as SpeechMode) ? item.label : `Parakeet TDT v3 · ${item.label}`}</span><small>{status.mode === item.value && ['ready','permission','recording','stopping'].includes(status.phase) ? 'Loaded' : status.installed.includes(item.value as SpeechMode) ? 'Installed' : `Install · ${(speechArtifacts(item.value as SpeechMode).reduce((sum, file) => sum + file.bytes, 0) / 1e9).toFixed(2)} GB`}</small>{/snippet}
     </NavigationDropdown>
   </div>
   {#if preparing || mine || status.error || failure}<div class="speech-status" role={status.error || failure ? 'alert' : 'status'}>{failure || status.error || (queued ? 'Speech model queued after the current operation…' : status.stage)}

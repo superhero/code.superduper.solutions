@@ -13,6 +13,14 @@ export async function verifyBrowserRuntime() {
   const receipt = JSON.parse(await readFile(new URL('build-receipt.json', root), 'utf8'));
   if (receipt.wllama !== '3bb2a46f0dab0b924e8cd992b85e8881c3d3a859' || receipt.llama_cpp !== '970b51ce7c9ba5fff0726c5e9994f1c2f0e4eedc' || receipt.cpu_heap_max_gib !== 4)
     throw new Error('The browser Wllama source-build pin changed. Review its evidence before updating.');
+  const lfmRoot = new URL('../src/public/browser-models/wllama-lfm3/', import.meta.url);
+  const lfmReceipt = JSON.parse(await readFile(new URL('build-receipt.json', lfmRoot), 'utf8'));
+  if (lfmReceipt.llama_cpp !== '19cce6919992fdffd92e0ac152caaf1e2b8f254e' || lfmReceipt.cpu_heap_max_gib !== 4)
+    throw Error('LFM3 isolated runtime pin changed.');
+  for (const name of ['index.js', 'wllama.wasm', 'LICENCE']) {
+    const bytes = await readFile(new URL(name, lfmRoot));
+    if (createHash('sha256').update(bytes).digest('hex') !== lfmReceipt.files[name]) throw Error('LFM3 runtime checksum differs: ' + name);
+  }
   const notices = JSON.parse(await readFile(new URL('../src/lib/assistant/browser/notices.json', import.meta.url), 'utf8'));
   for (const notice of notices) {
     const bytes = await readFile(new URL('../src/public/browser-models/notices/' + notice.file, import.meta.url));

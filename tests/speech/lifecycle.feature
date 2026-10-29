@@ -42,3 +42,11 @@ Feature: Recoverable browser speech lifecycle
     Given cached model restoration is still pending
     When I cancel model initialization
     Then the late restored URLs are revoked and no worker starts
+
+  Scenario Outline: Batch recognizer <model> finalizes before releasing its resources
+    Then "<model>" captures without streaming and releases after final transcription
+    Examples:
+      | model |
+      | lfm3-audio |
+      | lfm3-omni |
+      | phonon |
