@@ -6,6 +6,7 @@ import type {BrowserProfile} from '../../types.ts';
 export function createVisionTool(options: {
   profile: BrowserProfile; getImage(id: string): unknown;
   onState(state: {busy: boolean; status?: string}): void;
+  checkCapabilities?(options: {signal: AbortSignal}): Promise<void>;
   suspendText(): Promise<void>;
   resumeText(options: {signal: AbortSignal}): Promise<boolean>;
   loadVision(profile: BrowserProfile, options: {signal: AbortSignal}): Promise<{generate: (...args: any[]) => Promise<unknown>; dispose(): Promise<void>}>;

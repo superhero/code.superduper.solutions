@@ -5,6 +5,7 @@
 import {createAssistantMessageEventStream} from '@earendil-works/pi-ai/utils/event-stream';
 import {getCurrentSystemPrompt, getCurrentTools} from '@earendil-works/pi-ai/utils/transcript';
 import {splitLFM3Reasoning} from './lfm3-reasoning.js';
+import {requireGpuPlacement} from './chat-placement.js';
 import {executionPlans, loadWithFallback, abortableGeneration} from './execution.js';
 import {isWebML, isWllama, webmlLoadOptions, samplingOptions} from './settings.js';
 
@@ -103,8 +104,9 @@ export async function loadEngine(profile, onProgress, options = {}) {
   Object.assign(info, {engine: 'wllama', requested_engine: profile.engine, family: profile.family ?? (profile.engine === 'ornith' ? 'ornith' : null),
     runtime_source: JSON.parse(JSON.stringify(profile.runtime_source ?? null))});
   try {
-    return {kind: 'wllama', info, invalidated: false, reset() {}, logs: () => base.logs.slice(),
+    return {kind: 'wllama', info, invalidated: false, reset() {}, logs: () => [...base.logs,...base.placementLogs],
       async generate(messages, {tools, signal, maxTokens, onText, onThinking = () => {}, generation = profile.settings}) {
+        if (profile.settings.gpu_graph_only && messages.some(message => Array.isArray(message.content) && message.content.some(part => part.type !== 'text'))) throw Error('The strict GPU text model accepts text only. Inspect local images through the separate vision tool.');
         const calls = []; let text = '', reasoning = '', finish = null, usage, timings;
         const start = performance.now(); let first = null;
         await abortableGeneration(() => base.raw.createChatCompletion({messages, tools, tool_choice: tools.length ? 'auto' : 'none', stream: true,
@@ -118,11 +120,15 @@ export async function loadEngine(profile, onProgress, options = {}) {
             finish = chunk.choices?.[0]?.finish_reason || finish;
             usage = chunk.usage || usage; timings = chunk.timings || timings;
           }}), signal, async () => { this.invalidated = true; await base.dispose(); });
+        const rawContent = text, rawReasoning = reasoning;
         if (profile.family === 'lfm3') {
           const parsed = splitLFM3Reasoning(text, reasoning); text = parsed.text; reasoning = parsed.reasoning;
           if (reasoning) onThinking(reasoning); if (text) onText(text);
         }
+        const placement = profile.settings.gpu_graph_only ? requireGpuPlacement(base.placementLogs) : undefined;
+        if (placement) info.placement = placement;
         return {message: {role: 'assistant', content: text, ...(reasoning ? {reasoning_content: reasoning} : {}), ...(calls.length ? {tool_calls: calls.filter(Boolean)} : {})},
+          ...(placement ? {placement} : {}), ...(profile.family === 'lfm3' ? {raw_lfm3:{content:rawContent,reasoning_content:rawReasoning}} : {}),
           finish_reason: signal?.aborted ? 'cancelled' : finish,
           native_settings: {...samplingOptions(generation, 'wllama'), enable_thinking: !!profile.settings.thinking, cache_prompt: !!profile.settings.prefix_cache},
           usage: usage ?? {}, timings: {...timings, browser_first_text_ms: first === null ? null : first - start}, wall_ms: performance.now() - start};

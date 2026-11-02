@@ -20,14 +20,19 @@ and diagnostics behind an owned speech controller. Reuse AO's algorithms and
 expose controls through the existing AI connections and composer primitives.
 Speech augments a conversation draft instead of adding a language-model provider.
 Pause and Stop finalize pending words. Session identities protect conversations
-from late results, and each recording resets acoustic and feature state.
+from late results, and each recording resets acoustic and feature state. The
+continuous path rotates unique 20-second cores with two seconds of overlap,
+bounds feature owners, archives original PCM before releasing it and drains
+archive writes plus recognition before reporting Stop complete.
 
 Pin parakeet.js 1.4.4, ONNX Runtime Web 1.30.0 and the reference's immutable
-maintainer-converted model artifacts. Default to CPU INT8; offer explicit
-WebGPU FP32 encoder with INT8 CPU decoder and experimental FP16. Do not fall
-back silently. Apply an asserted build-local sequential session patch, retain
-the GPU CPU-decoder bootstrap, expose startup stages, and enforce a main-thread
-120-second deadline. Failure disposes the owned worker and requires manual Retry.
+maintainer-converted model artifacts. Default to continuous WebGPU recognition with the original dynamic FP32 encoder
+and the pinned local INT8-storage / FP32-arithmetic GPU decoder. Expose explicit
+TEN CPU, FireRed GPU, experimental FSMN GPU and MarbleNet GPU speech detection.
+Preserve the visibly labeled legacy recognizers and their capture limits; never
+fall back silently. Serialize VAD and ASR calls on the shared ORT runtime/device.
+Fatal native failures invalidate queued work and require a fresh worker. Keep
+startup deadlines, cancellation fencing and manual Retry.
 
 Keep inference and audio entirely in the secure, isolated browser. Download
 weights and runtimes only on explicit installation, verify size/digest, retain
@@ -44,6 +49,9 @@ license-compatibility determination for redistributors.
 
 ## Status
 
-Adopted. Named Vitest/QuickPickle lifecycle and streaming scenarios complement
+Adopted; updated 2026-11-02 from the verified long-stream/GPU reference.
+The [speech guide](../../src/lib/assistant/speech/README.md) records integrated
+editor evidence, visible CPU work, VAD limitations and private audio retention.
+Named Vitest/QuickPickle lifecycle and streaming scenarios complement
 the existing Cucumber/Playwright UI profile and an explicit real-model browser
 suite. Hardware/backend qualifications remain limited to recorded verification.

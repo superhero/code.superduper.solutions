@@ -1,0 +1,7 @@
+NVIDIA Frame_VAD_Multilingual_MarbleNet_v2.0
+Licensed by NVIDIA Corporation under the NVIDIA Open Model License
+
+Original model and learned tensors: NVIDIA Corporation.
+Source: https://huggingface.co/nvidia/Frame_VAD_Multilingual_MarbleNet_v2.0/tree/9d25eb877d9edab5101ccc843edd04787a6c72c4
+Local change: exact original FP32 tensors exported to ONNX for the browser; this is a local compatibility export. The original frontend coefficients are retained.
+The agreement PDF is included alongside this notice. NeMo code is separately Apache-2.0; that code license does not relabel these model tensors.

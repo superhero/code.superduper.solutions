@@ -1,0 +1,100 @@
+[
+  {
+    "id": "s01",
+    "request": {
+      "state": "The status card is blue.",
+      "questions": {
+        "q": {
+          "type": "noul",
+          "instructions": "Is the status card blue?"
+        }
+      }
+    },
+    "expected": "true"
+  },
+  {
+    "id": "s02",
+    "request": {
+      "state": "Do not delete any files.",
+      "questions": {
+        "q": {
+          "type": "noul",
+          "instructions": "Does this request ask for files to be deleted?"
+        }
+      }
+    },
+    "expected": "false"
+  },
+  {
+    "id": "s03",
+    "request": {
+      "state": "Translate good morning into Swedish.",
+      "questions": {
+        "q": {
+          "type": "choice",
+          "instructions": "Which task is requested?",
+          "criteria": {
+            "translate": "Translate between languages",
+            "summarize": "Shorten a document",
+            "code": "Write software"
+          }
+        }
+      }
+    },
+    "expected": "translate"
+  },
+  {
+    "id": "s04",
+    "request": {
+      "state": "Every user is blocked from signing in. There is no workaround.",
+      "questions": {
+        "q": {
+          "type": "score",
+          "instructions": "Rate the severity using the supplied rubric.",
+          "criteria": [
+            "Low: cosmetic issue only",
+            "Medium: issue with an available workaround",
+            "High: all users blocked without a workaround"
+          ]
+        }
+      }
+    },
+    "expected": "2"
+  },
+  {
+    "id": "c01",
+    "request": {
+      "state": "Translate good morning into Swedish.",
+      "questions": {
+        "q": {
+          "type": "choice",
+          "instructions": "Which task is requested?",
+          "criteria": {
+            "translate": "Translate between languages",
+            "summarize": "Shorten a document",
+            "code": "Write software"
+          }
+        }
+      }
+    },
+    "expected": "translate"
+  },
+  {
+    "id": "c02",
+    "request": {
+      "state": "Translate good morning into Swedish.",
+      "questions": {
+        "q": {
+          "type": "choice",
+          "instructions": "Which task is requested?",
+          "criteria": {
+            "code": "Write software",
+            "translate": "Translate between languages",
+            "summarize": "Shorten a document"
+          }
+        }
+      }
+    },
+    "expected": "translate"
+  }
+]

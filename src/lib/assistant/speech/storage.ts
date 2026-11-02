@@ -5,14 +5,15 @@ import { createSHA256 } from 'hash-wasm';
 import { downloadPackage } from '../../packages/download';
 import { speechArtifacts, speechModes } from './catalog';
 import type { SpeechArtifact, SpeechMode, SpeechProgress } from './types';
+import {vadModes,type VadMode} from './vad';
 
 const CACHE = 'code-speech-artifacts-v1';
 const key = (file: SpeechArtifact) => new URL(`/__code_speech__/${file.sha256}`, location.origin).href;
-const mime = (file: SpeechArtifact) => ['js', 'mjs'].includes(file.type) ? 'text/javascript' : file.type === 'wasm' ? 'application/wasm' : 'application/octet-stream';
-export async function installedSpeech(): Promise<SpeechMode[]> {
+const mime = (file: SpeechArtifact) => ['js', 'mjs'].includes(file.type) ? 'text/javascript' : file.type === 'wasm' ? 'application/wasm' : file.type==='notice-pdf'?'application/pdf':'application/octet-stream';
+export async function installedSpeech(vad:VadMode='ten'): Promise<SpeechMode[]> {
   const cache = await caches.open(CACHE), found: SpeechMode[] = [];
   for (const mode of speechModes) {
-    const files = speechArtifacts(mode.id);
+    const files = speechArtifacts(mode.id,vad);
     if ((await Promise.all(files.map(async file => (await cache.match(key(file)))?.headers.get('x-code-sha256') === file.sha256))).every(Boolean)) found.push(mode.id);
   }
   return found;
@@ -52,10 +53,10 @@ export async function cacheSpeechArtifact(cache: Cache, file: SpeechArtifact, pr
     throw failure;
   }
 }
-export async function installSpeech(mode: SpeechMode, progress: (event: SpeechProgress) => void, signal: AbortSignal): Promise<void> {
+export async function installSpeech(mode: SpeechMode, progress: (event: SpeechProgress) => void, signal: AbortSignal,vad:VadMode='ten'): Promise<void> {
   if (!navigator.locks) throw new Error('Speech storage requires a secure browser with Web Locks.');
   await navigator.locks.request('code-speech-install', { signal }, async () => {
-    const cache = await caches.open(CACHE), files = speechArtifacts(mode);
+    const cache = await caches.open(CACHE), files = speechArtifacts(mode,vad);
     // Privacy protections can mask quota estimates. Actual writes determine capacity.
     let received = 0; const total = files.reduce((sum, file) => sum + file.bytes, 0);
     for (const file of files) {
@@ -65,11 +66,11 @@ export async function installSpeech(mode: SpeechMode, progress: (event: SpeechPr
   });
 }
 /** Restoring a complete cache never falls back to a network download. */
-export async function cachedSpeechURLs(mode: SpeechMode, signal: AbortSignal): Promise<{ urls: Record<string, string>; close(): void }> {
+export async function cachedSpeechURLs(mode: SpeechMode, signal: AbortSignal,vad:VadMode='ten'): Promise<{ urls: Record<string, string>; close(): void }> {
   const cache = await caches.open(CACHE), urls: Record<string, string> = {};
   const close = () => Object.values(urls).forEach(url => URL.revokeObjectURL(url));
   try {
-    for (const file of speechArtifacts(mode)) {
+    for (const file of speechArtifacts(mode,vad)) {
       signal.throwIfAborted();
       const response = await cache.match(key(file));
       if (response?.headers.get('x-code-sha256') !== file.sha256) throw new Error('The speech cache is incomplete. Install the model again.');
@@ -81,8 +82,12 @@ export async function cachedSpeechURLs(mode: SpeechMode, signal: AbortSignal): P
 export async function removeSpeech(mode: SpeechMode): Promise<void> {
   await navigator.locks.request('code-speech-install', async () => {
     const cache = await caches.open(CACHE);
-    const retained = new Set((await installedSpeech()).filter(id => id !== mode).flatMap(id => speechArtifacts(id).map(file => file.sha256)));
-    for (const file of speechArtifacts(mode)) if (!retained.has(file.sha256)) await cache.delete(key(file));
+    // A complete continuous installation can use any detector, without TEN files.
+    // Removing an incomplete legacy variant must still preserve that installation.
+    const installations = await Promise.all(vadModes.map(vad => installedSpeech(vad.id)));
+    const retained = new Set(installations.flatMap((modes,index) => modes.filter(id => id !== mode).flatMap(id => speechArtifacts(id,vadModes[index]!.id).map(file => file.sha256))));
+    const files=mode==='gpu-nq'?vadModes.flatMap(vad=>speechArtifacts(mode,vad.id)):speechArtifacts(mode);
+    for (const file of files) if (!retained.has(file.sha256)) await cache.delete(key(file));
   });
 }
 /** Installed notices remain readable when the browser is offline. */

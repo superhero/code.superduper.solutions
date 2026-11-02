@@ -36,12 +36,13 @@ function validateImage(record) {
 }
 
 /** Pi tool that swaps model allocations while its caller keeps the agent alive. */
-export function createVisionTool({profile, getImage, suspendText, resumeText, onState = () => {}, loadVision = () => { throw Error('Install the vision model first.'); },
+export function createVisionTool({profile, getImage, suspendText, resumeText, checkCapabilities = async () => {}, onState = () => {}, loadVision = () => { throw Error('Install the vision model first.'); },
   timeouts = {}}) {
   const lfm3Revision = {'LiquidAI/LFM3-VL-2B-ONNX':'51ee393407d30ca84fb9b37bef4d0459f6803b2b', 'LiquidAI/LFM3-Omni-2B-ONNX':'7d6bd3fd59a0622e5ce7fefc141145a8bba1435a'}[profile?.model];
   const lfm3 = lfm3Revision && profile.revision === lfm3Revision && profile.engine === 'lfm3-onnx' && profile.category === 'vision' && profile.input_mode === 'vision';
   const legacy = profile?.model === MODEL && profile.revision === REVISION && profile.engine === 'transformers' && profile.kind === 'vision' && profile.settings?.preprocessing === 'letterbox-white-square-v1' && profile.settings?.text_only !== true;
-  if (!legacy && !lfm3) throw new Error('inspect_image requires the verified LFM2.5-VL 1.6B letterbox profile or a pinned LFM3 image profile.');
+  const nativeOrnith = profile?.category === 'vision' && profile.engine === 'wllama' && profile.model === 'ornith-ai/Ornith-1.5-9B-GGUF' && profile.revision === 'abdd624b12ebf020b767fff532ff44fe552b28c3' && ['Ornith-1.5-9B-Q4_K_M.gguf','Ornith-1.5-9B-Q8_0.gguf'].includes(profile.file) && profile.projector?.sha256 === '626f9f90627402a6bf4a999111d0fbd69b5fcca7aa8ba089d69e5f10e8858e1d' && !profile.settings.gpu_graph_only;
+  if (!legacy && !lfm3 && !nativeOrnith) throw new Error('inspect_image requires a pinned LFM image profile or the original Ornith native vision runtime/projector.');
   for (const [name, callback] of Object.entries({getImage, suspendText, resumeText, loadVision})) if (typeof callback !== 'function') throw new Error(`${name} must be a function.`);
   const limits = {validate: 5000, suspend: 30000, load: Math.min(profile.settings.load_timeout_ms || 1200000, 1200000),
     generate: Math.min(profile.settings.response_timeout_ms || 180000, 180000), release: 10000, resume: 1200000, ...timeouts};
@@ -89,6 +90,7 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, on
       publish({phase: 'validating', busy: true, error: null, cleanup_failed: false, image_id: args.image_id, question: args.question,
         status: 'Checking the local image…'});
       const image = validateImage(await deadline(Promise.resolve().then(() => getImage(args.image_id)), limits.validate, 'Local image lookup', operation));
+      await deadline(Promise.resolve().then(() => checkCapabilities({signal})), limits.validate, 'Vision capability check', operation);
       throwIfAborted(signal);
       publish({phase: 'suspending', text_ready: false, status: 'Releasing the text model before image inspection…'});
       await deadline(Promise.resolve().then(() => suspendText({signal, ...args})), limits.suspend, 'Text model suspension', operation);

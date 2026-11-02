@@ -1,6 +1,9 @@
 // Copyright (C) 2026 Erik Landvall
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
+import './segment-session.steps.mjs';
+import './transcript-merger.steps.mjs';
+import './continuous.steps.mjs';
 import { Given, When, Then, After } from 'quickpickle';
 import { expect, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
@@ -91,7 +94,7 @@ function controller(world, captureFactory = () => ({start:async()=>({sampleRate:
     installedSpeech:vi.fn(async()=>['cpu']),installSpeech:vi.fn(),removeSpeech:vi.fn(),save:vi.fn(),
     createWorker:()=>{const worker=new FakeWorker();workers.push(worker);return worker;},createCapture:captureFactory,
   };
-  world.data.controller=new SpeechController(adapters);return world.data.controller;
+  world.data.controller=new SpeechController(adapters);world.data.controller.setMode('gpu-fp32');return world.data.controller;
 }
 async function ready(world) { await world.data.controller.initialize(); world.data.workers.at(-1).emit({type:'ready'}); }
 Given('a speech worker blocked while compiling the encoder', async world => {

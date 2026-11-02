@@ -53,3 +53,78 @@ The owned cache loader adapts the generated module's single relative Wasm URL to
 the installed Blob URL; native binaries and packed model weights remain intact.
 The bridge is bundled independently from the pinned native module. Its runtime
 MIT notices and model CC BY 4.0 notice travel with the optional installation.
+
+## Brave GPU decision compatibility
+
+`native/shared-fp32/` retains the exact combined native build recipe, patches,
+context manifest and pins from the reference's current working tree. The paired
+`src/public/browser-models/wllama-decision-fp32/{index.js,wllama.wasm}` merges the
+four original decision API families with core FP32 GPU kernels. Original packed
+GGUF parameters remain unchanged. Native device creation requests no shader-f16;
+K/V caches are F32 and flash attention is disabled. Source and output digests
+are verified before generating the shared `decision-fp32` installation group.
+The inherited D3-only build-receipt description is superseded by its explicit
+`context_variant` and four merged patch hashes. This experimental local patch
+is qualified only with the 1,024-token complete-request guard.
+
+There are no decision CPU options or CPU-only distribution groups. Superseded
+CPU-only additions from the earlier preparation are removed; the previously
+committed chat and native reference binaries remain intact. Runtime/model
+backend failures cannot silently fall back to CPU.
+
+`strands-fp32/` retains MU's exact converter, worker patch, conversion manifest
+and per-parameter receipt from the reference's current working tree. The adapted
+worker keeps this project's IndexedDB-only fetch/Blob loading and deadlines while
+applying MU's explicit FP32 GPUDevice binding and native pipeline evidence.
+`expanded-provenance.json` records upstream and adapted digests.
+
+Before the next authorized deployment, stage the complete checksum-verified MU
+weight tree into the built distribution on the machine holding it:
+
+```sh
+python3 build/browser-models/stage-strands-fp32.py WEIGHTS_DIRECTORY dist
+```
+
+On sds-01 the existing input is
+`/home/erik/llm-sds-01/brave-decisions/weights/9c3589ba48ec3be7a565b52a2fbd0687e30ffe0222c2b3a29d94b569062daf30/`.
+The helper verifies all original file hashes before writing, retains relative
+paths, and splits the large shard into 16 MiB immutable static parts. The browser
+fetches each part in full and verifies the assembled original file digest before
+recording an installation. It then serves the unsplit logical shard to ORT from
+IndexedDB, including offline. Do not substitute the old FP16 manifest/shards.
+The optional payload is about 1.283 GB; it is separate from the source archive
+and HTML. Do not publish a candidate missing these catalog-referenced static
+files. Use the existing HTTPS and isolation policy; cross-origin mirrors also
+need CORS and Cross-Origin-Resource-Policy: cross-origin. Do not publish the LAN
+URL as a production dependency. Staging never uploads or deploys anything.
+
+## Strict GPU chat pairs
+
+`native/chat-gpu` pins Ornith Q4/Q8 and MiniCPM's Wllama3bb2a46/llama970b51c
+source build; `native/chat-lfm3-gpu` pins the separate llama19cce691 build.
+Each retains the exact reference build/patch inputs, paired JS/Wasm, MIT license
+and receipt. Generation validates every input/binary hash before publishing
+its runtime group. Keep the original image-capable native binaries separate.
+
+The strict builds force GPU input embedding, prohibit CPU weight fallback and
+reject CPU neural graph operators. Keep F32 KV, flash attention off, 128/64
+batches, one slot, no prefix cache and the 4,096/256 context/output ceilings.
+Tokenization, sampling/control and Pi tools remain CPU work. Ordinary logs may
+roll over; aggregate audits must survive. These builds need working WebGPU,
+JSPI, Wasm64, SIMD/pthreads and isolation, but not shader-f16.
+
+## Continuous speech source and optional assets
+
+`../speech/nq` retains the four unchanged NR generation recipes.
+`../prepare-nq-speech.mjs` changes only their build destinations and resolves
+the pinned parakeet.js support modules; it never writes the reference checkout.
+`../speech/conversion` preserves decoder lowering, initializer proof and pinned
+dependencies. VAD export/calibration recipes and publisher-license provenance
+remain under `../speech/`; MarbleNet model weights use NVIDIA's Open Model
+License, distinct from NeMo code's Apache license.
+
+Run `stage-speech-assets.py VERIFIED_ASSET_CACHE dist` after building and before
+creating the complete delivery manifest. Its source cache uses SHA directories
+and original filenames; the script verifies every byte before staging. The
+converted models stay outside Git and core HTML. Include every staged file and
+full notices; production URLs must never point to the reference LAN service.

@@ -31,7 +31,7 @@ function portableDeviceEvidence(requirePipelines = false) {
   if (runtime !== "webgpu") return {};
   if (!portableDevice) throw new Error("native ORT EP custom device was not created");
   const features = [...portableDevice.features];
-  if (!features.includes("shader-f16")) throw new Error("native ORT EP custom device lacks shader-f16");
+  if (pinnedProfile.browser_probe.compute_precision === 'float32' ? features.includes('shader-f16') : !features.includes('shader-f16')) throw new Error('Native ORT device precision differs from the pinned graph.');
   if (features.some((name) => /subgroup[-_]matrix/.test(name))) {
     throw new Error("native ORT EP custom device enabled experimental subgroup matrix kernels");
   }
@@ -40,7 +40,8 @@ function portableDeviceEvidence(requirePipelines = false) {
   return { native_gpu: {
     device_source: "executionProviders[0].device (ORT 1.30 native WebGPU EP custom-device binding)",
     device_features: features,
-    requested_features: ["shader-f16"],
+    requested_features: pinnedProfile.browser_probe.compute_precision === "float32" ? [] : ["shader-f16"],
+    compute_type: pinnedProfile.browser_probe.compute_precision === "float32" ? "float32" : "float16",
     compute_pipeline_calls: { ...portablePipelineCalls, total },
     pointer_readout: "unchanged JavaScript CPU FP32 pointer head",
   } };
@@ -104,18 +105,20 @@ async function webgpuProblem() {
   adapter = await self.navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
   if (!adapter) return "WebGPU found no usable GPU";
   // The graph computes in fp16; ONNX Runtime fails at the first run on an adapter without it.
-  if (!adapter.features.has("shader-f16")) return "this GPU has no fp16 shader support (shader-f16)";
+  if (pinnedProfile.browser_probe.compute_precision !== "float32" && !adapter.features.has("shader-f16")) return "this GPU has no fp16 shader support (shader-f16)";
   return null;
 }
 
 async function init({ device }) {
   const t0 = performance.now(), timings = {};
-  runtime = device === "wasm" ? "wasm" : "webgpu";
+  if (device !== "webgpu") throw Error("Strands requires WebGPU; CPU execution is not offered.");
+  runtime = "webgpu";
   if (runtime === "webgpu") {
     const problem = await webgpuProblem();
     if (problem) { post("unsupported", { reason: problem }); return; }
   }
   manifest = await fetch(new URL("manifest.json", WEIGHTS)).then((r) => { if (!r.ok) throw new Error(`manifest.json: HTTP ${r.status}`); return r.json(); });
+  if (pinnedProfile.browser_probe.compute_precision === 'float32' && (manifest.compatibility_conversion?.integer_parameters_identical !== true || Object.values(manifest.state_inputs).some(value => value.dtype === 'float16'))) throw Error('Pinned FP32 compatibility graph/provenance required.');
   post("status", { msg: `runtime ${runtime}`, runtime });
 
   let dir = await cacheDir();
@@ -150,7 +153,7 @@ async function init({ device }) {
       "maxStorageBufferBindingSize", "maxBufferSize", "maxComputeInvocationsPerWorkgroup",
       "maxComputeWorkgroupSizeX", "maxComputeWorkgroupSizeY", "maxComputeWorkgroupSizeZ"];
     portableDevice = await adapter.requestDevice({
-      requiredFeatures: ["shader-f16"],
+      requiredFeatures: pinnedProfile.browser_probe.compute_precision === "float32" ? [] : ["shader-f16"],
       requiredLimits: Object.fromEntries(names.map((name) => [name, adapter.limits[name]])),
     });
     const createSync = portableDevice.createComputePipeline.bind(portableDevice);
@@ -177,7 +180,7 @@ async function init({ device }) {
   });
   timings.session_ms = performance.now() - t;
   if (runtime === "webgpu") post("status", {
-    msg: "Native ORT session created with its bound baseline FP16 device; pointer head remains on JavaScript CPU",
+    msg: "Native ORT session created with its bound pinned compute device; pointer head remains on JavaScript CPU",
     ...portableDeviceEvidence(),
   });
   // One short forward compiles the GPU kernels now, so the first decision is not slow and a GPU problem shows at load.

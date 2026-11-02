@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { rolldown } from 'rolldown';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { BROWSER_PROFILES } from '../../src/lib/assistant/browser/catalog.ts';
 import { selectDropdown, selectPage, addOllamaConnection } from './navigation.helpers.mjs';
 import { speechBrowserFixture } from '../speech/browser-harness.mjs';
@@ -402,29 +402,92 @@ Then('browser model availability follows installation changes without hiding the
   assert.equal(this.requests.filter(request=>/huggingface\.co/.test(request.url)).length,0);
 });
 
-Then('AI settings offer Gemma MiniCPM LFM vision and the nine decision profiles separately',async function(){
+Then('AI settings offer Gemma MiniCPM LFM vision and the catalog decision profiles separately',async function(){
   const page=this.page;await controls(page);
-  await expect(page.getByRole('region',{name:'LLM',exact:true}).locator('[data-model-id]')).toHaveCount(8);
-  await expect(page.getByRole('region',{name:'Vision',exact:true}).locator('[data-model-id]')).toHaveCount(1);
-  await expect(page.getByRole('region',{name:'Decision models',exact:true}).locator('[data-model-id]')).toHaveCount(9);
+  await expect(page.getByRole('region',{name:'LLM',exact:true}).locator('[data-model-id]')).toHaveCount(9);
+  await expect(page.getByRole('region',{name:'Vision',exact:true}).locator('[data-model-id]')).toHaveCount(5);
+  await expect(page.getByRole('region',{name:'Decision models',exact:true}).locator('[data-model-id]')).toHaveCount(10);
   await expect(page.getByRole('button',{name:'Use LiteRT-LM',exact:true})).toBeVisible();
+  const fp32=page.locator('[data-model-id="mu-browser-decision-strands-fp32-gpu"]');await expect(fp32.locator('.model-name')).toHaveText('Strands · WebGPU FP32');
+  const gpu=page.locator('[data-model-id="kt-browser-decision-d3-lite-gguf-bf16"]');await expect(gpu.locator('.model-name')).toContainText('WebGPU');
+  await expect(page.locator('[data-model-id="ks-browser-decision-strands-current-int4-cpu"]')).toHaveCount(0);
+  const flash=page.locator('[data-model-id="lb-browser-decision-d3-flash-q8"]');
+  await flash.getByRole('button',{name:'Detailed info',exact:true}).click();
+  await expect(flash.getByLabel('Model limitations',{exact:true})).toContainText('no CPU fallback');
+  await expect(flash.getByText(/CPU-only 9B/)).toHaveCount(0);
+  await flash.getByRole('button',{name:'Model settings',exact:true}).click();
+  await expect(flash.getByLabel('Browser execution',{exact:true})).toHaveCount(0);
+  await expect(flash.getByText(/WebGPU · native decision scoring/)).toBeVisible();
   const gemma=page.getByRole('region',{name:'Gemma 4 · E2B',exact:true});await gemma.getByRole('button',{name:'Model settings',exact:true}).click();
   await expect(gemma.getByText(/GPU inference/)).toBeVisible();await expect(gemma.getByLabel('Context tokens',{exact:true})).toHaveValue('4096');
   await expect(gemma.getByLabel('Reasoning',{exact:true})).toHaveCount(0);
   const mini=page.getByRole('region',{name:'MiniCPM5 · 2.52B · Q4',exact:true});await mini.getByRole('button',{name:'Model settings',exact:true}).click();
-  await expect(mini.getByLabel('GPU layer budget',{exact:true})).toHaveValue('8');await expect(mini.getByText('Vision on GPU in hybrid mode',{exact:true})).toHaveCount(0);
+  await expect(mini.getByLabel('GPU layer budget',{exact:true})).toHaveCount(0);
+  await expect(mini.getByLabel('Browser execution',{exact:true})).toHaveCount(0);
+  await expect(mini.getByText('Vision on GPU in hybrid mode',{exact:true})).toHaveCount(0);
+  const continuous=page.locator('[data-speech-mode="gpu-nq"]');
+  await expect(continuous.locator('.model-name')).toHaveText('Parakeet · continuous');
+  await continuous.getByRole('button',{name:'Model settings',exact:true}).click();
+  await expect(continuous.getByText('WebGPU · grouped control · FP32 activations',{exact:true})).toBeVisible();
+  await continuous.getByRole('button',{name:'Speech detection',exact:true}).click();
+  const detectors=page.getByRole('menu',{name:'Speech detection',exact:true});
+  for(const label of ['FireRed Stream · GPU','FSMN · GPU (experimental)','MarbleNet · GPU']) await expect(detectors.getByRole('menuitemradio',{name:label,exact:true})).toBeVisible();
+  await page.keyboard.press('Escape');
+  await continuous.getByRole('button',{name:'Detailed info',exact:true}).click();
+  await expect(continuous.getByText(/Recovery audio stays in this browser/)).toBeVisible();
+  await expect(page.getByText('No saved recordings.',{exact:true})).toBeVisible();
   expect(this.requests.filter(request=>/huggingface\.co/.test(request.url))).toHaveLength(0);
 });
-Then('split browser runtime assets verify and stream from installed blocks offline',async function(){
+Then('local speech recordings export exact WAV cores and remove only the selected recording',async function(){
+ const page=this.page;await controls(page);
+ await page.addScriptTag({content:await speechBrowserFixture()});
+ await page.evaluate(async()=>{
+  const request=indexedDB.open('code-speech-segments-v1',1);
+  const db=await new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
+  try{await new Promise((resolve,reject)=>{
+   const tx=db.transaction(['audio','metadata'],'readwrite');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+   for(const row of [
+    {sessionId:'alpha-0',recordingId:'alpha-one',index:0,audioStartSample:0,coreStartSample:0,endSample:4,pcm:new Float32Array([-1,0,.5,1])},
+    {sessionId:'alpha-1',recordingId:'alpha-one',index:1,audioStartSample:2,coreStartSample:4,endSample:6,pcm:new Float32Array([.5,1,-.5,.25])},
+    {sessionId:'beta-0',recordingId:'beta-two',index:0,audioStartSample:0,coreStartSample:0,endSample:1,pcm:new Float32Array([0])},
+   ]){const {pcm,...metadata}=row;tx.objectStore('audio').add({sessionId:row.sessionId,pcm});tx.objectStore('metadata').add(metadata);}
+  });}finally{db.close();}
+ });
+ await page.getByRole('button',{name:'Refresh local recordings',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Export recording alpha-on',exact:true})).toBeVisible();
+ const bytes=await page.evaluate(async()=>[...new Uint8Array(await(await speechTest.speechRecordingWave('alpha-one')).arrayBuffer())]);
+ const wave=Buffer.from(bytes);assert.equal(wave.toString('ascii',0,4),'RIFF');assert.equal(wave.readUInt32LE(24),16000);assert.equal(wave.readUInt32LE(40),12);
+ assert.deepEqual(Array.from({length:6},(_,i)=>wave.readInt16LE(44+i*2)),[-32768,0,16384,32767,-16384,8192]);
+ const downloading=page.waitForEvent('download');await page.getByRole('button',{name:'Export recording alpha-on',exact:true}).click();
+ const downloaded=await downloading;const actual=await readFile(await downloaded.path());
+ assert.deepEqual(actual,wave);
+ await page.getByRole('button',{name:'Remove recording alpha-on',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Export recording alpha-on',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Export recording beta-two',exact:true})).toBeVisible();
+ assert.deepEqual(await page.evaluate(async()=>(await speechTest.speechRecordings()).map(row=>row.recordingId)),['beta-two']);
+});
+Then('speech removal retains continuous artifacts installed with a GPU detector',async function(){
+ const page=this.page;await page.addScriptTag({content:await speechBrowserFixture()});
+ const result=await page.evaluate(async()=>{
+  const cache=await caches.open('code-speech-artifacts-v1'),files=speechTest.speechArtifacts('gpu-nq','fsmn');
+  for(const file of files)await cache.put(new URL(`/__code_speech__/${file.sha256}`,location.origin),new Response('cache-control-fixture',{headers:{'x-code-sha256':file.sha256}}));
+  const before=await speechTest.installedSpeech('fsmn');
+  const shared=speechTest.speechArtifacts('gpu-fp32').filter(file=>files.some(other=>other.sha256===file.sha256)).length;
+  await speechTest.removeSpeech('gpu-fp32');
+  return{before,after:await speechTest.installedSpeech('fsmn'),shared,legacy:await speechTest.installedSpeech()};
+ });
+ assert.ok(result.shared>0);assert.ok(result.before.includes('gpu-nq'));assert.ok(result.after.includes('gpu-nq'));assert.ok(!result.legacy.includes('gpu-fp32'));
+});
+Then('split browser {string} assets verify and stream from installed blocks offline',async function(kind){
   await fixture(this.page);
-  const result=await this.page.evaluate(async()=>{
+  const result=await this.page.evaluate(async kind=>{
     const m=browserModelsFixture,bytes=new Uint8Array(8388608+31);bytes.set([11,22,33],8388607);
     const sha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(v=>v.toString(16).padStart(2,'0')).join('');
-    const file={id:'split-fixture',url:'https://offline.invalid/split',bytes:bytes.length,sha256,kind:'runtime',parts:[{url:'https://offline.invalid/part-1',bytes:8388608},{url:'https://offline.invalid/part-2',bytes:31}]},requests=[];
-    await m.installArtifact(file,()=>{},new AbortController().signal,async url=>{requests.push(String(url));return new Response(bytes.slice(String(url).endsWith('part-1')?0:8388608,String(url).endsWith('part-1')?8388608:bytes.length));});
+    const file={id:'split-fixture',url:'https://offline.invalid/split',bytes:bytes.length,sha256,kind,parts:[{url:'https://offline.invalid/part-1',bytes:8388608},{url:'https://offline.invalid/part-2',bytes:31}]},requests=[];
+    await m.installArtifact(file,()=>{},new AbortController().signal,async(url,options)=>{if(new Headers(options.headers).has('range'))throw Error('Split parts must download as complete static files.');requests.push(String(url));return new Response(bytes.slice(String(url).endsWith('part-1')?0:8388608,String(url).endsWith('part-1')?8388608:bytes.length));});
     const response=await m.installedFetch([file])(file.url,{headers:{range:'bytes=8388607-8388609'}});
     return {requests,bytes:[...new Uint8Array(await response.arrayBuffer())]};
-  });
+  },kind);
   assert.deepEqual(result,{requests:['https://offline.invalid/part-1','https://offline.invalid/part-2'],bytes:[11,22,33]});
 });
 Then('the installed LiteRT loader initializes native Wasm using only verified Blob URLs',{timeout:60000},async function(){

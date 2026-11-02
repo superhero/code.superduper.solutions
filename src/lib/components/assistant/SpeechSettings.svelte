@@ -5,6 +5,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import { onMount } from 'svelte';
   import MaterialIcon from '$lib/components/MaterialIcon.svelte';
   import SpeechModel from './SpeechModel.svelte';
+  import SpeechRecordings from './SpeechRecordings.svelte';
   import { speech } from '$lib/assistant/speech/controller';
   import { speechModes } from '$lib/assistant/speech/catalog';
   onMount(() => { void speech.refresh(); });
@@ -12,6 +13,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 <section class="speech-settings" aria-label="Speech input settings">
   <h4 tabindex="-1"><MaterialIcon name="mic" size={20} />Speech input</h4>
   {#each speechModes as mode (mode.id)}<SpeechModel mode={mode.id} />{/each}
+  <SpeechRecordings/>
 </section>
 <style>
   .speech-settings{display:grid;gap:12px;min-width:0;flex-shrink:0;padding:var(--pane-padding);background:var(--color-surface);border-radius:4px;font-size:.6875rem}

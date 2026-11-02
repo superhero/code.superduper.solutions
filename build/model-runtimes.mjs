@@ -39,7 +39,7 @@ async function generate() {
     }
     (catalog[group] ??= []).push(file);
   }
-  for (const [group, entry, format] of [['litert','litert-worker.js','iife'],['vision','vision-worker.js','iife'],['strands-cpu','strands-worker.js','iife'],['strands-gpu','strands-native-device-worker.js','iife'],['decision','decisions.js','es'],['lfm3','lfm3-worker.js','iife']]) {
+  for (const [group, entry, format] of [['litert','litert-worker.js','iife'],['vision','vision-worker.js','iife'],['strands-gpu','strands-native-device-worker.js','iife'],['strands-fp32','strands-native-device-worker.js','iife'],['decision','decisions.js','es'],['lfm3','lfm3-worker.js','iife']]) {
     const notices = commonNotices.slice();
     const bundle = await rolldown({input:resolve(root,source,entry), platform:'browser', ...(format === 'iife' ? {transform:{define:{'import.meta.url':'self.location.href'}}} : {}),
       plugins:[{name:'installed-model-runtime',
@@ -65,7 +65,7 @@ async function generate() {
       publish('litert',name,await readFile(resolve(root,'node_modules/@litert-lm/core/wasm',name)),ext);
     }
   }
-  for (const group of ['vision','strands-cpu','strands-gpu','lfm3']) {
+  for (const group of ['vision','strands-gpu','strands-fp32','lfm3']) {
     const directory = group === 'vision' ? 'node_modules/@huggingface/transformers/node_modules/onnxruntime-web' : 'node_modules/onnxruntime-web';
     const version = JSON.parse(await readFile(resolve(root,directory,'package.json'))).version;
     if (version !== (group === 'vision' ? '1.31.0-dev.20260914-8d85527a0' : '1.30.0')) throw Error('ONNX engine pin changed.');
@@ -93,6 +93,20 @@ async function generate() {
       }
     }
   }
+  {
+    const directory = resolve(root,'src/public/browser-models/wllama-decision-fp32');
+    const receipt = JSON.parse(await readFile(resolve(directory,'build-receipt.json')));
+    const pins = JSON.parse(await readFile(resolve(root,'build/browser-models/native/shared-fp32/pins.json')));
+    for (const [name, hash] of Object.entries(pins.inputs_sha256)) {
+      if (receipt.inputs_sha256[name] !== hash || digest(await readFile(resolve(root,'build/browser-models/native/shared-fp32',name))) !== hash) throw Error('FP32 native build input changed: '+name);
+    }
+    catalog['decision-fp32'] = [...catalog.decision, ...catalog.elephant.filter(file => file.id === 'elephant-OneJev.LICENSE'), ...catalog.pplx.filter(file => file.id.startsWith('pplx-publisher-'))];
+    for (const name of ['index.js','wllama.wasm','LICENCE']) {
+      const bytes = await readFile(resolve(directory,name));
+      if (digest(bytes) !== pins.files[name] || receipt.files[name] !== pins.files[name]) throw Error('FP32 native pair changed: '+name);
+      catalog['decision-fp32'].push({id:name === 'index.js' ? 'wllama-js' : name === 'wllama.wasm' ? 'wllama-wasm' : 'wllama-license',url:'browser-models/wllama-decision-fp32/'+name,bytes:bytes.length,sha256:digest(bytes),kind:name === 'LICENCE' ? 'notice' : 'runtime'});
+    }
+  }
   const lfmDirectory = resolve(root, 'src/public/browser-models/wllama-lfm3');
   const lfmReceipt = JSON.parse(await readFile(resolve(lfmDirectory, 'build-receipt.json')));
   catalog['wllama-lfm3'] = [];
@@ -100,6 +114,20 @@ async function generate() {
     const bytes = await readFile(resolve(lfmDirectory,name));
     if (digest(bytes) !== lfmReceipt.files[name]) throw Error('LFM3 native runtime changed: ' + name);
     catalog['wllama-lfm3'].push({id,url:'browser-models/wllama-lfm3/'+name,bytes:bytes.length,sha256:digest(bytes),kind});
+  }
+  for (const group of ['chat-gpu','chat-lfm3-gpu']) {
+    const folder = 'wllama-'+group, directory = resolve(root,'src/public/browser-models',folder);
+    const pins = JSON.parse(await readFile(resolve(root,'build/browser-models/native',group,'pins.json')));
+    const receipt = JSON.parse(await readFile(resolve(directory,'build-receipt.json')));
+    for (const [name,sha] of Object.entries(pins.inputs_sha256)) {
+      if (receipt.inputs_sha256[name] !== sha || digest(await readFile(resolve(root,'build/browser-models/native',group,name))) !== sha) throw Error('Chat GPU build input differs: '+group+'/'+name);
+    }
+    catalog[group] = [];
+    for (const [name,id,kind] of [['index.js','wllama-js','runtime'],['wllama.wasm','wllama-wasm','runtime'],['LICENCE','wllama-license','notice']]) {
+      const bytes = await readFile(resolve(directory,name));
+      if (digest(bytes) !== pins.files[name] || receipt.files[name] !== pins.files[name]) throw Error('Chat GPU native pair differs: '+group+'/'+name);
+      catalog[group].push({id,url:`browser-models/${folder}/${name}`,bytes:bytes.length,sha256:digest(bytes),kind});
+    }
   }
   delete catalog.decision;
   return {assets,catalog};

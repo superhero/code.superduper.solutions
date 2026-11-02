@@ -44,9 +44,17 @@ Feature: Explicit browser model installation and local inference controls
     Then selecting a browser model starts its preparation and can be cancelled without losing the draft
 
   Scenario: Expanded AI settings separate language vision and decision models without downloading weights
-    Then AI settings offer Gemma MiniCPM LFM vision and the nine decision profiles separately
-  Scenario: Split optional SDK downloads retain complete verified bytes across block boundaries
-    Then split browser runtime assets verify and stream from installed blocks offline
+    Then AI settings offer Gemma MiniCPM LFM vision and the catalog decision profiles separately
+  Scenario: Local recording export keeps unique cores and deletion preserves other recordings
+    Then local speech recordings export exact WAV cores and remove only the selected recording
+  Scenario: Removing an incomplete legacy speech variant preserves a GPU detector installation
+    Then speech removal retains continuous artifacts installed with a GPU detector
+  Scenario Outline: Split optional SDK downloads retain complete verified bytes across block boundaries
+    Then split browser "<kind>" assets verify and stream from installed blocks offline
+    Examples:
+      | kind |
+      | runtime |
+      | weights |
   Scenario: The pinned Gemma SDK initializes its native Wasm in a classic Blob worker offline
     Then the installed LiteRT loader initializes native Wasm using only verified Blob URLs
 

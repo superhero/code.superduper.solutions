@@ -1,0 +1,51 @@
+[
+  {
+    "id": "FireRed-LICENSE",
+    "url": "speech/notices/FireRed-LICENSE",
+    "bytes": 11357,
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "type": "notice"
+  },
+  {
+    "id": "FSMN-MODEL-CARD.md",
+    "url": "speech/notices/FSMN-MODEL-CARD.md",
+    "bytes": 3613,
+    "sha256": "59ad5ed1e004a8a2b431ad4d86715f0093dee023ff7018073d3c261f60ec0e1e",
+    "type": "notice"
+  },
+  {
+    "id": "MarbleNet-MODEL-CARD.md",
+    "url": "speech/notices/MarbleNet-MODEL-CARD.md",
+    "bytes": 17046,
+    "sha256": "c48b3a61e35e2d7377bdb084d6acc021f681df8258126cb9af2690d38f29184f",
+    "type": "notice"
+  },
+  {
+    "id": "NVIDIA-OPEN-MODEL-LICENSE.pdf",
+    "url": "speech/notices/NVIDIA-OPEN-MODEL-LICENSE.pdf",
+    "bytes": 79005,
+    "sha256": "4d2fb590aa9b30c47f2058bff17291df7fa2aa0c1bd775a20703da9bb267cfab",
+    "type": "notice-pdf"
+  },
+  {
+    "id": "NVIDIA-OPEN-MODEL-LICENSE.txt",
+    "url": "speech/notices/NVIDIA-OPEN-MODEL-LICENSE.txt",
+    "bytes": 10476,
+    "sha256": "48b1f47664f5e7f54eb5104b62cdf183fb8cff4c9022b534a0fbe6b0f033e962",
+    "type": "notice"
+  },
+  {
+    "id": "MarbleNet-NOTICE",
+    "url": "speech/notices/MarbleNet-NOTICE",
+    "bytes": 599,
+    "sha256": "ad921c7b17e11aed0e9f0eb4cace2f56ee9e8ff1292ba16b7b912679a826e33b",
+    "type": "notice"
+  },
+  {
+    "id": "Parakeet-PUBLISHER-CARD.md",
+    "url": "speech/notices/Parakeet-PUBLISHER-CARD.md",
+    "bytes": 42888,
+    "sha256": "7a4306a43f395e3a716e77f1d81c03db18a0a355d7b566bb1d6307213ba0302b",
+    "type": "notice"
+  }
+]

@@ -8,6 +8,11 @@ export const layerLimit = profile => (profile.gguf_block_count || profile.model_
 export const CPU_HEAP_BYTES = 4294967296;
 export const fullCPUFitsBuild = profile => profile.weight_bytes + (profile.projector?.bytes ?? 0) < CPU_HEAP_BYTES;
 export function executionPlans(profile, capabilities, {mode = 'auto', gpuLayers = profile.settings.gpu_fallback_layers ?? 24, visionGpu = true} = {}) {
+  if (profile.settings.gpu_graph_only) {
+    if (!['auto','gpu'].includes(mode)) throw Error('This runtime requires GPU execution; CPU and hybrid model execution are unavailable.');
+    if (!capabilities?.gpu?.compute) throw Error('A usable WebGPU adapter is required. Enable hardware acceleration and retry.');
+    return [{mode:'gpu',gpu_layers:99,vision_gpu_offload:true,cpu_fallback:false,label:'WebGPU · FP32-compatible · CPU model fallback disabled'}];
+  }
   if (!['auto', 'gpu', 'hybrid', 'cpu'].includes(mode)) throw Error('Unknown execution mode');
   if (!Number.isInteger(gpuLayers) || gpuLayers < 1 || gpuLayers > layerLimit(profile)) throw Error('Invalid GPU layer count');
   const gpu = !!capabilities?.gpu?.compute && !!capabilities?.gpu?.f16_compute;

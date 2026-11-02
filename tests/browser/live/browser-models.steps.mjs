@@ -9,10 +9,13 @@ import {resolve} from 'node:path';
 import {createHash, randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
 import {get as httpsGet} from 'node:https';
+import {decisionFixtures} from './decision-fixtures.mjs';
+import {pinnedFixtures} from './pinned-fixtures.mjs';
+import expandedProfiles from '../../../src/lib/assistant/browser/expanded-catalog.json' with {type:'json'};
 import {observeSpeechMessages} from '../../speech/browser-harness.mjs';
 setDefaultTimeout(1800000);
 const directory = resolve(process.env.MODEL_LIVE_ARTIFACTS ?? 'tmp/test/model-live');
-let context, page, imports, fixtureServer, result = {cases: []};
+let context, page, imports, fixtureServer, decisionDelivery, fixedDelivery, result = {cases: []};
 function record(type, value) {console.log(JSON.stringify({type, ...value}));}
 async function save() {await writeFile(resolve(directory,'model-results.json'),JSON.stringify(result,null,2)+'\n');}
 BeforeAll({timeout:120000},async()=>{
@@ -20,15 +23,23 @@ BeforeAll({timeout:120000},async()=>{
   await mkdir(directory,{recursive:true});
   if(process.env.MODEL_LIVE_SPEECH_FIXTURE){
     const bytes=await readFile(process.env.MODEL_LIVE_SPEECH_FIXTURE),sha256=createHash('sha256').update(bytes).digest('hex');
-    assert.equal(sha256,'aa81c2552465568567e670f3823117e633900d16bd6202346a72f3c8464c74c8','Use the pinned public JFK microphone fixture.');
+    assert.equal(sha256,process.env.MODEL_LIVE_MICROPHONE_SHA??'aa81c2552465568567e670f3823117e633900d16bd6202346a72f3c8464c74c8','Use the pinned public JFK microphone fixture.');
     result.microphoneFixture={sha256,bytes:bytes.length};
   }
-  context=await chromium.launchPersistentContext(resolve(directory,'profile'),{channel:'chromium',headless:false,viewport:{width:1280,height:1000},reducedMotion:'reduce',args:['--no-sandbox','--enable-unsafe-webgpu','--enable-features=Vulkan,VulkanFromANGLE','--use-angle=vulkan','--ozone-platform=x11','--disk-cache-size=1','--enable-dawn-features=allow_unsafe_apis,vulkan_enable_f16_on_nvidia',...(process.env.MODEL_LIVE_SPEECH_FIXTURE?['--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${process.env.MODEL_LIVE_SPEECH_FIXTURE}${process.env.MODEL_LIVE_PHONON_STREAMING==='1'?'%noloop':''}`]:[])]});
+  const browserArgs=['--no-sandbox','--enable-unsafe-webgpu','--enable-features=Vulkan,VulkanFromANGLE','--use-angle=vulkan','--ozone-platform=x11','--disk-cache-size=1',process.env.MODEL_LIVE_BRAVE==='1'?'--enable-dawn-features=allow_unsafe_apis':'--enable-dawn-features=allow_unsafe_apis,vulkan_enable_f16_on_nvidia',...(process.env.MODEL_LIVE_SPEECH_FIXTURE?['--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${process.env.MODEL_LIVE_SPEECH_FIXTURE}${process.env.MODEL_LIVE_PHONON_STREAMING==='1'?'%noloop':''}`]:[])];
+  context=await chromium.launchPersistentContext(resolve(directory,'profile'),{...(process.env.MODEL_LIVE_BRAVE==='1'?{executablePath:process.env.MODEL_LIVE_BRAVE_PATH??'/evidence/browser/opt/brave.com/brave/brave'}:{channel:'chromium'}),headless:false,viewport:{width:1280,height:1000},reducedMotion:'reduce',args:browserArgs});
+  result.browserLaunchFlags=browserArgs;
+  if(process.env.MODEL_LIVE_DECISION_FIXTURES==='1')decisionDelivery=await decisionFixtures(context,directory,expandedProfiles,record);
+  if(process.env.MODEL_LIVE_FIXED_ASSETS)fixedDelivery=await pinnedFixtures(context,JSON.parse(await readFile(process.env.MODEL_LIVE_FIXED_ASSETS)),record);
   // Long model checks retain one application version while independent source
   // edits can continue in the development server. Mock only its HMR transport.
   const origin=new URL(process.env.MODEL_LIVE_URL??'http://127.0.0.1:5175');
   await context.routeWebSocket(url=>url.host===origin.host,route=>{route.send(JSON.stringify({type:'connected'}));route.onMessage(()=>{});});
   page=context.pages()[0]??await context.newPage();
+  if(process.env.MODEL_LIVE_FIXED_ASSETS)await page.addInitScript(()=>{
+    const Original=Worker;globalThis.modelWorkerErrors=[];
+    globalThis.Worker=class extends Original{constructor(...args){super(...args);this.addEventListener('message',({data})=>{if(data?.type==='error')modelWorkerErrors.push({message:data.message,stack:data.stack,sessionId:data.sessionId});});}};
+  });
   if(process.env.MODEL_LIVE_PHONON_STREAMING==='1') {
     await observeSpeechMessages(page);
     await page.addInitScript(()=>{globalThis.phononWindowEvents=[];const Original=Worker;globalThis.Worker=class extends Original{constructor(...args){super(...args);this.addEventListener('message',({data})=>{if(['inference','ready'].includes(data.type))globalThis.phononWindowEvents.push(structuredClone(data));});}};});
@@ -99,16 +110,18 @@ After(async function({result:status}){
   this.case.status=status.status.toLowerCase();this.case.finishedAt=new Date().toISOString();
   if(status.status!=='PASSED')this.case.error=status.message??status.exception?.message;
   if(status.status!=='PASSED'){
+    this.case.workerErrors=await page.evaluate(()=>globalThis.modelWorkerErrors??[]).catch(()=>[]);
     this.case.alerts=await page.getByRole('alert').allTextContents().catch(()=>[]);
     this.case.body=(await page.locator('body').innerText().catch(()=>'' )).slice(-7000);
     this.case.tools=await page.locator('.tool-activity').allTextContents().catch(()=>[]);
     await page.screenshot({path:resolve(directory,'failure-'+result.cases.length+'.png')}).catch(()=>{});
     await page.getByRole('button',{name:'Close AI',exact:true}).click().catch(()=>{});
   }
-  await page.evaluate(async()=>{globalThis.modelLiveController?.abort();globalThis.modelLive?.speech?.unload();await globalThis.modelLive?.runtime.unloadBrowserModel();}).catch(()=>{});
+  await page.evaluate(async()=>{globalThis.modelLiveController?.abort();await globalThis.modelLive?.speech?.unload();await globalThis.modelLive?.runtime.unloadBrowserModel();}).catch(()=>{});
   record('case-result',this.case);await save();
 });
-AfterAll(async()=>{await context?.close();fixtureServer?.closeAllConnections();if(fixtureServer)await new Promise(resolve=>fixtureServer.close(resolve));await save();});
+AfterAll(async()=>{await context?.close();await decisionDelivery?.close();await fixedDelivery?.close();fixtureServer?.closeAllConnections();if(fixtureServer)await new Promise(resolve=>fixtureServer.close(resolve));await save();});
+export const liveBrowser=()=>({context,page,imports,result,directory,choose,send,record,save});
 async function choose(id){
   if(await page.evaluate(id=>modelLive.runtime.loadedModel()===id,id))return;
   await page.getByRole('button',{name:'AI model',exact:true}).click();
@@ -303,4 +316,34 @@ Then('the live Phonon GPU stream preserves confirmed words across recordings and
   await context.setOffline(false);
   assert.deepEqual(result.uploads,[]);assert.deepEqual(result.pageErrors,[]);
   await page.screenshot({path:resolve(directory,'phonon-gpu-streaming.png')});
+});
+
+Then('the Brave decision profile {string} passes six native checks',async function(id){
+  assert.equal(process.env.MODEL_LIVE_BRAVE,'1','This qualification requires actual Brave.');
+  this.case.model=id;await decisionDelivery?.prepare(id);
+  const fixtures=JSON.parse(await readFile(new URL('../../models/native-decision-cases.json',import.meta.url)));
+  this.case.results=await page.evaluate(async({id,fixtures})=>{
+    const m=modelLive;globalThis.modelLiveController=new AbortController();let last='';
+    const progress=event=>{const key=event.total?Math.floor((event.received??0)/134217728):event.message;if(key!==last){last=key;void modelLiveProgress({id,...event});}};
+    await m.ensureBrowserModelInstalled(id,progress,modelLiveController.signal);
+    const rows=[];
+    for(const fixture of fixtures){
+      const start=performance.now();
+      const result=await m.runtime.scoreBrowserDecision(id,fixture.request,modelLiveController.signal,progress);
+      rows.push({id:fixture.id,result,ms:performance.now()-start,placement:m.runtime.loadedModelInfo()});
+      await modelLiveProgress({id,case:fixture.id,ms:rows.at(-1).ms,result});
+    }
+    return rows;
+  },{id,fixtures});
+  for(const [i,row]of this.case.results.entries()){
+    const answer=row.result.answer??row.result;
+    const probabilities=answer.probabilities??{true:answer.noul,false:1-answer.noul};
+    assert.ok(Object.values(probabilities).every(p=>Number.isFinite(p)&&p>=0&&p<=1));
+    assert.ok(Math.abs(Object.values(probabilities).reduce((sum,p)=>sum+p,0)-1)<1e-4);
+    const top=Object.keys(probabilities).reduce((a,b)=>probabilities[a]>=probabilities[b]?a:b);assert.equal(top,fixtures[i].expected);
+    if(id==='mu-browser-decision-strands-fp32-gpu'){
+      const gpu=row.result.native_gpu;assert.equal(row.result.runtime,'webgpu');assert.deepEqual(gpu.requested_features,[]);assert.equal(gpu.compute_type,'float32');assert.ok(!gpu.device_features.includes('shader-f16'));assert.ok(gpu.compute_pipeline_calls.total>0);
+    }else {const p=row.placement.placement;assert.equal(p.backend,'webgpu');assert.equal(p.n_gpu_layers,99);assert.equal(p.shader_f16,false);assert.equal(p.offloaded.count,p.offloaded.total);assert.ok(p.offloaded.count>0);assert.ok(p.gpu_model_buffers.length>0);assert.ok(p.compute_verified);assert.ok(p.matrix_pipelines.length>0);}
+  }
+  await page.evaluate(()=>modelLive.runtime.unloadBrowserModel());
 });

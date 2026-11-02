@@ -28,7 +28,6 @@ Feature: Real browser-local inference in the editor
       | la-browser-decision-d3-mini-q8 |
       | lb-browser-decision-d3-flash-q8 |
       | kx-browser-decision-strands-portable-matmul |
-      | ks-browser-decision-strands-current-int4-cpu |
       | kv-browser-decision-knowline-gen55-top64 |
       | kw-browser-decision-elephant1-q4 |
       | ky-browser-decision-pplx-flash-v3 |
@@ -36,8 +35,8 @@ Feature: Real browser-local inference in the editor
     Then loading the live auxiliary profile "<model>" leaves a fresh chat without an LLM
     Examples:
       | model |
-      | ks-browser-decision-strands-current-int4-cpu |
       | jo-browser-mobile-lfm25-vl16b-letterbox |
+      | mu-browser-decision-strands-fp32-gpu |
   @browser-speech-live
   Scenario Outline: Speech model <mode> recognizes a real microphone fixture through the composer
     Then the live speech profile "<mode>" dictates a known recording into the composer
@@ -71,3 +70,17 @@ Feature: Real browser-local inference in the editor
   @browser-speech-live
   Scenario: Phonon GPU streaming survives restart offline loading silence and cancellation
     Then the live Phonon GPU stream preserves confirmed words across recordings and offline restart
+
+  @browser-brave-decisions-live
+  Scenario Outline: Brave native backend <model> scores six reference decisions with verified placement
+    Then the Brave decision profile "<model>" passes six native checks
+    Examples:
+      | model |
+      | mu-browser-decision-strands-fp32-gpu |
+      | kt-browser-decision-d3-lite-gguf-bf16 |
+      | kz-browser-decision-d3-nano-q8 |
+      | la-browser-decision-d3-mini-q8 |
+      | lb-browser-decision-d3-flash-q8 |
+      | kv-browser-decision-knowline-gen55-top64 |
+      | kw-browser-decision-elephant1-q4 |
+      | ky-browser-decision-pplx-flash-v3 |

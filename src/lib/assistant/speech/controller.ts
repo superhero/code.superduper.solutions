@@ -1,13 +1,16 @@
 // Copyright (C) 2026 Erik Landvall
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
-import {lfmSpeechProfile, isBatchSpeech, isAdditionalSpeech} from './catalog';
+import {lfmSpeechProfile, isBatchSpeech, requiresSpeechGpu} from './catalog';
 import { cachedSpeechURLs, installedSpeech, installSpeech, removeSpeech } from './storage';
 import {phononCompatibility} from './phonon-compatibility.js';
 import {probeBrowser} from '../browser/reference/compatibility.js';
 import { SpeechCapture } from './capture';
 import { LiveFeatures } from './runtime/live-features.js';
 import { clearLegacySpeechDiagnostics } from './diagnostics';
+import {createLongSpeech} from './runtime/continuous/capture.js';
+import {vadAssetURLs,vadModes,type VadMode} from './vad';
+import type {LongSpeech,ContinuousTranscript} from './continuous-types';
 import type { SpeechMode, SpeechState, Transcript } from './types';
 export const STARTUP_DEADLINE = 120_000;
 const stages: Record<string, string> = {
@@ -18,9 +21,9 @@ const stages: Record<string, string> = {
 };
 const browserAdapters = { checkPhonon: async () => phononCompatibility(await probeBrowser()), cachedSpeechURLs, installedSpeech, installSpeech, removeSpeech,
   createWorker: (url: string) => new Worker(url, { type: 'module' }),
-  createCapture: () => new SpeechCapture() };
+  createCapture: () => new SpeechCapture(),createContinuous:createLongSpeech };
 export class SpeechController {
-  state: SpeechState = { mode: 'gpu-fp32', phase: 'idle', stage: '', error: '', transcript: '', seconds: 0, progress: undefined, installed: [], runtime:undefined };
+  state: SpeechState = { mode: 'gpu-nq', vad:'ten', phase: 'idle', stage: '', error: '', transcript: '', seconds: 0, progress: undefined, installed: [], runtime:undefined };
   owner: string | undefined;
   private listeners = new Set<(state: SpeechState) => void>();
   private request: AbortController | undefined;
@@ -37,6 +40,10 @@ export class SpeechController {
   private commit: ((text: string) => void) | undefined;
   private adapters: typeof browserAdapters;
   private preparation = Promise.resolve();
+  private continuous:LongSpeech|undefined;
+  private disposal:Promise<unknown>=Promise.resolve();
+  private stableSequence=0;
+  private recoverySources=new Set<LongSpeech>();
   // Dependencies are owned browser adapters; injection permits deterministic lifecycle tests.
   constructor(adapters = browserAdapters) {
     this.adapters = adapters;
@@ -44,7 +51,7 @@ export class SpeechController {
   }
   subscribe = (listener: (state: SpeechState) => void): (() => void) => { this.listeners.add(listener); listener(this.state); return () => this.listeners.delete(listener); };
   private set(patch: Partial<SpeechState>): void { this.state = { ...this.state, ...patch }; for (const listener of this.listeners) listener(this.state); }
-  async refresh(): Promise<void> { try { this.set({ installed: await this.adapters.installedSpeech() }); } catch (error) { this.set({ error: `Speech storage unavailable: ${message(error)}` }); } }
+  async refresh(): Promise<void> { try { this.set({ installed: await this.adapters.installedSpeech(this.state.vad) }); } catch (error) { this.set({ error: `Speech storage unavailable: ${message(error)}` }); } }
   /** Model choices wait for capture or another preparation before replacing its worker. */
   prepare(mode: SpeechMode, signal: AbortSignal, onStart?: () => void): Promise<void> {
     const next = this.preparation.then(async () => {
@@ -75,12 +82,17 @@ export class SpeechController {
     });
   }
   async releaseForLanguage(signal: AbortSignal): Promise<void> {
-    if (!isAdditionalSpeech(this.state.mode)) return;
-    await this.waitUntilIdle(signal); this.unload();
+    if (!requiresSpeechGpu(this.state.mode)) return;
+    await this.waitUntilIdle(signal); await this.unload();
   }
   setMode(mode: SpeechMode): void {
     if (!['idle', 'ready', 'failed'].includes(this.state.phase)) return;
-    this.unload(); this.set({ mode });
+    void this.unload(); this.set({ mode });
+  }
+  async setVad(vad:VadMode):Promise<void>{
+    if(!vadModes.some(item=>item.id===vad))throw Error('Choose a supported speech detector. Silero GPU failed correctness.');
+    if(!['idle','ready','failed'].includes(this.state.phase))return;
+    await this.unload();this.set({vad});await this.refresh();
   }
   async install(): Promise<void> {
     if (!['idle', 'failed'].includes(this.state.phase)) return;
@@ -88,7 +100,7 @@ export class SpeechController {
     const epoch = ++this.epoch, request = this.request = new AbortController();
     this.set({ phase: 'installing', error: '', stage: 'Downloading speech model' });
     try {
-      await this.adapters.installSpeech(this.state.mode, progress => { if (epoch === this.epoch) this.set({ progress }); }, request.signal);
+      await this.adapters.installSpeech(this.state.mode, progress => { if (epoch === this.epoch) this.set({ progress }); }, request.signal,this.state.vad);
       if (epoch !== this.epoch) return;
       this.set({ phase: 'idle', stage: 'Installed in this browser', progress: undefined }); await this.refresh();
     } catch (error) { if (epoch === this.epoch) this.fail(error); }
@@ -96,7 +108,9 @@ export class SpeechController {
   async initialize(): Promise<void> {
     if (!['idle', 'failed'].includes(this.state.phase)) return;
     if (!this.environmentReady()) return;
-    this.unload(); const epoch = ++this.epoch, request = this.request = new AbortController();
+    const disposing=this.unload(),requestedEpoch=this.epoch;await disposing;
+    if(requestedEpoch!==this.epoch)return;
+    const epoch = ++this.epoch, request = this.request = new AbortController();
     this.set({ phase: 'loading', error: '', stage: 'Restoring cached speech model' });
     this.timer = setTimeout(() => { if (epoch === this.epoch) this.fail(new Error(`Speech startup exceeded ${this.state.mode === 'phonon' ? 60 : 120} seconds during “${this.state.stage}”. Retry starts a fresh worker.`)); }, this.state.mode === 'phonon' ? 60000 : STARTUP_DEADLINE);
     try {
@@ -105,8 +119,30 @@ export class SpeechController {
         if (epoch !== this.epoch) return;
         if (!checks.ready) throw new Error(checks.rows.filter(row=>!row.passed).map(row=>row.title+': '+row.detail).join('\n'));
       }
-      const resources = await this.adapters.cachedSpeechURLs(this.state.mode, request.signal);
+      const resources = await this.adapters.cachedSpeechURLs(this.state.mode, request.signal,this.state.vad);
       if (epoch !== this.epoch) { resources.close(); return; } this.resources = resources;
+      if(this.state.mode==='gpu-nq'){
+        const urls=resources.urls;
+        const continuous=this.continuous=(this.adapters.createContinuous??browserAdapters.createContinuous)({
+          config:{workerURL:urls.worker,featuresURL:urls['features-worker'],captureURL:urls['capture-worklet'],
+            assets:{encoder:urls['encoder-model.onnx'],externalData:urls['encoder-model.onnx.data'],decoder:urls['decoder-single-step.int8-fp32.onnx'],vocab:urls['vocab.txt']},
+            ortPaths:{mjs:urls['ort-mjs'],wasm:urls['ort-wasm']},vad:this.state.vad,vadAssets:vadAssetURLs(this.state.vad,urls)},createWorker:this.adapters.createWorker,
+          onState:state=>{
+            if(epoch!==this.epoch)return;
+            if(state.lastError){this.fail(new Error(state.lastError));return;}
+            this.set({seconds:(state.session?.capturedSamples??0)/16000,queuedSegments:state.session?.queuedSegments??0,recordingId:state.recordingId??undefined});
+          },
+          onEvent:event=>{
+            if(epoch!==this.epoch)return;
+            if(event.type==='stage')this.set({stage:event.text??'Preparing speech'});
+            if(['captureStarted','injectedCaptureStarted'].includes(event.type))this.set({phase:'recording',stage:'Listening · audio saved locally for recovery'});
+            if(event.type==='inferenceStart'&&this.state.phase==='stopping')this.stopDeadline();
+          },
+          onTranscript:data=>{if(epoch===this.epoch)this.continuousTranscript(data);},
+        });
+        const result=await continuous.load();if(epoch!==this.epoch)return;
+        clearTimeout(this.timer);this.set({phase:'ready',stage:'Speech ready',runtime:result.runtime});return;
+      }
       const worker = this.worker = this.adapters.createWorker(resources.urls.worker!);
       worker.onmessage = ({ data }) => {
         if (epoch !== this.epoch || data.sessionId && data.sessionId !== this.sessionId) return;
@@ -120,10 +156,17 @@ export class SpeechController {
     } catch (error) { if (epoch === this.epoch) this.fail(error); }
   }
   async record(owner: string, commit: (text: string) => void): Promise<void> {
-    if (this.state.phase !== 'ready' || !this.worker || !this.resources) return;
+    if (this.state.phase !== 'ready' || !(this.worker||this.continuous) || !this.resources) return;
     this.owner = owner; this.commit = commit; this.committed = ''; this.chunks = [];
     const epoch = this.epoch, id = this.sessionId = crypto.randomUUID();
     this.set({ phase: 'permission', transcript: '', seconds: 0, error: '', stage: 'Allow microphone access' });
+    if(this.continuous){
+      this.stableSequence=0;const continuous=this.continuous;
+      try{await continuous.startRecord({recordingId:id});}
+      catch(error){if(epoch===this.epoch&&id===this.sessionId)this.fail(error);}
+      return;
+    }
+    const worker=this.worker;if(!worker)return;
     const capture = this.capture = this.adapters.createCapture();
     try {
       const stopped = isBatchSpeech(this.state.mode);
@@ -131,9 +174,9 @@ export class SpeechController {
         const featureWorker = this.adapters.createWorker(this.resources.urls['features-worker']!);
         this.features = new LiveFeatures(128, null, featureWorker);
         featureWorker.addEventListener('error', event => { if (id === this.sessionId) this.fail(new Error(event.message || 'Speech feature worker failed.')); });
-        const port = this.features.connect(); this.worker.postMessage({ type: 'streamStart', sessionId: id, featurePort: port }, [port]);
+        const port = this.features.connect(); worker.postMessage({ type: 'streamStart', sessionId: id, featurePort: port }, [port]);
       }
-      if (this.state.mode === 'phonon') this.worker.postMessage({type:'streamStart',sessionId:id});
+      if (this.state.mode === 'phonon') worker.postMessage({type:'streamStart',sessionId:id});
       await capture.start(this.resources.urls['capture-worklet']!, pcm => {
         if (id !== this.sessionId || epoch !== this.epoch) return;
         try {
@@ -154,6 +197,14 @@ export class SpeechController {
     if (this.state.phase !== 'recording') return;
     clearTimeout(this.recordingTimer); const id = this.sessionId;
     this.set({ phase: 'stopping', stage: 'Finishing speech' });
+    if(this.continuous){
+      this.stopDeadline();const continuous=this.continuous;
+      try{
+        await continuous.stopRecord();
+        if(id!==this.sessionId)return;
+        clearTimeout(this.timer);this.releaseCapture();this.set({phase:'ready',transcript:'',stage:continuous.getTranscript()?'Speech added to draft':'No speech detected'});
+      }catch(error){if(id===this.sessionId)this.fail(error);}return;
+    }
     // A deadline also bounds a blocked decoder after capture has already stopped.
     this.timer = setTimeout(() => { if (id === this.sessionId) this.fail(new Error('Finishing speech exceeded 120 seconds. Retry to record again.')); }, STARTUP_DEADLINE);
     try {
@@ -178,23 +229,44 @@ export class SpeechController {
       this.set({ phase: 'ready', transcript: '', stage: data.text ? 'Speech added to draft' : 'No speech detected' });
     }
   }
+  private stopDeadline():void{
+    clearTimeout(this.timer);const epoch=this.epoch;
+    this.timer=setTimeout(()=>{if(epoch===this.epoch)this.fail(new Error('Queued speech made no progress for 120 seconds. Recovery audio remains available.'));},STARTUP_DEADLINE);
+  }
+  private continuousTranscript(data:ContinuousTranscript):void{
+    if(!this.owner||data.recordingId!==this.sessionId)return;
+    if(data.stableDelta.text&&data.stableDelta.sequence>this.stableSequence){
+      if(data.stableDelta.sequence!==this.stableSequence+1){this.fail(new Error('Speech transcript sequence is incomplete. Recovery audio remains available.'));return;}
+      this.stableSequence=data.stableDelta.sequence;this.commit?.(data.stableDelta.text.trim());
+    }
+    this.set({transcript:data.draftText,stage:this.state.phase==='recording'?'Listening · provisional speech below':this.state.stage});
+    if(this.state.phase==='stopping')this.stopDeadline();
+    // Final words precede the archive/statistics barrier. Stop owns readiness
+    // so a queued language model cannot unload ASR before that barrier settles.
+  }
+  recoveryAudio(){return [...this.recoverySources].flatMap(source=>source.getRecoveryAudio());}
+  clearRecoveryAudio():void{this.recoverySources.clear();}
   private releaseCapture(): void {
     clearTimeout(this.recordingTimer); this.capture?.close(); this.capture = undefined;
     this.features?.close(); this.features = undefined; this.owner = undefined; this.commit = undefined; this.sessionId = '';
     this.chunks = []; this.committed = '';
   }
   private fail(error: unknown): void {
-    const text = message(error); this.dispose();
+    const text = message(error); void this.dispose();
     this.set({ phase: 'failed', error: text, progress: undefined, transcript: '' });
   }
-  private dispose(): void {
+  private dispose(): Promise<unknown> {
     ++this.epoch; this.request?.abort(); this.request = undefined; clearTimeout(this.timer);
     this.releaseCapture(); this.worker?.terminate(); this.worker = undefined;
-    this.resources?.close(); this.resources = undefined;
+    const resources=this.resources;this.resources=undefined;const continuous=this.continuous;this.continuous=undefined;
+    if(continuous)this.recoverySources.add(continuous);
+    const previous=this.disposal;
+    this.disposal=Promise.allSettled([previous,continuous?continuous.unload().finally(()=>resources?.close()):Promise.resolve(resources?.close())]).then(()=>undefined);
+    return this.disposal;
   }
-  unload(): void { this.dispose(); this.set({ phase: 'idle', stage: '', error: '', progress: undefined, transcript: '', runtime:undefined }); }
+  unload(): Promise<unknown> { const disposed=this.dispose(); this.set({ phase: 'idle', stage: '', error: '', progress: undefined, transcript: '', runtime:undefined });return disposed; }
   async remove(): Promise<void> {
-    const mode = this.state.mode; this.unload(); this.set({ phase: 'removing', stage: 'Removing speech download' });
+    const mode = this.state.mode; await this.unload(); this.set({ phase: 'removing', stage: 'Removing speech download' });
     try { await this.adapters.removeSpeech(mode); this.set({ phase: 'idle', stage: 'Speech download removed' }); await this.refresh(); }
     catch (error) { this.fail(error); }
   }

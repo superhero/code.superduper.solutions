@@ -17,7 +17,7 @@
   "src/lib/assistant/browser/reference/expanded/vision-tool.js": {
     "source": "examples/browser-assistant/src/vision-tool.js",
     "sha256": "221e6cbada13973af9456b8b627b3402814cf9c3d4a546e37de7b00d6d269329",
-    "adapted_sha256": "8ddd3469d0813693d442616159ace5385f39d767a444d5671b7b1889e09bf25d"
+    "adapted_sha256": "afa13b14a61147f1db3f7f240f4fbd004f0f050f6f3904071f4caba00ce94ac9"
   },
   "src/lib/assistant/browser/reference/expanded/knowline-browser.mjs": {
     "source": "inference/evaluations/browser-decisions/runtime/knowline-browser.mjs",
@@ -147,7 +147,7 @@
   "src/lib/assistant/browser/reference/expanded/strands-native-device-worker.js": {
     "source": "inference/attempts/kl-browser-decision-d3-lite/runtime/dist/vendor/strands-native-device/js/worker.js",
     "sha256": "c4ba1adfee6e766dc064091318abca3c9fc65ac6451a4362960e409365aa6ff1",
-    "adapted_sha256": "3190a85805a6804e6d8d5c6b71664206d3b33a127bc2025e0596430f7178fb90"
+    "adapted_sha256": "a0348ab8babb2cedd51f3866c3a86dff19484099578b130d67cbee2672277e7e"
   },
   "src/public/browser-models/notices/elephant-OneJev.LICENSE": {
     "source": "inference/evaluations/browser-decisions/runtime/elephant-OneJev.LICENSE",
@@ -183,5 +183,24 @@
     "source": "inference/evaluations/lfm3-browser/decisions/protocol.mjs",
     "sha256": "e8512a933f7813d53b967fad7c8cd4c097d7e05ee2261ed791996e2f2dda2dd7",
     "adapted_sha256": "d8c4fe9756666de6e9d247a399b7fd5cc20b22856ca243faab74b7bac2f74304"
+  },
+  "src/lib/assistant/browser/reference/expanded/decisions.js": {
+    "source": "inference/evaluations/brave-decisions/runtime/engine.mjs",
+    "sha256": "76b229607fecdd17d823c83529b6bfc69ecb69fe87e004cc9b6edb2d26b2d63e",
+    "adapted_sha256": "18812192b05967c2442f155f80d8d83d2e7a376cd6a902cbb0cda866dd0bfe96"
+  },
+  "build/browser-models/strands-fp32/manifest.json": {
+    "source": "inference/attempts/mu-browser-decision-strands-fp32-gpu/conversion-manifest.json",
+    "sha256": "9c3589ba48ec3be7a565b52a2fbd0687e30ffe0222c2b3a29d94b569062daf30",
+    "scope": "Exact local INT4/FP32 conversion; original FP16 profile kept separately."
+  },
+  "src/lib/assistant/browser/reference/expanded/decision-placement.js": {
+    "source": "inference/evaluations/brave-decisions/runtime/browser.steps.js",
+    "sha256": "1ea3e729071155149fd97ef42533154294c52f8f7e006f916ac4e3f69d0c8b49",
+    "adapted_sha256": "5f673bbfac274b6c57c357abe18ad88581108cf6f302989dcf6e9429d0a57197"
+  },
+  "build/browser-models/native/shared-fp32/pins.json": {
+    "source": "inference/evaluations/brave-decisions/runtime/native-recipes/shared-fp32/pins.json",
+    "sha256": "019dce96aca00a7e02a0e6e278a429fcbd49d0e40a0d7827f87d9016457d6f8c"
   }
 }

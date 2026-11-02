@@ -30,8 +30,8 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const profile = $derived(profileById(selected));
   const engineLabel = $derived(({'lfm3-onnx':'ONNX Runtime Web',webml:'WebML',wllama:'Wllama','litert-lm':'LiteRT-LM',transformers:'Transformers.js','strands-onnx':'ONNX Runtime Web','wllama-knowline':'Wllama · KnowLine','wllama-elephant':'Wllama · Elephant','wllama-pplx':'Wllama · Perplexity'})[profile.engine]);
   const modelName = $derived(profile.engine === 'strands-onnx'
-    ? `${profile.title.split(' · ')[0]} · ${profile.runtime_id === 'strands-cpu' ? 'CPU' : 'WebGPU'}`
-    : profile.title.split(' · ')[0]);
+    ? `${profile.title.split(' · ')[0]} · ${profile.browser_probe?.compute_precision === 'float32' ? 'WebGPU FP32' : 'WebGPU FP16'}`
+    : profile.category === 'decision' ? `${profile.title.split(' · ')[0]} · WebGPU` : profile.title.split(' · ')[0]);
   const parameterSize = $derived(profile.parameters ?? profile.title.match(/·\s*([\d.]+B)/)?.[1] ?? '—');
   const quantization = $derived(profile.quantization ?? profile.file.match(/(PTQ\d+_\d+|Q\d+_[A-Z0-9_]+)\.gguf$/i)?.[1] ?? '—');
   const compatibility = $derived(compatibilityFor(facts, profile, profile.engine === 'webml' ? 'gpu' : execution.mode));
@@ -105,7 +105,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   <div class="model-row">
     <span class="model-name" title={`${profile.title} · ${engineLabel}`}>{modelName}</span>
     <span class="model-parameters" title="Parameter size">{parameterSize}</span>
-    <span class="model-quantization" title="Quantization">{quantization}</span>
+    <span class="model-quantization" title={`Quantization: ${quantization}`}>{quantization === 'Mixed Q4F16' ? 'Q4/F16' : quantization}</span>
     <div class="model-controls">
     <span class="model-size" title="Download size">{bytes(downloadBytes(profile))}</span>
     <div class="model-actions">
@@ -146,19 +146,20 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   </div>{/if}
   {#if settingsOpen}<div class="fold-panel" id={`${selected}-settings`} role="region" aria-label="Model settings" transition:slide={{ duration: foldDuration }}>
     <div class="disclosure-content">{#if ready}<div class="settings">
-      {#if profile.category === 'decision'}<p class="model-footnote">Native decision scoring · one question · 1,024-token input limit. This model is available for decision features.</p>{:else if profile.category === 'vision'}<p class="model-footnote">Inspects images on demand through the language model’s image tool. 1,024 context tokens · 256 output tokens.</p>{:else if profile.engine === 'litert-lm'}<p class="model-footnote">GPU inference · greedy decoding · reasoning and prompt caching off.</p>{/if}
-      {#if (profile.category ?? 'llm') === 'llm' && profile.engine === 'wllama'}
+      {#if profile.category === 'decision'}<p class="model-footnote">WebGPU · native decision scoring · one question · 1,024-token input limit. This model is available for decision features.</p>{:else if profile.category === 'vision'}<p class="model-footnote">Inspects images on demand through the language model’s image tool. 1,024 context tokens · 256 output tokens.</p>{:else if profile.engine === 'litert-lm'}<p class="model-footnote">GPU inference · greedy decoding · reasoning and prompt caching off.</p>{/if}
+      {#if profile.settings.gpu_graph_only}<p class="model-footnote">WebGPU · CPU model fallback disabled · up to 4,096 context and 256 output tokens. FP32 cache · greedy decoding.</p>{/if}
+      {#if (profile.category ?? 'llm') === 'llm' && profile.engine === 'wllama' && !profile.settings.gpu_graph_only}
         <div><span class="field-label">Execution</span><NavigationDropdown label="Browser execution" placeholder="Choose execution" value={execution.mode} disabled={busy || runtimeWorking} items={[{value:"auto",icon:"memory",label:"GPU preferred, allocation fallback"},{value:"gpu",icon:"memory",label:"GPU"},{value:"hybrid",icon:"memory",label:"GPU + CPU"},{value:"cpu",icon:"memory",label:"CPU"}]} onchange={value => { execution.mode = value as typeof execution.mode; saveSettings(); }} /></div>
         <label>GPU layer budget<input type="number" min="1" max={(profile.model_layers ?? 33) + 1} value={execution.gpuLayers} disabled={busy || runtimeWorking} oninput={event => { execution.gpuLayers = event.currentTarget.valueAsNumber; saveSettings(); }} /></label>
         {#if profile.projector}<label class="toggle"><input type="checkbox" data-slot="checkbox" role="switch" checked={execution.visionGpu} disabled={busy || runtimeWorking} onchange={event => { execution.visionGpu = event.currentTarget.checked; saveSettings(); }} />Vision on GPU in hybrid mode</label>{/if}
       {/if}
       {#if profile.vision_tool}<div><span class="field-label">Image inspection model</span><NavigationDropdown label="Image inspection model" placeholder="Choose a vision model" value={visionTool} disabled={busy || runtimeWorking} items={VISION_PROFILES.map(p => ({value:p.id,label:p.title,icon:'image'}))} onchange={value => {visionTool=value;saveSettings();}} /></div>{/if}
-      {#each Object.entries(generation).filter(([key]) => labels[key] && (profile.family !== 'lfm3' || !['thinking','sampling_mode','temperature','top_k','top_p','min_p'].includes(key))) as [key, value]}
+      {#each Object.entries(generation).filter(([key]) => labels[key] && (!profile.settings.gpu_graph_only || !['thinking','sampling_mode','temperature','top_k','top_p','min_p','flash_attention','cache_type_k','cache_type_v','batch_tokens','micro_batch_tokens','prefix_cache','context_shift'].includes(key)) && (profile.family !== 'lfm3' || !['thinking','sampling_mode','temperature','top_k','top_p','min_p'].includes(key))) as [key, value]}
         {#if typeof value === 'boolean'}<label class="toggle"><input type="checkbox" data-slot="checkbox" role="switch" checked={value} disabled={busy || runtimeWorking} onchange={event => { generation[key] = event.currentTarget.checked; saveSettings(); }} />{labels[key]}</label>
         {:else if typeof value === 'number'}<label>{labels[key]}<input type="number" step="any" value={value} disabled={busy || runtimeWorking} oninput={event => { generation[key] = event.currentTarget.valueAsNumber; saveSettings(); }} /></label>
         {:else}<div><span class="field-label">{labels[key]}</span><NavigationDropdown label={labels[key]!} placeholder="Choose a value" {value} disabled={busy || runtimeWorking} items={(key === 'sampling_mode' ? ['greedy','sample'] : ['f16','f32','q8_0','q4_0']).map(value => ({value,label:value,icon:"tune"}))} onchange={value => { generation[key] = value; saveSettings(); }} /></div>{/if}
       {/each}
-    </div>{/if}</div>
+    </div>{:else if profile.settings.gpu_graph_only}<Button variant="secondary" size="sm" onclick={()=>{generation=defaultSettings(profile);execution=executionSettings({},profile);visionTool=profile.vision_tool??'';ready=true;saveSettings();}}>Reset model settings</Button>{/if}</div>
   </div>{/if}
   {#if infoOpen}<div class="fold-panel" id={`${selected}-info`} role="region" aria-label="Detailed info" transition:slide={{ duration: foldDuration }}>
     <h5>Detailed info</h5>
@@ -167,7 +168,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
       <aside class="model-notes" aria-label="Model limitations">
         <MaterialIcon name="info" size={16} />
         <div><p>{profile.limitations}</p><p class="subtle">Mobile is unqualified. Free RAM and GPU memory cannot be measured by the page.</p>
-          {#if profile.engine === 'wllama' && profile.weight_bytes > 4294967296}<p>CPU-only 9B exceeds this build’s 4 GiB Wasm heap. More system RAM does not lift that limit.</p>{/if}
+          {#if (profile.category ?? 'llm') === 'llm' && profile.engine === 'wllama' && !profile.settings.gpu_graph_only && profile.weight_bytes > 4294967296}<p>CPU-only 9B exceeds this build’s 4 GiB Wasm heap. More system RAM does not lift that limit.</p>{/if}
         </div>
       </aside>
       <div class="pin-group">

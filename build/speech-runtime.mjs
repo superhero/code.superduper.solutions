@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { rolldown } from 'rolldown';
 import { publishPackageArtifact } from './package-artifacts.mjs';
 import { collectInlineWorkerLicenses } from './license-notices.mjs';
+import {prepareNqSpeech} from './prepare-nq-speech.mjs';
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 let generated;
@@ -44,14 +45,25 @@ async function generate() {
   const assets = new Map(), catalog = [];
   const notices = await Promise.all(['LICENSE', 'LICENSE-ADDITIONAL-TERMS'].map(async name => ({ name, version: 'application', text: await readFile(name, 'utf8') })));
   notices.push({ name: 'ONNX Runtime third-party notices', version: '1.30.0', text: await readFile('build/licenses/onnxruntime-1.30.0-ThirdPartyNotices.txt', 'utf8') });
+  for(const file of JSON.parse(await readFile('build/speech/notice-files.json'))){
+    const bytes=await readFile('src/public/'+file.url);if(bytes.length!==file.bytes||digest(bytes)!==file.sha256)throw Error('Speech publisher notice differs: '+file.id);
+    if(file.type!=='notice-pdf')notices.push({name:file.id,version:'pinned publisher / local export',text:bytes.toString()});
+  }
+  for(const name of ['TEN-VAD-LICENSE','TEN-VAD-NOTICES'])notices.push({name,version:'d68ab71c8d5f',text:await readFile('src/public/speech/notices/'+name,'utf8')});
+  notices.push({name:'Parakeet grouped GPU compatibility conversion',version:'NR/NQ',text:'Original Parakeet weights are NVIDIA CC-BY-4.0. The local decoder conversion preserves compact initializer encodings while replacing dynamic activation quantization with FP32 arithmetic. Original dynamic encoder neural work uses GPU with audited CPU indexing/layout. Decoder neural work and grouped control use GPU. Model files are separate optional downloads; source recipes/proofs are under build/speech/.'});
   function publish(id, bytes, type) {
     const sha256 = digest(bytes), filename = `speech/${id}-${sha256.slice(0, 12)}.${type}`;
     catalog.push({ id, bytes: bytes.length, sha256, type, ...publishPackageArtifact(assets, filename, bytes) });
   }
-  for (const id of ['worker', 'features-worker']) {
-    const bundle = await rolldown({ input: `src/lib/assistant/speech/runtime/${id}.js`, platform: 'browser',
+  const nqAliases=await prepareNqSpeech();
+  for (const id of ['worker', 'features-worker','continuous-worker']) {
+    const bundle = await rolldown({ input: `src/lib/assistant/speech/runtime/${id==='continuous-worker'?'continuous/worker':id}.js`, platform: 'browser',
       plugins: [{ name: 'pinned-speech-runtime',
-        resolveId(source) { if (source === 'onnxruntime-web') return resolve('node_modules/onnxruntime-web/dist/ort.webgpu.min.mjs'); },
+        resolveId(source) {
+          if (nqAliases[source]) return nqAliases[source];
+          if (source === 'onnxruntime-web') return resolve('node_modules/onnxruntime-web/dist/ort.webgpu.min.mjs');
+          if (source === 'onnxruntime-web/webgpu') return resolve('node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs');
+        },
         async load(id) { if (id === resolve('node_modules/parakeet.js/src/parakeet.js')) return serialParakeet(await readFile(id)); },
       }, collectInlineWorkerLicenses(notices)] });
     try {

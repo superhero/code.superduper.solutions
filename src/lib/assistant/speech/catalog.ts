@@ -4,13 +4,17 @@
 import phonon from './phonon-artifacts.json';
 import runtime from 'virtual:code-speech';
 import lock from './model.lock.json';
+import continuous from './continuous-assets.json';
+import {vadArtifacts,type VadMode} from './vad';
 import runtimes from '../browser/runtime-artifacts.json';
 import {SPEECH_PROFILES} from '../browser/catalog';
 import type { SpeechArtifact, SpeechMode } from './types';
 export const lfmSpeechProfile = (mode: SpeechMode) => SPEECH_PROFILES.find(p => p.id === (mode === 'lfm3-audio' ? 'lh-browser-lfm3-audio' : mode === 'lfm3-omni' ? 'li-browser-lfm3-omni-audio' : ''));
 export const isAdditionalSpeech = (mode: SpeechMode) => mode === 'phonon' || !!lfmSpeechProfile(mode);
 export const isBatchSpeech = (mode: SpeechMode) => !!lfmSpeechProfile(mode);
+export const requiresSpeechGpu = (mode:SpeechMode) => mode !== 'cpu';
 export const speechModes: { id: SpeechMode; label: string; description: string }[] = [
+  { id:'gpu-nq',label:'WebGPU · continuous',description:'Parakeet FP32 GPU encoder and grouped GPU decoder · continuous capture with local recovery audio' },
   { id: 'phonon', label: 'Phonon 2.5 · WebGPU', description: 'WebGPU · live speech windows · packed download, expanded GPU weights · stops after 55 seconds' },
   { id: 'lfm3-audio', label: 'LFM3-Audio · 2B', description: 'WebGPU · transcription after stopping · up to 30 seconds' },
   { id: 'lfm3-omni', label: 'LFM3-Omni · 2B', description: 'WebGPU · transcription after stopping · up to 30 seconds' },
@@ -25,13 +29,16 @@ const ten = [
 ] as const;
 // TEN is obtained unchanged from its publisher, separately from the AGPL application.
 import tenSizes from './ten-files.json';
-export function speechArtifacts(mode: SpeechMode): SpeechArtifact[] {
+export function speechArtifacts(mode: SpeechMode,vad:VadMode='ten'): SpeechArtifact[] {
+  if(mode==='gpu-nq')return [...runtime.filter(file=>!['worker','phonon-worker'].includes(file.id)).map(file=>({...file,id:file.id==='continuous-worker'?'worker':file.id})),
+    ...lock.files.filter(file=>['encoder-model.onnx','encoder-model.onnx.data','vocab.txt'].includes(file.file)).map(file=>({id:file.file,type:'model',bytes:file.bytes,sha256:file.sha256,url:`https://huggingface.co/${lock.browserArtifact}/resolve/${lock.revision}/${file.file}`})),
+    ...[continuous.decoder].map(({id,url,bytes,sha256,type})=>({id,url,bytes,sha256,type})),...(vad==='ten'?tenArtifacts():vadArtifacts(vad))];
   if (mode === 'phonon') return [...phonon, ...tenArtifacts(), ...runtime.filter(f => ['phonon-worker','capture-worklet'].includes(f.id)).map(f => ({...f,id:f.id === 'phonon-worker' ? 'worker' : f.id}))];
   const lfm = lfmSpeechProfile(mode);
   if (lfm) return [...[...lfm.artifacts!, ...runtimes.lfm3].map(file => ({...file,type:file.kind === 'runtime' ? (file.id === 'ort-wasm' ? 'wasm' : 'js') : file.kind})), ...runtime.filter(file => file.id === 'capture-worklet')] as SpeechArtifact[];
   const encoder = mode === 'cpu' ? 'encoder-model.int8.onnx' : mode === 'gpu-fp16' ? 'encoder-model.fp16.onnx' : 'encoder-model.onnx';
   const names = [encoder, 'decoder_joint-model.int8.onnx', 'vocab.txt', ...(mode === 'gpu-fp32' ? ['encoder-model.onnx.data'] : [])];
-  return [...runtime.filter(file => file.id !== 'phonon-worker'), ...lock.files.filter(file => names.includes(file.file)).map(file => ({
+  return [...runtime.filter(file => !['phonon-worker','continuous-worker'].includes(file.id)), ...lock.files.filter(file => names.includes(file.file)).map(file => ({
     id: file.file, type: 'model', bytes: file.bytes, sha256: file.sha256,
     url: `https://huggingface.co/${lock.browserArtifact}/resolve/${lock.revision}/${file.file}`,
   })), ...tenArtifacts()];

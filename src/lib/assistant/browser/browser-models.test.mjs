@@ -21,6 +21,14 @@ import { runBrowserTurn, runtimeBusy, unloadBrowserModel, loadBrowserModel } fro
 import { prepareBrowserModel } from './selection.ts';
 import { modelProgress } from './progress.ts';
 import { BrowserWorkQueue } from './queue.ts';
+function withNativeGpuProof(Native) {return class extends Native {
+  constructor(...args) {super(...args);this.proofLogger=args[1].logger;}
+  async loadModel(...args) {
+    const value=await super.loadModel(...args), layers=this.getLoadedContextInfo().n_layer;
+    for(const line of ['FP32_COMPAT device shader_f16=0','GPU_ONLY_MODEL input=GPU no_cpu_weight_fallback=1','GPU_ONLY_AUDIT cpu_compute_ops=0 gpu_compute_ops=1','load_tensors: WebGPU model buffer size = 128.00 MiB',`load_tensors: offloaded ${layers}/${layers} layers to GPU`,'FP32_COMPAT pipeline mul_mat_bf16'])this.proofLogger.log(line);
+    return value;
+  }
+};}
 Then('native GPU exhaustion suggests freeing memory without hiding its allocator diagnostic',async function(){
   const {createDecisionEngine}=await import('./reference/expanded/decisions.js');let exited=0;
   class Native{
@@ -28,21 +36,21 @@ Then('native GPU exhaustion suggests freeing memory without hiding its allocator
     async loadModel(){this.logger.error('vkAllocateMemory failed with VK_ERROR_OUT_OF_DEVICE_MEMORY');throw new WebAssembly.RuntimeError('(ABORT)');}
     async exit(){exited++;}
   }
-  await assert.rejects(createDecisionEngine(DECISION_PROFILES.find(profile=>profile.runtime_id==='d3'),{
-    Wllama:Native,wasmUrl:'fixture',files:[],readArtifact:async()=>{},localFetch:async()=>{},signal:new AbortController().signal,onProgress:()=>{},
+  await assert.rejects(createDecisionEngine(DECISION_PROFILES.find(profile=>profile.family==='d3'),{
+    Wllama:withNativeGpuProof(Native),wasmUrl:'fixture',files:[],readArtifact:async()=>{},localFetch:async()=>{},signal:new AbortController().signal,onProgress:()=>{},
   }),error=>/Not enough GPU memory.*Free GPU memory/.test(error.message)&&/VK_ERROR_OUT_OF_DEVICE_MEMORY/.test(error.cause.message)&&error.cause.cause instanceof WebAssembly.RuntimeError);
   assert.equal(exited,1);
 });
 Then('a blocked native decision stops at its scoring deadline and releases its worker',async function(){
   const {createDecisionEngine}=await import('./reference/expanded/decisions.js');
-  const base=DECISION_PROFILES.find(profile=>profile.runtime_id==='d3'),profile={...base,settings:{...base.settings,decision_timeout_ms:20}};let exited=0,entered=false;
+  const base=DECISION_PROFILES.find(profile=>profile.family==='d3'),profile={...base,browser_probe:{...base.browser_probe,expected_context:{},systemone_template_sha256:undefined,required_temperatures:{}},settings:{...base.settings,decision_timeout_ms:20}};let exited=0,entered=false;
   class Native{
-    async loadModel(){}getLoadedContextInfo(){return{n_layer:1,n_ctx:1024,n_vocab:100};}
+    async loadModel(){}getLoadedContextInfo(){return{n_layer:1,n_vocab:100,...base.browser_probe.expected_context,n_ctx:1024};}
     getModelMetadata(){return{meta:{'qwen35.decision.type':'vllm-d3','qwen35.attention.causal':'false'}};}
     async inspectSystemOne(){return{tasks:[{question_id:'q',variant:0,input_tokens:1,tokens:[1]}],diagnostics:{decode_calls:0,tasks_posted:0,no_forward:true,text_only:true,format:'native-systemone'}};}
     createSystemOne(){entered=true;return new Promise(()=>{});}async exit(){exited++;}
   }
-  const engine=await createDecisionEngine(profile,{Wllama:Native,wasmUrl:'fixture',files:[],readArtifact:async()=>{},localFetch:async()=>{},signal:new AbortController().signal,onProgress:()=>{}});
+  const engine=await createDecisionEngine(profile,{Wllama:withNativeGpuProof(Native),wasmUrl:'fixture',files:[],readArtifact:async()=>{},localFetch:async()=>{},signal:new AbortController().signal,onProgress:()=>{}});
   await assert.rejects(engine.score({state:'Choose',questions:{q:{type:'choice',criteria:{a:'A',b:'B'}}}},new AbortController().signal),/timed out/);
   assert.equal(entered,true);assert.equal(exited,1);assert.equal(engine.invalidated,true);await engine.dispose();assert.equal(exited,1);
 });
@@ -54,7 +62,7 @@ Then('native decision load failures report the allocation error after cleanup',a
     async loadModel(){this.logger.error('GPU buffer allocation failed: insufficient memory');throw failure;}
     async exit(){exited++;}
   }
-  await assert.rejects(createDecisionEngine(DECISION_PROFILES.find(profile=>profile.runtime_id==='d3'),{
+  await assert.rejects(createDecisionEngine(DECISION_PROFILES.find(profile=>profile.family==='d3'),{
     Wllama:FailingNative,wasmUrl:'blob:verified',files:[],readArtifact:async()=>{},localFetch:async()=>{},
     signal:new AbortController().signal,onProgress:()=>{},
   }),error=>error.name==='RuntimeError'&&error.cause===failure&&/insufficient memory/.test(error.message));
@@ -119,7 +127,8 @@ Then('the browser model catalog retains all six handoff pins and their image lim
   assert.deepEqual(BROWSER_PROFILES.map(p=>p.engine),['webml','webml','webml','webml','wllama','wllama']);
   for(const p of BROWSER_PROFILES) {
     assert.match(p.revision,/^[0-9a-f]{40}$/);assert.match(p.weight_sha256,/^[0-9a-f]{64}$/);
-    assert.match(p.projector.sha256,/^[0-9a-f]{64}$/);assert.ok(p.evidence.run_id);assert.equal(p.evidence.attempt,p.id);
+    const vision=p.projector??VISION_PROFILES.find(v=>v.id===p.vision_tool)?.projector;
+    assert.match(vision.sha256,/^[0-9a-f]{64}$/);assert.ok(p.evidence.run_id);assert.equal(p.evidence.attempt,p.id);
     assert.ok(artifactsFor(p).every(file=>file.bytes>0 && /^[0-9a-f]{64}$/.test(file.sha256)));
     if(p.engine==='webml') assert.equal(p.runtime_source.sha256,'00c1a72a962a84fee17000a6b1d18b24d75033e56d59996fc504b7c57cfc6488');
     else {assert.equal(p.runtime_source.source_revision,'3bb2a46f0dab0b924e8cd992b85e8881c3d3a859');assert.equal(p.runtime_source.llama_cpp,'970b51ce7c9ba5fff0726c5e9994f1c2f0e4eedc');}
@@ -158,19 +167,19 @@ Then('browser compatibility separates actual GPU capabilities from unknown memor
   }
   assert.equal(compatibilityFor({...facts,gpu:{compute:false}},BROWSER_PROFILES[0]).ready,false);
 });
-Then('browser execution plans preserve the CPU heap limit and partial offload choices', function () {
+Then('browser execution plans require GPU without partial CPU offload choices', function () {
   for(const p of BROWSER_PROFILES.slice(4)) {
-    assert.throws(()=>executionPlans(p,facts,{mode:'cpu'}),/4GiB/);
-    assert.throws(()=>executionPlans(p,{gpu:{compute:false}},{mode:'auto'}),/4GiB/);
-    assert.deepEqual(executionPlans(p,facts).map(plan=>plan.mode),['gpu','hybrid']);
-    assert.equal(executionPlans(p,facts,{mode:'hybrid',gpuLayers:20,visionGpu:false})[0].vision_gpu_offload,false);
+    assert.throws(()=>executionPlans(p,facts,{mode:'cpu'}),/requires GPU/);
+    assert.throws(()=>executionPlans(p,{gpu:{compute:false}},{mode:'auto'}),/WebGPU/);
+    assert.deepEqual(executionPlans(p,facts).map(plan=>plan.mode),['gpu']);
+    assert.throws(()=>executionPlans(p,facts,{mode:'hybrid',gpuLayers:20,visionGpu:false}),/requires GPU/);
   }
 });
-Then('browser engine fallback disposes failed instances and retries allocation errors only', async function () {
-  for(const [error,expected] of [[Error('GPU out of memory'),['gpu','dispose:gpu','hybrid']],[Error('HTTP503'),['gpu','dispose:gpu']]]) {
+Then('strict GPU load failures dispose the instance without substituting another backend', async function () {
+  for(const error of [Error('GPU out of memory'),Error('HTTP503')]) {
     const events=[];const work=loadWithFallback(executionPlans(BROWSER_PROFILES[4],facts),plan=>({async load(){events.push(plan.mode);if(plan.mode==='gpu')throw error;return{};},async dispose(){events.push('dispose:'+plan.mode);}}));
-    if(expected.length===2) await assert.rejects(work,/HTTP503/);else await work;
-    assert.deepEqual(events,expected);
+    await assert.rejects(work,error);
+    assert.deepEqual(events,['gpu','dispose:gpu']);
   }
 });
 Then('aborting a blocked browser generator unloads it without waiting', async function () {
@@ -260,30 +269,30 @@ Then('the {string} browser profile loads and streams through its native API cont
     async exit(){seen.disposed=true;}
   }
   const localFetch=()=>{throw Error('Unexpected runtime network access');};
-  const files=artifactsFor(profile),engine=await loadEngine(profile,()=>{}, {mode:'auto',gpuLayers:24,visionGpu:true,capabilities:facts,webmlModule,Wllama,wasmUrl:'blob:verified-local-wasm',localFetch,files,signal:signal(),readArtifact:async(file,start,end)=>{seen.read=[file.id,start,end];return new ArrayBuffer(end-start);}});
+  const files=artifactsFor(profile),engine=await loadEngine(profile,()=>{}, {mode:'auto',gpuLayers:24,visionGpu:true,capabilities:facts,webmlModule,Wllama:withNativeGpuProof(Wllama),wasmUrl:'blob:verified-local-wasm',localFetch,files,signal:signal(),readArtifact:async(file,start,end)=>{seen.read=[file.id,start,end];return new ArrayBuffer(end-start);}});
   const plugin={model:(modelId,contextWindow)=>({id:modelId,name:modelId,provider:'browser',api:'openai-completions',baseUrl:'',input:['text','image'],reasoning:false,contextWindow,maxTokens:128,cost:{input:0,output:0,cacheRead:0,cacheWrite:0}}),stream:localStream(engine,{maxTokens:128,responseTimeoutMs:5000,generation:profile.settings},[])};
   const deltas=[];
   await new BrowserAgentHarness().run(plugin,id,[{role:'user',content:'Ready?'}],signal(),text=>deltas.push(text),{instructions:'Answer.',contextWindow:4096,tools:[],onTool(){},onUsage(){}});
   assert.equal(deltas.join(''),'Ready');assert.equal(seen.messages.at(-1).content,'Ready?');
   if(profile.engine==='webml') {assert.equal(seen.model,pinned.model);assert.equal(seen.load.revision,pinned.revision);assert.equal(seen.load.mmproj,pinned.projector.file);assert.equal(seen.load.fetch,localFetch);assert.equal(seen.load.cache,false);}
-  else {assert.deepEqual(seen.sizes,[pinned.weight_bytes,pinned.projector.bytes]);assert.deepEqual(seen.read,[pinned.file,8,16]);assert.equal(seen.load.n_gpu_layers,99);assert.equal(seen.paths.default,'blob:verified-local-wasm');}
+  else {assert.deepEqual(seen.sizes,[pinned.weight_bytes]);assert.deepEqual(seen.read,[pinned.file,8,16]);assert.equal(seen.load.n_gpu_layers,99);assert.equal(seen.paths.default,'blob:verified-local-wasm');}
   await engine.dispose();assert.equal(seen.disposed,true);
 });
 
-Then('the expanded catalog exposes nine LLMs three vision profiles and ten native decision profiles', function () {
-  assert.equal(ALL_BROWSER_PROFILES.length,9); assert.equal(VISION_PROFILES.length,3); assert.equal(DECISION_PROFILES.length,10);
-  assert.equal(ALL_MODEL_PROFILES.length,24); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,24);
+Then('the expanded catalog exposes nine LLMs five vision profiles and ten GPU decision profiles', function () {
+  assert.equal(ALL_BROWSER_PROFILES.length,9); assert.equal(VISION_PROFILES.length,5); assert.equal(DECISION_PROFILES.length,10);
+  assert.equal(ALL_MODEL_PROFILES.length,26); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,26);
   for (const profile of ALL_MODEL_PROFILES) for (const file of artifactsFor(profile)) {
     assert.ok(file.bytes>0); assert.match(file.sha256,/^[a-f0-9]{64}$/);
-    if(file.kind==='weights') assert.match(file.url,/\/resolve\/[a-f0-9]{40}\//);
+    if(file.kind==='weights') assert.match(file.url,/\/resolve\/[a-f0-9]{40}\/|^browser-models\/strands-fp32\/[a-f0-9]{64}\//);
     if(file.parts) {assert.equal(file.parts.reduce((sum,p)=>sum+p.bytes,0),file.bytes);for(const part of file.parts.slice(0,-1)) assert.equal(part.bytes % (8*1024*1024),0);}
   }
   const [gemma,mini]=ALL_BROWSER_PROFILES.slice(6);
   assert.equal(gemma.engine,'litert-lm');assert.equal(gemma.runtime_source.version,'0.18.0');assert.equal(mini.parameters,'2.52B');
   for(const p of [gemma,mini]) {assert.equal(p.projector,null);assert.equal(p.vision_tool,VISION_PROFILES[0].id);}
   assert.equal(VISION_PROFILES[0].revision,'d0e00ca26cc42892d9f3c4380faa631927218209');
-  assert.deepEqual(DECISION_PROFILES.filter(p=>p.engine==='strands-onnx').map(p=>p.browser_probe.device),['webgpu','wasm']);
-  assert.ok(DECISION_PROFILES.filter(p=>p.runtime_id==='d3').every(p=>artifactsFor(p).some(f=>f.url.includes('wllama-d3/'))));
+  assert.deepEqual(DECISION_PROFILES.filter(p=>p.engine==='strands-onnx').map(p=>p.browser_probe.device),['webgpu','webgpu']);
+  assert.ok(DECISION_PROFILES.filter(p=>p.family==='d3').every(p=>artifactsFor(p).some(f=>f.url.includes('wllama-decision-fp32/'))));
   assert.equal(ALL_MODEL_PROFILES.some(p=>/450M|cached-cpu/.test(p.id)),false);
 });
 Then('Gemma rejects unsupported controls and MiniCPM loads without a vision projector', async function () {
@@ -291,11 +300,11 @@ Then('Gemma rejects unsupported controls and MiniCPM loads without a vision proj
   for(const override of [{thinking:true},{sampling_mode:'sample'},{prefix_cache:true},{context_tokens:8192},{max_new_tokens:4096}]) assert.throws(()=>settings.defaultSettings(gemma,override));
   const profile=settings.configuredProfile(gemma,settings.defaultSettings(gemma,{context_tokens:3072}));
   assert.equal(profile.settings.temperature,0);assert.equal(profile.settings.prefix_cache,false);assert.equal(profile.settings.thinking,false);
-  assert.deepEqual(executionPlans(mini,facts).map(p=>[p.mode,p.gpu_layers]),[['gpu',99],['hybrid',8],['cpu',0]]);
+  assert.deepEqual(executionPlans(mini,facts).map(p=>[p.mode,p.gpu_layers]),[['gpu',99]]);
   let weights,loadOptions;
   class Native {async loadModel(files,options){weights=files;loadOptions=options;}getLoadedContextInfo(){return {n_layer:42,n_ctx:4096,n_vocab:100,has_image_input:false};}async exit(){}}
   const configured=settings.configuredProfile(mini,settings.defaultSettings(mini));
-  const engine=await loadEngine(configured,()=>{},{capabilities:facts,Wllama:Native,wasmUrl:'blob:fixture',files:artifactsFor(mini),readArtifact:async()=>new ArrayBuffer(0),signal:signal()});
+  const engine=await loadEngine(configured,()=>{},{capabilities:facts,Wllama:withNativeGpuProof(Native),wasmUrl:'blob:fixture',files:artifactsFor(mini),readArtifact:async()=>new ArrayBuffer(0),signal:signal()});
   assert.equal(weights.length,1);assert.equal(loadOptions.n_gpu_layers,99);assert.equal(engine.kind,'wllama');await engine.dispose();
 });
 Then('LFM image inspection uses local image identifiers and restores text after its actual Pi tool call', async function () {
@@ -319,9 +328,9 @@ Then('cancelled LFM image inspection releases its worker before returning', asyn
 });
 Then('D3 native preflight prevents oversized forwards and decision answers require complete probabilities', async function () {
   const {createDecisionEngine,validateDecisionAnswer}=await import('./reference/expanded/decisions.js');
-  const profile=DECISION_PROFILES.find(p=>p.runtime_id==='d3'),events=[];let tokens=1025;
+  const base=DECISION_PROFILES.find(p=>p.family==='d3'),profile={...base,browser_probe:{...base.browser_probe,expected_context:{},systemone_template_sha256:undefined,required_temperatures:{}}},events=[];let tokens=1025;
   class Native {async loadModel(){}getLoadedContextInfo(){return {n_layer:1,n_ctx:1024,n_vocab:100};}getModelMetadata(){return {meta:{'qwen35.decision.type':'vllm-d3','qwen35.attention.causal':'false'}};}async inspectSystemOne(){return {tasks:[{question_id:'q',variant:0,input_tokens:tokens,tokens:Array(tokens).fill(1)}],diagnostics:{decode_calls:0,tasks_posted:0,no_forward:true,text_only:true,format:'native-systemone'}};}async createSystemOne(){events.push('native');return {usage:{input_tokens:tokens},answers:{q:{type:'choice',probabilities:{a:.8,b:.2},choice:'a'}}};}async exit(){events.push('dispose');}}
-  const engine=await createDecisionEngine(profile,{Wllama:Native,wasmUrl:'fixture',files:artifactsFor(profile),readArtifact:async()=>new ArrayBuffer(0),localFetch:async()=>{throw Error('No prompt download expected');},signal:signal(),onProgress:()=>{}}),request={state:'Choose',questions:{q:{type:'choice',criteria:{a:'A',b:'B'}}}};
+  const engine=await createDecisionEngine(profile,{Wllama:withNativeGpuProof(Native),wasmUrl:'fixture',files:artifactsFor(profile),readArtifact:async()=>new ArrayBuffer(0),localFetch:async()=>{throw Error('No prompt download expected');},signal:signal(),onProgress:()=>{}}),request={state:'Choose',questions:{q:{type:'choice',criteria:{a:'A',b:'B'}}}};
   await assert.rejects(engine.score(request,signal()),/budget|limit|context|tokens/i);assert.deepEqual(events,[]);tokens=100;assert.equal((await engine.score(request,signal())).probabilities.a,.8);assert.deepEqual(events,['native']);
   assert.throws(()=>validateDecisionAnswer({type:'choice',probabilities:{a:1}},request),/incomplete/);assert.throws(()=>validateDecisionAnswer({type:'choice',probabilities:{a:NaN,b:0}},request),/invalid/);await engine.dispose();
 });
@@ -339,19 +348,19 @@ Then('a blocked decision worker stops at its configured scoring deadline',async 
 Then('LFM3 retains its accepted pins and keeps reasoning out of visible answers', async function () {
   const {splitLFM3Reasoning} = await import('./reference/lfm3-reasoning.js');
   const profile = ALL_BROWSER_PROFILES.find(p => p.family === 'lfm3');
-  assert.equal(profile.runtime_id, 'wllama-lfm3');
+  assert.equal(profile.runtime_id, 'chat-lfm3-gpu');
   assert.equal(profile.runtime_source.llama_cpp, '19cce6919992fdffd92e0ac152caaf1e2b8f254e');
   assert.equal(profile.weight_bytes, 1049615680);
   assert.equal(profile.projector, null);
-  assert(artifactsFor(profile).some(f => f.id === 'wllama-wasm' && f.url.includes('wllama-lfm3/')));
+  assert(artifactsFor(profile).some(f => f.id === 'wllama-wasm' && f.url.includes('wllama-chat-lfm3-gpu/')));
   for (const p of ALL_BROWSER_PROFILES.filter(p => p.engine === 'wllama' && p.family !== 'lfm3'))
-    assert(!artifactsFor(p).some(f => f.url.includes('wllama-lfm3/')));
+    assert(!artifactsFor(p).some(f => f.url.includes('wllama-chat-lfm3-gpu/')));
   assert.deepEqual(splitLFM3Reasoning('Paris</think>Paris'), {text:'Paris', reasoning:'Paris'});
   assert.deepEqual(splitLFM3Reasoning('<think>secret'), {text:'', reasoning:'secret'});
   assert.deepEqual(splitLFM3Reasoning('<div>answer</div>'), {text:'<div>answer</div>', reasoning:''});
   const settings = await import('./settings.js');
   assert.throws(() => settings.defaultSettings(profile, {context_tokens:8192}), /4,096/);
-  assert.throws(() => settings.defaultSettings(profile, {thinking:true}), /thinking off/);
+  assert.throws(() => settings.defaultSettings(profile, {thinking:true}), /reasoning\/prompt caching off/);
 });
 
 Then('the image tool accepts both LFM3 image pins and rejects an altered revision', async function () {
@@ -359,6 +368,6 @@ Then('the image tool accepts both LFM3 image pins and rejects an altered revisio
   const adapters={getImage:()=>null,suspendText:async()=>{},resumeText:async()=>true};
   for(const profile of VISION_PROFILES.filter(p=>p.engine==='lfm3-onnx')){
     assert.doesNotThrow(()=>createVisionTool({profile,...adapters}));
-    assert.throws(()=>createVisionTool({profile:{...profile,revision:'0'.repeat(40)},...adapters}),/pinned LFM3/);
+    assert.throws(()=>createVisionTool({profile:{...profile,revision:'0'.repeat(40)},...adapters}),/pinned LFM/);
   }
 });

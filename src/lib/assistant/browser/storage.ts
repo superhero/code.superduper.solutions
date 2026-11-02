@@ -46,11 +46,11 @@ async function downloadBlock(url: URL, file: Artifact, offset: number, last: num
     try {
       const response = await fetcher(url, { credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store',
         signal: AbortSignal.any([signal, AbortSignal.timeout(120_000)]),
-        ...(file.kind === 'weights' ? { headers: { Range: `bytes=${offset}-${last}` } } : {}) });
+        ...(file.kind === 'weights' && !file.parts ? { headers: { Range: `bytes=${offset}-${last}` } } : {}) });
       if (response.status === 429 || response.status >= 500) {
         await response.body?.cancel(); throw new RetryableDownload(`Download interrupted (HTTP ${response.status}).`);
       }
-      if (!response.body || (file.kind === 'weights' ? response.status !== 206 || response.headers.get('content-range') !== `bytes ${offset}-${last}/${file.bytes}` : !response.ok)) {
+      if (!response.body || (file.kind === 'weights' && !file.parts ? response.status !== 206 || response.headers.get('content-range') !== `bytes ${offset}-${last}/${file.bytes}` : !response.ok)) {
         await response.body?.cancel(); throw new Error(`Could not download the pinned ${file.id}${file.kind === 'weights' ? ' byte range' : ''}.`);
       }
       const reader = response.body.getReader(), bytes = new Uint8Array(expected); let used = 0;
@@ -94,7 +94,7 @@ export async function installArtifact(file: Artifact, progress: (received: numbe
       const part = file.parts?.find((_, index) => file.parts!.slice(0, index).reduce((sum, item) => sum + item.bytes, 0) === offset);
       const last = Math.min(offset + BLOCK_BYTES, file.bytes) - 1;
       const url = new URL(part?.url ?? file.url, globalThis.location?.href ?? 'http://localhost/');
-      if (file.kind === 'weights') url.searchParams.set('browser_range', `${offset}-${last}`);
+      if (file.kind === 'weights' && !file.parts) url.searchParams.set('browser_range', `${offset}-${last}`);
       const expected = part?.bytes ?? (file.kind === 'weights' ? last - offset + 1 : file.bytes);
       const bytes = await downloadBlock(url, file, offset, last, expected, progress, signal, fetcher), used = bytes.length;
       // A failed attempt must never contribute bytes twice to the whole-file hash.

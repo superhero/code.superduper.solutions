@@ -171,55 +171,13 @@
       ]
     }
   ],
-  "strands-cpu": [
-    {
-      "id": "worker",
-      "bytes": 120686,
-      "sha256": "47584ff47c31ec5d7d069969b5e354a322049aea1d7fdb2c5723e2e9594e56c9",
-      "kind": "runtime",
-      "url": "browser-models/runtimes/strands-cpu/worker-47584ff47c31.js"
-    },
-    {
-      "id": "notices",
-      "bytes": 408871,
-      "sha256": "99cb5ad983bd02b88ff209e3465e27a682ccb2659e92ba38be59d769a38bc5dd",
-      "kind": "notice",
-      "url": "browser-models/runtimes/strands-cpu/notices-99cb5ad983bd.json"
-    },
-    {
-      "id": "ort-mjs",
-      "bytes": 53057,
-      "sha256": "3d1c85995364bb643302fc6fd877a0c3ba5ae72401815e0f24828a53d9191e28",
-      "kind": "runtime",
-      "url": "browser-models/runtimes/strands-cpu/ort-mjs-3d1c85995364.mjs"
-    },
-    {
-      "id": "ort-wasm",
-      "bytes": 26781914,
-      "sha256": "39f9f0894d478800487ed9f7dbe92618498db320cf55c8e3d89adff8dce658da",
-      "kind": "runtime",
-      "url": "browser-models/runtimes/strands-cpu/ort-wasm-39f9f0894d47.wasm.part-001",
-      "parts": [
-        {
-          "url": "browser-models/runtimes/strands-cpu/ort-wasm-39f9f0894d47.wasm.part-001",
-          "bytes": 16777216,
-          "sha256": "9f3196f1ef3506d7cabb9558f2fac779571b225007b744e766d8e63228750d3a"
-        },
-        {
-          "url": "browser-models/runtimes/strands-cpu/ort-wasm-39f9f0894d47.wasm.part-002",
-          "bytes": 10004698,
-          "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
-        }
-      ]
-    }
-  ],
   "strands-gpu": [
     {
       "id": "worker",
-      "bytes": 122430,
-      "sha256": "b867d2e6fe1078bc5dedf66b0e2cda0658a6f99da92abac32d8fb05b7be8d085",
+      "bytes": 123056,
+      "sha256": "a996fb71255cd8e33f06c62609ba75d0d03b20b7449b281b422ea81500bf988c",
       "kind": "runtime",
-      "url": "browser-models/runtimes/strands-gpu/worker-b867d2e6fe10.js"
+      "url": "browser-models/runtimes/strands-gpu/worker-a996fb71255c.js"
     },
     {
       "id": "notices",
@@ -249,6 +207,48 @@
         },
         {
           "url": "browser-models/runtimes/strands-gpu/ort-wasm-39f9f0894d47.wasm.part-002",
+          "bytes": 10004698,
+          "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
+        }
+      ]
+    }
+  ],
+  "strands-fp32": [
+    {
+      "id": "worker",
+      "bytes": 123056,
+      "sha256": "a996fb71255cd8e33f06c62609ba75d0d03b20b7449b281b422ea81500bf988c",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/strands-fp32/worker-a996fb71255c.js"
+    },
+    {
+      "id": "notices",
+      "bytes": 408871,
+      "sha256": "99cb5ad983bd02b88ff209e3465e27a682ccb2659e92ba38be59d769a38bc5dd",
+      "kind": "notice",
+      "url": "browser-models/runtimes/strands-fp32/notices-99cb5ad983bd.json"
+    },
+    {
+      "id": "ort-mjs",
+      "bytes": 53057,
+      "sha256": "3d1c85995364bb643302fc6fd877a0c3ba5ae72401815e0f24828a53d9191e28",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/strands-fp32/ort-mjs-3d1c85995364.mjs"
+    },
+    {
+      "id": "ort-wasm",
+      "bytes": 26781914,
+      "sha256": "39f9f0894d478800487ed9f7dbe92618498db320cf55c8e3d89adff8dce658da",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/strands-fp32/ort-wasm-39f9f0894d47.wasm.part-001",
+      "parts": [
+        {
+          "url": "browser-models/runtimes/strands-fp32/ort-wasm-39f9f0894d47.wasm.part-001",
+          "bytes": 16777216,
+          "sha256": "9f3196f1ef3506d7cabb9558f2fac779571b225007b744e766d8e63228750d3a"
+        },
+        {
+          "url": "browser-models/runtimes/strands-fp32/ort-wasm-39f9f0894d47.wasm.part-002",
           "bytes": 10004698,
           "sha256": "8fdca824417391c1f641b1b9cd1bcd407191ad75fe03d9bfa7139fdf358faa13"
         }
@@ -300,10 +300,10 @@
   "d3": [
     {
       "id": "decision-helpers",
-      "bytes": 120065,
-      "sha256": "b62762873f9e005660abad62213c7c468f8dfaca6aefa30bafa789e642d60ce4",
+      "bytes": 121497,
+      "sha256": "47194071598ba0ed4ff7fd5e478f60ab9f81d31d6d98002bd1b8e38ef32f460c",
       "kind": "runtime",
-      "url": "browser-models/runtimes/decision/decision-helpers-b62762873f9e.js"
+      "url": "browser-models/runtimes/decision/decision-helpers-47194071598b.js"
     },
     {
       "id": "notices",
@@ -337,10 +337,10 @@
   "knowline": [
     {
       "id": "decision-helpers",
-      "bytes": 120065,
-      "sha256": "b62762873f9e005660abad62213c7c468f8dfaca6aefa30bafa789e642d60ce4",
+      "bytes": 121497,
+      "sha256": "47194071598ba0ed4ff7fd5e478f60ab9f81d31d6d98002bd1b8e38ef32f460c",
       "kind": "runtime",
-      "url": "browser-models/runtimes/decision/decision-helpers-b62762873f9e.js"
+      "url": "browser-models/runtimes/decision/decision-helpers-47194071598b.js"
     },
     {
       "id": "notices",
@@ -374,10 +374,10 @@
   "elephant": [
     {
       "id": "decision-helpers",
-      "bytes": 120065,
-      "sha256": "b62762873f9e005660abad62213c7c468f8dfaca6aefa30bafa789e642d60ce4",
+      "bytes": 121497,
+      "sha256": "47194071598ba0ed4ff7fd5e478f60ab9f81d31d6d98002bd1b8e38ef32f460c",
       "kind": "runtime",
-      "url": "browser-models/runtimes/decision/decision-helpers-b62762873f9e.js"
+      "url": "browser-models/runtimes/decision/decision-helpers-47194071598b.js"
     },
     {
       "id": "notices",
@@ -418,10 +418,10 @@
   "pplx": [
     {
       "id": "decision-helpers",
-      "bytes": 120065,
-      "sha256": "b62762873f9e005660abad62213c7c468f8dfaca6aefa30bafa789e642d60ce4",
+      "bytes": 121497,
+      "sha256": "47194071598ba0ed4ff7fd5e478f60ab9f81d31d6d98002bd1b8e38ef32f460c",
       "kind": "runtime",
-      "url": "browser-models/runtimes/decision/decision-helpers-b62762873f9e.js"
+      "url": "browser-models/runtimes/decision/decision-helpers-47194071598b.js"
     },
     {
       "id": "notices",
@@ -466,6 +466,64 @@
       "kind": "notice"
     }
   ],
+  "decision-fp32": [
+    {
+      "id": "decision-helpers",
+      "bytes": 121497,
+      "sha256": "47194071598ba0ed4ff7fd5e478f60ab9f81d31d6d98002bd1b8e38ef32f460c",
+      "kind": "runtime",
+      "url": "browser-models/runtimes/decision/decision-helpers-47194071598b.js"
+    },
+    {
+      "id": "notices",
+      "bytes": 396330,
+      "sha256": "583b9c05067e640352d0b813e402aaecd8aa9996c852d0cb1421683c2fa3fdf1",
+      "kind": "notice",
+      "url": "browser-models/runtimes/decision/notices-583b9c05067e.json"
+    },
+    {
+      "id": "elephant-OneJev.LICENSE",
+      "url": "browser-models/notices/elephant-OneJev.LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "kind": "notice"
+    },
+    {
+      "id": "pplx-publisher-LICENSE",
+      "url": "browser-models/notices/pplx-publisher-LICENSE",
+      "bytes": 11544,
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "kind": "notice"
+    },
+    {
+      "id": "pplx-publisher-NOTICE",
+      "url": "browser-models/notices/pplx-publisher-NOTICE",
+      "bytes": 132,
+      "sha256": "381fb81e814716a5ef8e5eae26a08607d052cf12f019dba9da9e81298ef5cb75",
+      "kind": "notice"
+    },
+    {
+      "id": "wllama-js",
+      "url": "browser-models/wllama-decision-fp32/index.js",
+      "bytes": 389614,
+      "sha256": "647a28ebc01a27b43386023f01740b6348ec7a851311811fe584e8291c33cbda",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-wasm",
+      "url": "browser-models/wllama-decision-fp32/wllama.wasm",
+      "bytes": 9386116,
+      "sha256": "2eff6cb50e99d1d80c57e4ed235b659303318d98097d64fe0b39aa8f6b730541",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-license",
+      "url": "browser-models/wllama-decision-fp32/LICENCE",
+      "bytes": 1071,
+      "sha256": "5866e3bd7e3cbd3f7c8bea6efd8a1e7fa7cc8de68c30f428aff7c6584a0fb720",
+      "kind": "notice"
+    }
+  ],
   "wllama-lfm3": [
     {
       "id": "wllama-js",
@@ -484,6 +542,52 @@
     {
       "id": "wllama-license",
       "url": "browser-models/wllama-lfm3/LICENCE",
+      "bytes": 1071,
+      "sha256": "5866e3bd7e3cbd3f7c8bea6efd8a1e7fa7cc8de68c30f428aff7c6584a0fb720",
+      "kind": "notice"
+    }
+  ],
+  "chat-gpu": [
+    {
+      "id": "wllama-js",
+      "url": "browser-models/wllama-chat-gpu/index.js",
+      "bytes": 386507,
+      "sha256": "dc43ffb762922b95134b45bd9b93069c2b1e6f825e8ee31e633cde17a2fc96ab",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-wasm",
+      "url": "browser-models/wllama-chat-gpu/wllama.wasm",
+      "bytes": 9326027,
+      "sha256": "b4862a3d30aaac1d33afbbba430d4d48a3e8baeb55b1a2e632fac51478ec7cc0",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-license",
+      "url": "browser-models/wllama-chat-gpu/LICENCE",
+      "bytes": 1071,
+      "sha256": "5866e3bd7e3cbd3f7c8bea6efd8a1e7fa7cc8de68c30f428aff7c6584a0fb720",
+      "kind": "notice"
+    }
+  ],
+  "chat-lfm3-gpu": [
+    {
+      "id": "wllama-js",
+      "url": "browser-models/wllama-chat-lfm3-gpu/index.js",
+      "bytes": 386507,
+      "sha256": "530aefa7a83721e843762c0e886b83100ee1dd356fef6343a79008e98332f1b7",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-wasm",
+      "url": "browser-models/wllama-chat-lfm3-gpu/wllama.wasm",
+      "bytes": 9456086,
+      "sha256": "5ae95c179c98794498b7d9a4b9594ddf58c2804c4367b76a92393bd8953b02f3",
+      "kind": "runtime"
+    },
+    {
+      "id": "wllama-license",
+      "url": "browser-models/wllama-chat-lfm3-gpu/LICENCE",
       "bytes": 1071,
       "sha256": "5866e3bd7e3cbd3f7c8bea6efd8a1e7fa7cc8de68c30f428aff7c6584a0fb720",
       "kind": "notice"

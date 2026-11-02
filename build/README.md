@@ -4,8 +4,9 @@
 
 `speech-runtime.mjs` builds isolated Parakeet inference/features workers and
 publishes matching ONNX Runtime MJS/Wasm, capture worklet and complete notices
-under `speech/`. Models and TEN-VAD's engine are explicit upstream downloads;
-they never enter the core HTML or static model payloads. Files above 20 MiB use
+under `speech/`. Original large Parakeet weights and TEN-VAD's engine remain
+explicit upstream downloads. Continuous decoder/GPU VAD compatibility assets
+are separately staged optional static payloads; no model weights enter core HTML. Files above 20 MiB use
 the existing verified-part transport to meet Pages' 25 MiB limit. The build
 asserts exact runtime versions and the local serial initialization patch.
 The [speech guide](../src/lib/assistant/speech/README.md) owns runtime/data
@@ -89,6 +90,16 @@ credentials, caches, dependencies, and build output. The published source must
 match the deployed application changes. Clean committed builds default to the
 project's GitHub source link. `source.tar.gz` is optional hosting output and
 participates in the complete deployment hash when present.
+
+Continuous Parakeet's compatibility decoder and the optional GPU VAD exports are
+separate pinned static assets. Before an authorized deployment, run
+`python3 build/browser-models/stage-speech-assets.py VERIFIED_ASSET_CACHE dist`
+after building. The cache layout is `<sha256>/<filename>`; every input and staged
+file is size/SHA verified against `src/lib/assistant/speech/continuous-assets.json`.
+No generated model enters Git or the core HTML. Include these `speech/models/`
+files, their publisher notices, and the staged Strands FP32 payload in the
+complete candidate. Speech fetches these files whole; Strands uses its verified
+static parts rather than assuming Pages supports byte-range responses.
 
 Wasm packages preserve the original plugin bytes and full notices obtained from
 `getLicenseText()`. Prettier providers are independent minified browser ESM
@@ -222,11 +233,12 @@ guide](browser-models/README.md) and [installation contract](../src/lib/assistan
 
 
 `model-runtimes.mjs` builds optional LiteRT-LM 0.18.0, Transformers.js 4.3.1
-(its own ORT 1.31.0 development pin), the separate original CPU/custom-device GPU
+(its own ORT 1.31.0 development pin), the original/custom-device FP32 GPU
 Strands adapters, and native decision prompt/readout helpers. Assets live under
 `browser-models/runtimes/`; SDK files over 16 MiB are split on database-block
-boundaries. The D3 exact-preflight, Elephant and Perplexity native builds retain
-separate source-build receipts under `browser-models/wllama-*`.
+boundaries. The native GPU decision families use the paired shared FP32 build with its
+combined native API receipts under `browser-models/wllama-decision-fp32/`.
+Decision CPU choices and CPU-only distribution groups are not offered.
 `npm run models:generate` refreshes `runtime-artifacts.json` after an owned adapter
 change; production builds verify those generated hashes before emitting bytes.
 Development invalidates generated SDK bytes when their adapter sources change;
@@ -238,3 +250,14 @@ URLs in a classic worker. Model files, backend, sampler and native templates sta
 pinned. Model/tokenizer/config/head/license files are user-installed independently;
 no model weights enter the build. Package license fallbacks are documented under
 [`licenses/`](licenses/README.md).
+
+
+Strands' local INT4/FP32 compatibility profile uses an immutable same-origin
+optional weight prefix because the reference conversion has no public upstream
+URL. A code-only build deliberately excludes its 1.283 GB weight payload.
+Before an authorized Pages release, stage that exact verified tree into `dist`
+using `browser-models/stage-strands-fp32.py`; the source-build guide owns the
+input location, checksums and command. The installer assembles 16 MiB parts in
+IndexedDB and verifies the original whole-file digest. A release candidate is
+incomplete if it omits these referenced optional static files. No model inference
+runs during staging and no weights belong in Git or the source archive.

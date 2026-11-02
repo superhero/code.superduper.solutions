@@ -5,12 +5,11 @@ Settings → AI → Inference engines opens the Speech input settings card.
 
 Parakeet dictation augments the existing AI draft for every connection provider.
 It never sends a message automatically. Open **Settings → AI → Speech input**,
-choose the CPU INT8, WebGPU FP32 or experimental WebGPU FP16 row, install it
-explicitly. Each compact row matches the LLM list, with parameter
+choose a recognizer row and install it explicitly. Each compact row matches the LLM list, with parameter
 count, encoder precision, total download size and install/load/remove controls.
 Browser compatibility, settings and detailed information expand independently
 below each row. Licenses remain available under **Detailed info**. The
-**Speech model** menu beside **Dictate** always lists all three variants with
+**Speech model** menu beside **Dictate** lists every recognizer with
 installation state and download size. Selecting one installs missing files and
 queues its load after active browser inference or dictation; it never opens the
 microphone. The separate **Dictate** button prepares the selected model if
@@ -20,8 +19,15 @@ in the composer's existing framed footer. Confirmed sentences are
 appended to the originating conversation; provisional words remain a preview.
 Changing conversation or closing the pane stops capture and finalizes its tail.
 
-The default is WebGPU FP32, with an FP32 encoder and INT8 CPU decoder.
-CPU INT8 remains an explicit option.
+The default recognizer is **WebGPU continuous**, using NR's original dynamic FP32
+encoder and NQ's GPU-resident decoder/grouped control. Encoder neural operators
+use GPU; audited indexing/layout, capture, features and scheduling use CPU.
+TEN remains an explicitly labeled CPU/Wasm speech detector. Its settings card
+also offers FireRed, FSMN and MarbleNet GPU frontend/model adapters; no
+unsupported GPU path silently substitutes a CPU model.
+
+The original WebGPU FP32 encoder + INT8 CPU decoder and CPU INT8 recognizer
+remain explicit legacy options with their earlier recording limits.
 WebGPU FP16 is an explicit experimental choice requiring `shader-f16`. No mode
 silently substitutes another backend. Download sizes do not establish RAM/VRAM
 requirements or browser/device qualification. Microphone access requires an
@@ -36,7 +42,7 @@ worker, releases capture/features and offers a clean manual Retry. Retry creates
 a fresh worker and retains verified cached artifacts. Stop flushes the worklet
 before ending recognition and has a separate completion deadline.
 
-`capture.ts` owns microphone tracks, a 16 kHz AudioContext and the worklet's
+For legacy recognizers, `capture.ts` owns microphone tracks, a 16 kHz AudioContext and the worklet's
 flush acknowledgement. Late permission grants are closed after cancellation.
 Recording stops after 55 seconds; the pipeline bounds audio at 60 seconds.
 
@@ -47,9 +53,10 @@ continuous 128-bin features and conservative sentence merging. Inference stays
 serial and skips silence. A sustained pause or Stop matures provisional words.
 Every recording gets fresh feature state and reset VAD/model caches.
 
-The build applies BS's sequential-session approach to **both** CPU and strict
-WebGPU: encoder creation completes before decoder creation starts, with named
-startup stages. Strict GPU retains the reference's CPU decoder bootstrap.
+The legacy build applies BS's sequential-session approach to **both** CPU and
+WebGPU encoder paths: encoder creation completes before decoder creation starts, with named
+startup stages. These legacy paths retain the reference's CPU decoder bootstrap; the default
+continuous mode uses the independent GPU decoder described below.
 The transform checks the exact parakeet.js 1.4.4 source digest and fails if its
 shape changes. It does not edit `node_modules` or claim an upstream fix.
 
@@ -58,7 +65,9 @@ shape changes. It does not edit `node_modules` or claim an upstream fix.
 `model.lock.json` preserves AO's publisher/conversion revisions, sizes and hashes.
 The vocabulary's added SHA256 was derived from the pinned file after verifying
 its recorded Git blob ID. NVIDIA publishes the original model; ysdede maintains
-the ONNX conversion and quantization. No weights ship in Git or the distribution.
+the ONNX conversion and quantization. No weights ship in Git or core HTML. The optional immutable decoder and GPU VAD
+compatibility assets are staged separately for distribution; original large
+Parakeet weights remain pinned publisher downloads.
 
 `storage.ts` verifies SHA256 and exact sizes before publishing installed cache
 entries. Large files stream into browser CacheStorage, outside repository files.
@@ -72,9 +81,14 @@ more capacity is available. Real `QuotaExceededError` failures remove the
 incomplete artifact and explain how to free space. Temporary/private browser
 contexts can impose tighter storage limits than an ordinary persistent profile.
 
-Speech audio stays in memory for transcription; no recording, transcript archive
-or recognition diagnostics are saved. Only confirmed text is appended to the
-originating AI draft. `diagnostics.ts` removes the obsolete
+Continuous Parakeet keeps original 16 kHz PCM and segment/transcript metadata in
+the separate private `code-speech-segments-v1` IndexedDB database. Pending audio
+survives reload; completed audio remains until explicitly removed under
+**Local recordings**. WAV export reconstructs unique cores without duplicated
+overlap and reads one stored segment at a time. Quota/backpressure errors stop
+capture explicitly and expose any unsaved recovery audio for export. Nothing is
+uploaded. Other recognizers retain their in-memory-only recording behavior.
+Confirmed text is appended to the originating AI draft. `diagnostics.ts` removes the obsolete
 `code-speech-diagnostics` database on application startup, including any earlier
 recordings. Downloaded model files remain cached separately. Nothing is uploaded
 by the speech service; normal AI message submission remains the user's action.
@@ -185,3 +199,73 @@ during a GPU window rejected stale updates and a fresh initialization succeeded.
 The test used an isolated development server and left the shared Vite service
 and foreign workloads unchanged. These are bounded fixture checks, not physical
 microphone, mobile or long-recording qualification.
+
+## Continuous Parakeet and GPU speech detection
+
+`runtime/continuous/` adapts the complete OO coordinator, store and global merger.
+One AudioWorklet feeds 20-second unique cores plus two seconds of overlap into
+one warm serial ASR worker. Pending PCM is durable; only capture and active
+inference own feature clients. The final second at a forced seam stays
+provisional. Real pauses commit earlier, decoded silence advances its own
+horizon, repeated context is reconciled by onset/overlap, and genuine repeated
+words survive. Append each sequenced `stableDelta` once; replace only `draftText`.
+Only the global merger rebases segment-local timestamps.
+
+Stop flushes the worklet, drains queued segments and commits the tail without
+whole-recording transcription. Readiness follows the archive/statistics barrier.
+Cancellation and late permission callbacks are fenced by worker/session epochs.
+GPU chat waits for capture and complete speech unload; speech waits for an
+active Pi turn and unloads its LLM. Joint ASR/LLM residency is unqualified,
+especially Ornith Q8 on 12 GiB.
+
+`build/prepare-nq-speech.mjs` runs the four unchanged pinned NR generation recipes
+in ignored build storage. Paired ORT 1.30 Asyncify files, generated helpers,
+feature workers and caller-verified Blob model URLs form the offline bundle.
+The compact decoder is a local FP32-activation compatibility conversion of the
+original INT8 initializer bytes; recipes, initializer proofs and dependency pins
+remain under `build/speech/`. It is not publisher-native INT8 arithmetic.
+
+FireRed and FSMN retain their original FP32 graphs, preprocessing/cache/reset
+contracts and native frontend calibration. MarbleNet retains exact official
+tensors in a local FP32 export and roughly 1.45 seconds of future context.
+Reference raw-classifier F1 was 84.63%, 95.85% and 97.87%, respectively, on four
+held-out clips; this is not a universal ranking or complete dictation score.
+FSMN remains experimental pending publisher endpoint/SNR processing. Silero GPU
+is explicitly unsupported because tested probabilities/decisions were incorrect.
+GPU execution uses the ASR-owned explicit device with CPU neural fallback
+disabled; VAD flush/reset occurs per segment and its resources close first.
+
+Optional installations carry publisher licenses and notices. MarbleNet weights
+use the NVIDIA Open Model License, including the agreement and required Notice;
+its separate NeMo code license does not relabel those weights. TEN's additional
+license conditions remain intact. Installed notice text is available offline.
+Physical microphones, phones, hours-long recording and actual quota exhaustion
+remain outside fixture qualification.
+
+## Integrated editor evidence (2026-11-02)
+
+Actual Brave 1.96.61 / Chromium 154.0.8037.98 on sds-01, RTX 3060 12 GB,
+passed the installed continuous worker and AudioWorklet path: 75 seconds
+produced the expected 110 words; a ten-minute accelerated replay produced
+880 words while draining its durable backlog. Stable prefixes stayed fixed.
+All 36 archived audio records retained matching hashes after reload. Stop
+waited for pending archive writes and final words. Cancellation during native
+inference, a fresh restart, silence, cached Blob model reload with downloads
+blocked, and zero tracked GPU buffers after unload passed. These file-backed
+checks do not qualify physical microphones or ten minutes of wall-clock capture.
+
+FireRed, FSMN and MarbleNet each passed a full 15-second, 22-word dictation
+through the same ASR-owned GPUDevice, with positive detector execution counters
+and zero tracked buffers after unload. VAD operations and ASR inference share
+a serial compute queue: overlapping ORT Asyncify/JSEP calls caused an observed
+FSMN memory fault before this fix. A fatal native failure now rejects queued
+operations and requires a fresh worker. TEN remains the visible CPU control;
+raw reference classifier scores do not establish a universal production default.
+
+Targeted Vitest/QuickPickle cases cover queue invalidation, transcript seams,
+segment ownership, lifecycle and the changed model adapters. Their simulated
+resource tests supplement the actual browser results above. Hours-long capture,
+quota exhaustion during a real recording, mobile and simultaneous model
+residency remain unqualified. Exact decoder reproduction is documented under
+`build/speech/conversion/README.md`; publisher licenses and local conversion
+notices travel with each selected optional payload.

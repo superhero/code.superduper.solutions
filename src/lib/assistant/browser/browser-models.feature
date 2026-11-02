@@ -23,10 +23,10 @@ Feature: Pinned installable browser inference with the existing Pi agent
     Then browser model settings reject invalid or unknown controls
   Scenario: WebML needs GPU compute and Wllama needs its streaming Wasm prerequisites
     Then browser compatibility separates actual GPU capabilities from unknown memory and driver facts
-  Scenario: Large Ornith weights cannot silently fall back to the four GiB CPU heap
-    Then browser execution plans preserve the CPU heap limit and partial offload choices
-  Scenario: Allocation errors permit fallback while network errors remain visible
-    Then browser engine fallback disposes failed instances and retries allocation errors only
+  Scenario: Strict Ornith text execution cannot silently fall back to CPU
+    Then browser execution plans require GPU without partial CPU offload choices
+  Scenario: GPU allocation and network failures remain visible without backend substitution
+    Then strict GPU load failures dispose the instance without substituting another backend
   Scenario: Cancellation terminates unresponsive native generation
     Then aborting a blocked browser generator unloads it without waiting
   Scenario: Native tool identities arguments parser errors and results survive Pi translation
@@ -57,7 +57,7 @@ Feature: Pinned installable browser inference with the existing Pi agent
       | iy-browser-shared-wllama-ornith-q8 |
 
   Scenario: Verified language vision and native decision profiles remain separate and fully pinned
-    Then the expanded catalog exposes nine LLMs three vision profiles and ten native decision profiles
+    Then the expanded catalog exposes nine LLMs five vision profiles and ten GPU decision profiles
   Scenario: New language engines preserve their qualified settings and text-only loading
     Then Gemma rejects unsupported controls and MiniCPM loads without a vision projector
   Scenario: Offline vision tokenizers probe the installed model commit

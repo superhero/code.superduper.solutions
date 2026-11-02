@@ -7,3 +7,4 @@ export * from '../../src/lib/assistant/speech/storage';
 export * from '../../src/lib/assistant/speech/diagnostics';
 export * from '../../src/lib/assistant/speech/capture';
 export * from '../../src/lib/assistant/speech/controller';
+export * from '../../src/lib/assistant/speech/recordings';

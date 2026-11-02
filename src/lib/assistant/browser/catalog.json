@@ -274,28 +274,24 @@
     "file": "Ornith-1.5-9B-Q4_K_M.gguf",
     "weight_bytes": 5780090816,
     "weight_sha256": "70c112196e0b7023803c9762752e46d29e612a92c83f995bc3ba1ceb07e8fab6",
-    "projector": {
-      "file": "mmproj-Ornith-1.5-9B-BF16.gguf",
-      "bytes": 921704672,
-      "sha256": "626f9f90627402a6bf4a999111d0fbd69b5fcca7aa8ba089d69e5f10e8858e1d",
-      "format": "official BF16/F32 GGUF vision",
-      "model": "ornith-ai/Ornith-1.5-9B-GGUF",
-      "revision": "abdd624b12ebf020b767fff532ff44fe552b28c3"
-    },
+    "projector": null,
     "runtime_source": {
       "package": "@wllama/wllama",
-      "version": "3.12.0-source",
+      "build": "build/browser-models/native/chat-gpu/build.sh",
+      "receipt": "browser-models/wllama-chat-gpu/build-receipt.json",
+      "shader_f16_required": false,
+      "neural_graphs": "GPU only; CPU operator and weight fallback rejected",
       "source_revision": "3bb2a46f0dab0b924e8cd992b85e8881c3d3a859",
+      "version": "3.12.0-source",
       "llama_cpp": "970b51ce7c9ba5fff0726c5e9994f1c2f0e4eedc",
-      "original_llama_cpp": "5aeac37a35b44fde4bdffaec9159f2fcb253b622",
-      "license": "MIT",
-      "change": "Pinned upstream submodule update for Q2_0 WebGPU/Hadamard; no local model conversion.",
-      "build": "../../evaluations/shared-webgpu/runtime/wllama/build.sh"
+      "emscripten": "4.0.20",
+      "dawn": "v20260317.182325",
+      "qualification": "brave-chat-gpu: complete GPU layers/input embedding; positive GPU audit and zero CPU model ops"
     },
     "settings": {
-      "context_tokens": 10000,
-      "max_new_tokens": 10000,
-      "smoke_max_new_tokens": 10000,
+      "context_tokens": 4096,
+      "max_new_tokens": 256,
+      "smoke_max_new_tokens": 256,
       "load_timeout_ms": 1200000,
       "thinking": false,
       "enable_thinking": false,
@@ -316,24 +312,27 @@
       "max_model_turns": 6,
       "max_tool_calls": 8,
       "execution_mode": "gpu",
-      "nvidia_f16_override": true,
+      "nvidia_f16_override": false,
       "gpu_layers": 99,
       "cpu_threads": 4,
       "batch_tokens": 128,
       "micro_batch_tokens": 64,
-      "flash_attention": true,
-      "cache_type_k": "f16",
-      "cache_type_v": "f16",
+      "flash_attention": false,
+      "cache_type_k": "f32",
+      "cache_type_v": "f32",
       "vision_gpu_offload": true,
       "image_max_tokens": 256,
       "range_chunk_bytes": 8388608,
       "range_lru_bytes_per_file": 67108864,
       "range_parallel": 2,
-      "mtp": false
+      "mtp": false,
+      "gpu_graph_only": true,
+      "context_shift": false,
+      "text_only": true
     },
     "model_layers": 32,
     "gguf_block_count": 33,
-    "limitations": "Simple image passed; OCR was not tested in this runtime run.",
+    "limitations": "Verified strict GPU text/Pi tools and progressive skills at 4,096 context and 256 output tokens. FP32 KV cache; no CPU model fallback. Tokenization, sampling and tools use CPU. Image inspection uses a separate capability-gated vision runtime; joint residency and mobile remain unqualified. Native vision OCR was not tested.",
     "evidence": {
       "attempt": "ix-browser-shared-wllama-ornith-q4",
       "run_id": "shared-webgpu-1792695694435494902",
@@ -344,7 +343,10 @@
         "skill": true
       },
       "scope": "Recorded browser text, image, Pi tool and skill checks; not qualification of this editor integration."
-    }
+    },
+    "vision_tool": "ix-browser-shared-wllama-ornith-q4-native-vision",
+    "runtime_id": "chat-gpu",
+    "family": "ornith"
   },
   {
     "id": "iy-browser-shared-wllama-ornith-q8",
@@ -355,28 +357,24 @@
     "file": "Ornith-1.5-9B-Q8_0.gguf",
     "weight_bytes": 9786060384,
     "weight_sha256": "22086870b009dbe9815ee752c48a82de930118a7c5ce5599590892ae03b8b010",
-    "projector": {
-      "file": "mmproj-Ornith-1.5-9B-BF16.gguf",
-      "bytes": 921704672,
-      "sha256": "626f9f90627402a6bf4a999111d0fbd69b5fcca7aa8ba089d69e5f10e8858e1d",
-      "format": "official BF16/F32 GGUF vision",
-      "model": "ornith-ai/Ornith-1.5-9B-GGUF",
-      "revision": "abdd624b12ebf020b767fff532ff44fe552b28c3"
-    },
+    "projector": null,
     "runtime_source": {
       "package": "@wllama/wllama",
-      "version": "3.12.0-source",
+      "build": "build/browser-models/native/chat-gpu/build.sh",
+      "receipt": "browser-models/wllama-chat-gpu/build-receipt.json",
+      "shader_f16_required": false,
+      "neural_graphs": "GPU only; CPU operator and weight fallback rejected",
       "source_revision": "3bb2a46f0dab0b924e8cd992b85e8881c3d3a859",
+      "version": "3.12.0-source",
       "llama_cpp": "970b51ce7c9ba5fff0726c5e9994f1c2f0e4eedc",
-      "original_llama_cpp": "5aeac37a35b44fde4bdffaec9159f2fcb253b622",
-      "license": "MIT",
-      "change": "Pinned upstream submodule update for Q2_0 WebGPU/Hadamard; no local model conversion.",
-      "build": "../../evaluations/shared-webgpu/runtime/wllama/build.sh"
+      "emscripten": "4.0.20",
+      "dawn": "v20260317.182325",
+      "qualification": "brave-chat-gpu: complete GPU layers/input embedding; positive GPU audit and zero CPU model ops"
     },
     "settings": {
-      "context_tokens": 10000,
-      "max_new_tokens": 10000,
-      "smoke_max_new_tokens": 10000,
+      "context_tokens": 4096,
+      "max_new_tokens": 256,
+      "smoke_max_new_tokens": 256,
       "load_timeout_ms": 1200000,
       "thinking": false,
       "enable_thinking": false,
@@ -397,24 +395,27 @@
       "max_model_turns": 6,
       "max_tool_calls": 8,
       "execution_mode": "gpu",
-      "nvidia_f16_override": true,
+      "nvidia_f16_override": false,
       "gpu_layers": 99,
       "cpu_threads": 4,
       "batch_tokens": 128,
       "micro_batch_tokens": 64,
-      "flash_attention": true,
-      "cache_type_k": "f16",
-      "cache_type_v": "f16",
+      "flash_attention": false,
+      "cache_type_k": "f32",
+      "cache_type_v": "f32",
       "vision_gpu_offload": true,
       "image_max_tokens": 256,
       "range_chunk_bytes": 8388608,
       "range_lru_bytes_per_file": 67108864,
       "range_parallel": 2,
-      "mtp": false
+      "mtp": false,
+      "gpu_graph_only": true,
+      "context_shift": false,
+      "text_only": true
     },
     "model_layers": 32,
     "gguf_block_count": 33,
-    "limitations": "Simple image passed; OCR was not tested in this runtime run.",
+    "limitations": "Verified strict GPU text/Pi tools and progressive skills at 4,096 context and 256 output tokens. FP32 KV cache; no CPU model fallback. Tokenization, sampling and tools use CPU. Image inspection uses a separate capability-gated vision runtime; joint residency and mobile remain unqualified. Native vision OCR was not tested.",
     "evidence": {
       "attempt": "iy-browser-shared-wllama-ornith-q8",
       "run_id": "shared-webgpu-1792695694435494902",
@@ -425,6 +426,9 @@
         "skill": true
       },
       "scope": "Recorded browser text, image, Pi tool and skill checks; not qualification of this editor integration."
-    }
+    },
+    "vision_tool": "iy-browser-shared-wllama-ornith-q8-native-vision",
+    "runtime_id": "chat-gpu",
+    "family": "ornith"
   }
 ]

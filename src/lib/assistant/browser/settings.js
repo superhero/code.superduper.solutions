@@ -8,6 +8,12 @@ export function defaultSettings(profile, overrides = {}) {
     if (Object.keys(overrides).length) throw Error('This profile uses its verified fixed inference settings.');
     return {};
   }
+  if (profile.settings.gpu_graph_only) {
+    const values = nativeDefaults(profile, overrides);
+    const fixed = {flash_attention:false,cache_type_k:'f32',cache_type_v:'f32',batch_tokens:128,micro_batch_tokens:64,prefix_cache:false,context_shift:false,thinking:false};
+    if (Object.entries(fixed).some(([key,value]) => values[key] !== value) || values.context_tokens > 4096 || values.max_new_tokens > 256 || values.check_max_new_tokens > 256 || values.sampling_mode !== 'greedy') throw Error('This GPU runtime supports up to 4,096 context tokens and 256 output tokens, greedy decoding, FP32 cache, 128/64 batches, and reasoning/prompt caching off. Reset older settings to use the verified profile.');
+    return values;
+  }
   if (profile.family === 'lfm3') {
     const values = nativeDefaults(profile, overrides);
     if (values.context_tokens > 4096 || values.thinking || values.sampling_mode !== 'greedy') throw Error('LFM3 supports a tested context up to 4,096 tokens, greedy decoding and thinking off.');

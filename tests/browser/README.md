@@ -698,3 +698,24 @@ category/scroll restoration after closing and reload. `selectSettingsTab` perfor
 explicit category navigation in shared helpers; dropdown helpers reveal their
 own Settings section before opening the control. Minimap and Git configuration
 link scenarios continue covering the tabbed content through their existing flows.
+
+## GPU resume integration
+
+The opt-in `gpuResumeLive` Cucumber profile runs changed strict chat and
+continuous speech adapters through the actual editor. Run models serially on
+sds-01 with an owned browser/profile and the shared model-test lease; do not
+interrupt other sessions. `MODEL_LIVE_BRAVE=1` selects the pinned Brave binary.
+`MODEL_LIVE_FIXED_ASSETS` points to a JSON mapping of immutable publisher URLs
+to verified local files; this only delivers bytes and never proxies inference.
+`MODEL_LIVE_SPEECH_FIXTURE`, `MODEL_LIVE_SOURCE_AUDIO` and
+`MODEL_LIVE_MICROPHONE_SHA` pin the public-domain capture fixture. The base
+model harness documents other launch and artifact-directory settings.
+
+The named scenarios exercise genuine progressive skill/file-tool chat,
+unsupported vision before text suspension, real AudioWorklet capture, a
+ten-minute accelerated backlog, stable transcript prefixes, archived PCM
+hashes after reload, cancellation during inference, restart, silence and cached
+Blob model loading. Each GPU VAD runs a complete dictation with runtime counters
+and release assertions. Fixed file audio is not physical microphone qualification.
+Record browser versions and exact launch flags alongside model results. Normal
+UI runs do not download or execute these models.

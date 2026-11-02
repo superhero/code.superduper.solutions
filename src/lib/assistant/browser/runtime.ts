@@ -23,7 +23,7 @@ export function executionSettings(value: unknown, profile?: BrowserProfile): Bro
   const maximum = (profile?.gguf_block_count ?? profile?.model_layers ?? 33) + 1;
   if (input.gpuLayers !== undefined && (!Number.isInteger(input.gpuLayers) || input.gpuLayers < 1 || input.gpuLayers > maximum)) throw new Error(`Use a GPU layer budget from 1 to ${maximum}.`);
   if (input.visionGpu !== undefined && typeof input.visionGpu !== 'boolean') throw new Error('Choose a valid vision placement.');
-  return { ...DEFAULT_EXECUTION, gpuLayers: Number(profile?.settings.gpu_fallback_layers ?? DEFAULT_EXECUTION.gpuLayers), ...input };
+  return profile?.settings.gpu_graph_only || profile?.category === 'vision' && profile.engine === 'wllama' ? {...DEFAULT_EXECUTION,mode:'gpu',gpuLayers:(profile.model_layers ?? 33)+1} : { ...DEFAULT_EXECUTION, gpuLayers: Number(profile?.settings.gpu_fallback_layers ?? DEFAULT_EXECUTION.gpuLayers), ...input };
 }
 type FrozenModel = { key: string; profile: BrowserProfile; execution: BrowserOptions };
 let loaded: FrozenModel & { id: string; engine: LocalEngine; urls: string[]; release: () => Promise<void> } | undefined;
@@ -54,6 +54,8 @@ import.meta.hot?.dispose(() => {
   void schedule(async () => {}).finally(() => ownership?.close()).catch(() => {});
 });
 export const loadedModel = () => loaded?.id;
+/** Verified native backend evidence for local decision consumers. */
+export const loadedModelInfo = () => loaded ? structuredClone(loaded.engine.info) : undefined;
 export const runtimeBusy = () => work.busy || loading || generating;
 /** The scoped loader shares this turn's ownership, without a second queue entry. */
 export function runBrowserTurn<T>(run: (loadModel: typeof loadModelNow, unloadModel: typeof unloadModelNow) => Promise<T>, signal?: AbortSignal, onQueued?: () => void): Promise<T> {
@@ -113,7 +115,7 @@ async function loadModelNow(id: string, progress: (event: Progress) => void, sig
     }
     if (['litert-lm','transformers','strands-onnx','lfm3-onnx'].includes(profile.engine)) {
       const runtimeURLs = await verifiedRuntimeURLs(files, urls);
-      engine = await createWorkerEngine(profile, files, runtimeURLs, progress, signal);
+      engine = await createWorkerEngine(profile.engine === 'strands-onnx' ? {...profile, browser_probe: {...profile.browser_probe, weights_url: new URL(String(profile.browser_probe!.weights_url), globalThis.document?.baseURI ?? globalThis.location?.href).href}} : profile, files, runtimeURLs, progress, signal);
     } else {
     const moduleBytes = await verifiedBytes(profile.engine === 'webml' ? 'webml-js' : 'wllama-js');
     let runtimeUrl = '';
@@ -182,6 +184,10 @@ export async function browserVisionTool(id: string, conversation: readonly ChatM
   const references = imageReferences(conversation), vision = profileById(original.profile.vision_tool);
   const frozen: FrozenModel = {key: original.key, profile: original.profile, execution: original.execution};
   const control = createVisionTool({profile: vision, getImage: references.getImage,
+    checkCapabilities: async ({signal}) => {
+      const checks = compatibilityFor(await probeBrowser(),vision,'gpu'); signal.throwIfAborted();
+      if (!checks.ready) throw new Error(checks.rows.filter(row=>row.required && row.state==='fail').map(row=>`${row.title}: ${row.detail}`).join('\n'));
+    },
     onState: state => {if (state.busy) progress({message: state.status ?? 'Inspecting image…'});},
     suspendText: async () => {await unloadModelNow();},
     resumeText: async ({signal}) => {
@@ -195,7 +201,11 @@ export async function browserVisionTool(id: string, conversation: readonly ChatM
       const current = loaded;
       if (!current || current.id !== vision.id) throw new Error('The vision model did not load.');
       const engine = current.engine as WorkerEngine;
-      return {generate: engine.generate.bind(engine), async dispose() {if (loaded === current) await unloadModelNow();}};
+      return {generate: vision.engine === 'wllama' ? async (messages: {role:string;content:string}[], options: {image:ChatImage;signal:AbortSignal;maxTokens:number}) => {
+        const pixels = Uint8Array.from(atob(options.image.data), char => char.charCodeAt(0));
+        const raw = await engine.generate(messages.map(message => ({...message,content:[{type:'text',text:message.content},{type:'image',data:pixels.buffer}]})), {...options,tools:[],onText:()=>{},generation:vision.settings});
+        return {...raw,text:(raw.message as {content?:string}|undefined)?.content};
+      } : engine.generate.bind(engine), async dispose() {if (loaded === current) await unloadModelNow();}};
     },
   });
   return {...control, reference: references.reference};

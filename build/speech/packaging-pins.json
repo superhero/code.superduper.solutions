@@ -1,0 +1,45 @@
+{
+  "purpose": "Publisher licensing provenance for existing pinned audio artifacts, not a model format change",
+  "records": {
+    "firered_license": {
+      "license": "Apache-2.0",
+      "source": "https://raw.githubusercontent.com/FireRedTeam/FireRedVAD/c30ec49e8cc69642b0ee65362eba11b9d11c6e54/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "checked": "2026-11-02",
+      "status": "fetched"
+    },
+    "fsmn_model_card": {
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/funasr/fsmn-vad-onnx/resolve/f6e9fbb4cefa7397216c763f21307993f147f585/README.md",
+      "bytes": 3613,
+      "sha256": "59ad5ed1e004a8a2b431ad4d86715f0093dee023ff7018073d3c261f60ec0e1e",
+      "checked": "2026-11-02",
+      "status": "fetched"
+    },
+    "marblenet_model_card": {
+      "license": "NVIDIA Open Model License Agreement",
+      "source": "https://huggingface.co/nvidia/Frame_VAD_Multilingual_MarbleNet_v2.0/resolve/9d25eb877d9edab5101ccc843edd04787a6c72c4/README.md",
+      "bytes": 17046,
+      "sha256": "c48b3a61e35e2d7377bdb084d6acc021f681df8258126cb9af2690d38f29184f",
+      "checked": "2026-11-02",
+      "status": "fetched"
+    },
+    "nvidia_open_model_license": {
+      "license": "NVIDIA Open Model License Agreement,2025-10-24",
+      "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/license-agreements/enterprise-software/nvidia-open-model-license-agreements-24-10-2025.pdf",
+      "bytes": 79005,
+      "sha256": "4d2fb590aa9b30c47f2058bff17291df7fa2aa0c1bd775a20703da9bb267cfab",
+      "checked": "2026-11-02",
+      "status": "fetched"
+    },
+    "parakeet_publisher_card": {
+      "license": "CC-BY-4.0",
+      "source": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3/resolve/541d1f99c6b0c3cd0b11a95167540bb8edefd82b/README.md",
+      "bytes": 42888,
+      "sha256": "7a4306a43f395e3a716e77f1d81c03db18a0a355d7b566bb1d6307213ba0302b",
+      "checked": "2026-11-02",
+      "status": "fetched"
+    }
+  }
+}

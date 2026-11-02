@@ -8,7 +8,9 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   import MaterialIcon from '$lib/components/MaterialIcon.svelte';
   import ModelOperation from './ModelOperation.svelte';
   import { speech } from '$lib/assistant/speech/controller';
-  import { speechArtifacts, speechModes, speechPins, tenRevision, lfmSpeechProfile, isAdditionalSpeech } from '$lib/assistant/speech/catalog';
+  import { speechArtifacts, speechModes, speechPins, tenRevision, lfmSpeechProfile, isAdditionalSpeech, requiresSpeechGpu } from '$lib/assistant/speech/catalog';
+  import NavigationDropdown from '$lib/components/NavigationDropdown.svelte';
+  import {vadModes,type VadMode} from '$lib/assistant/speech/vad';
   import { probeBrowser } from '$lib/assistant/browser/reference/compatibility.js';
   import type { BrowserFacts } from '$lib/assistant/browser/types';
   import type { SpeechMode } from '$lib/assistant/speech/types';
@@ -28,13 +30,13 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
   const lfm = $derived(lfmSpeechProfile(mode));
   const modelTitle = $derived(mode === 'phonon' ? 'Phonon 2.5' : lfm?.title ?? 'Parakeet TDT v3');
   const precision = $derived(mode === 'phonon' ? 'Packed' : lfm ? 'Mixed' : mode === 'cpu' ? 'INT8' : mode === 'gpu-fp16' ? 'FP16' : 'FP32');
-  const downloadSize = $derived(speechArtifacts(mode).reduce((total, file) => total + file.bytes, 0));
+  const downloadSize = $derived(speechArtifacts(mode,status.vad).reduce((total, file) => total + file.bytes, 0));
   const compatibility = $derived(facts ? mode === 'phonon' ? phononCompatibility(facts).rows : [
     { title: 'Secure page', passed: facts.secure, detail: 'HTTPS or localhost is required.' },
     { title: 'Cross-origin isolation', passed: facts.isolated, detail: 'The page must supply COOP/COEP headers.' },
-    { title: 'WebAssembly SIMD', passed: facts.wasm && facts.simd, detail: 'Required by the CPU decoder and speech detector.' },
+    { title: 'WebAssembly SIMD', passed: facts.wasm && facts.simd, detail: mode === 'gpu-nq' || lfm ? 'Required by runtime helpers and audio processing.' : 'Required by the CPU decoder and speech detector.' },
     { title: 'Microphone and audio worklets', passed: !!navigator.mediaDevices?.getUserMedia && typeof AudioWorkletNode !== 'undefined', detail: 'Microphone permission is requested when you start dictation.' },
-    ...(['cpu','phonon'].includes(mode) ? [] : [{ title: 'WebGPU compute', passed: facts.gpu.compute, detail: 'Required by the GPU encoder. The decoder runs on the CPU.' }]),
+    ...(['cpu','phonon'].includes(mode) ? [] : [{ title: 'WebGPU compute', passed: facts.gpu.compute, detail: mode==='gpu-nq'?'Required by encoder neural operators and the grouped GPU decoder. Audited encoder indexing/layout, capture, features and scheduling use CPU. No CPU model fallback.':lfm?'Required by the audio encoder and text decoder.':'Required by the GPU encoder. The decoder runs on the CPU.' }]),
     ...(['gpu-fp16','lfm3-audio','lfm3-omni'].includes(mode) ? [{ title: 'FP16 compute', passed: facts.gpu.f16_compute, detail: 'Experimental FP16 requires shader-f16.' }] : []),
   ] : []);
   onMount(() => {
@@ -48,7 +50,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     if (working) return;
     if (!current) speech.setMode(mode);
     if (action === 'install') await speech.install();
-    if (action === 'load') { const {runBrowserTurn} = await import('$lib/assistant/browser/runtime'); await runBrowserTurn(async (_load, unload) => {if (isAdditionalSpeech(mode)) await unload(); await speech.prepare(mode,new AbortController().signal);}); }
+    if (action === 'load') { const {runBrowserTurn} = await import('$lib/assistant/browser/runtime'); await runBrowserTurn(async (_load, unload) => {if (requiresSpeechGpu(mode)) await unload(); await speech.prepare(mode,new AbortController().signal);}); }
     if (action === 'remove') await speech.remove();
   }
   async function readNotices() {
@@ -77,7 +79,7 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
 </script>
 <section class="model-unit" aria-label={isAdditionalSpeech(mode) ? `${modelTitle} · ${variant.label}` : `Parakeet TDT · 0.6B v3 · ${variant.label}`} data-speech-mode={mode} data-selected={current} data-hover="foreground">
     <div class="model-row">
-      <span class="model-name" title={modelTitle}>{modelTitle}</span>
+      <span class="model-name" title={modelTitle}>{mode === 'gpu-nq' ? 'Parakeet · continuous' : modelTitle}</span>
       <span class="model-parameters" title="Parameter size">{mode === 'phonon' ? '—' : lfm ? '2B' : '0.6B'}</span>
       <span class="model-quantization" title="Encoder precision">{precision}</span>
       <div class="model-controls">
@@ -114,14 +116,20 @@ See LICENSE and LICENSE-ADDITIONAL-TERMS. -->
     </div>{/if}
     {#if settingsOpen}<div class="fold-panel" id={`speech-${mode}-model-settings`} role="region" aria-label="Model settings" transition:slide={{ duration: foldDuration }}>
       <div class="disclosure-content">
-        <dl><dt>Execution</dt><dd>{mode === 'cpu' ? 'CPU' : 'WebGPU'}</dd><dt>Encoder</dt><dd>{precision}</dd><dt>Decoder</dt><dd>{mode === 'phonon' ? 'WebGPU · expanded F16/F32' : lfm ? 'WebGPU · Q4F16' : 'CPU · INT8'}</dd></dl>
+        <dl><dt>Execution</dt><dd>{mode === 'cpu' ? 'CPU' : 'WebGPU'}</dd><dt>Encoder</dt><dd>{precision}</dd><dt>Decoder</dt><dd>{mode === 'gpu-nq'?'WebGPU · grouped control · FP32 activations':mode === 'phonon' ? 'WebGPU · expanded F16/F32' : lfm ? 'WebGPU · Q4F16' : 'CPU · INT8'}</dd></dl>
+        {#if mode==='gpu-nq'}
+          <div class="vad-setting"><span class="field-label">Speech detection</span><NavigationDropdown label="Speech detection" placeholder="Choose speech detection" value={status.vad} disabled={working} items={vadModes.map(item=>({value:item.id,label:item.label,icon:'graphic_eq'}))} onchange={value=>void speech.setVad(value as VadMode)} /></div>
+          <p>{vadModes.find(item=>item.id===status.vad)?.detail}</p>
+          <p class="subtle">Reference corpus scores describe raw classification. Detection delay and complete dictation quality differ by model. Silero GPU is unavailable because probability correctness failed.</p>
+          <p>Continuous capture uses 20-second cores with two seconds of overlap. Audio and transcript segments stay in this browser for recovery until you remove them.</p>
+        {/if}
         {#if mode === 'gpu-fp16'}<p class="warning">FP16 is experimental. Startup and transcription may fail on this browser.</p>{/if}
       </div>
     </div>{/if}
     {#if infoOpen}<div class="fold-panel" id={`speech-${mode}-model-info`} role="region" aria-label="Detailed info" transition:slide={{ duration: foldDuration }}>
       <h5>Detailed info</h5>
       <div class="disclosure-content">
-    <p>Dictate into your AI draft. Audio is processed in memory and is never saved as a recording.</p>
+    <p>{mode === 'gpu-nq' ? 'Dictate into your AI draft. Recovery audio stays in this browser until you remove it under Local recordings.' : 'Dictate into your AI draft. Audio is processed in memory and is never saved as a recording.'}</p>
     <p>{variant.description}. Storage size does not measure free RAM or GPU memory.</p>
     {#if mode === 'phonon'}<p>Phonon 2.5 by Fermion Research, derived from NVIDIA Parakeet. Runtime-project packed GGUF conversion; WebGPU with JSPI and permitted CPU operations. Live speech uses serial, speech-aware windows with up to 30 seconds of context and a 55-second capture cap. Packed model files expand to about 1.4 GB of GPU weights. Mobile and longer recordings remain unqualified.</p>{:else if lfm}<p>{lfm.limitations}</p><dl><dt>Model</dt><dd><a href={`https://huggingface.co/${lfm.model}/tree/${lfm.revision}`} target="_blank" rel="noreferrer">{lfm.model}</a></dd><dt>Runtime</dt><dd>ONNX Runtime Web 1.30.0 · explicit GPU device</dd><dt>Capture</dt><dd>Transcription after stopping · up to 30 seconds</dd></dl>{:else}
     <dl><dt>Model</dt><dd><a href={`https://huggingface.co/${speechPins.publisherModel}/tree/${speechPins.publisherRevision}`} target="_blank" rel="noreferrer">NVIDIA Parakeet · CC BY 4.0</a></dd>

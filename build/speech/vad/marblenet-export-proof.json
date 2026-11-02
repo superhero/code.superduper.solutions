@@ -1,0 +1,118 @@
+{
+  "source": {
+    "repo": "nvidia/Frame_VAD_Multilingual_MarbleNet_v2.0",
+    "revision": "9d25eb877d9edab5101ccc843edd04787a6c72c4",
+    "sha256": "84bda37e925ac6fd740c2ced55642cb79f94f81348e1fa0db992ca50d4b09706",
+    "bytes": 501760
+  },
+  "export": "local FP32 ONNX using exact official state tensors and upstream NeMo2.3 Jasper class bodies; disabled adapter/access hooks; no trained-weight conversion",
+  "source_code": {
+    "url": "https://raw.githubusercontent.com/NVIDIA/NeMo/v2.3.0/nemo/collections/asr/parts/submodules/jasper.py",
+    "sha256": "062680d444150cc64b35985f347cd702d9d600efbb719eff3d431a443c6c514a"
+  },
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "onnx": "1.19.1",
+    "onnxruntime": "1.23.2"
+  },
+  "masked_unmasked_probability_parity": [
+    {
+      "valid_feature_frames": 25,
+      "padded_frames": 26,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 26,
+      "padded_frames": 26,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 199,
+      "padded_frames": 200,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 200,
+      "padded_frames": 200,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 321,
+      "padded_frames": 322,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 322,
+      "padded_frames": 322,
+      "max_absolute_probability_error": 0.0
+    },
+    {
+      "valid_feature_frames": 401,
+      "padded_frames": 402,
+      "max_absolute_probability_error": 0.0
+    }
+  ],
+  "torch_onnx_probability_parity": [
+    {
+      "frames": 26,
+      "max_absolute_probability_error": 1.1920928955078125e-07
+    },
+    {
+      "frames": 200,
+      "max_absolute_probability_error": 1.7881393432617188e-07
+    },
+    {
+      "frames": 326,
+      "max_absolute_probability_error": 1.7881393432617188e-07
+    },
+    {
+      "frames": 402,
+      "max_absolute_probability_error": 1.7881393432617188e-07
+    }
+  ],
+  "parameters": 91378,
+  "ops": {
+    "Add": 4,
+    "BatchNormalization": 12,
+    "Conv": 20,
+    "Identity": 2,
+    "MatMul": 1,
+    "Relu": 9,
+    "Softmax": 1,
+    "Transpose": 2
+  },
+  "files": {
+    "golden-pcm.bin": {
+      "bytes": 256000,
+      "sha256": "a1116ca795df104771c54b3f617f370389688f651ace36befcd4614cd4b91f52"
+    },
+    "upstream-jasper.py": {
+      "bytes": 48584,
+      "sha256": "062680d444150cc64b35985f347cd702d9d600efbb719eff3d431a443c6c514a"
+    },
+    "golden-probabilities.bin": {
+      "bytes": 804,
+      "sha256": "b2c8e749dcd4e1ba1e8d28684ca19f78abd51a4479903428f1c96165128fcaf2"
+    },
+    "golden-features.bin": {
+      "bytes": 128640,
+      "sha256": "176d3d070a71164bdcd876c5a8956da1074fd49da62f0a38eb191e3b6c65f3c0"
+    },
+    "model.onnx": {
+      "bytes": 387219,
+      "sha256": "2ed1075930a0e919b4dd9a7ea05928e94566547102e6b08f82b5cd082ec7bca0"
+    },
+    "window.bin": {
+      "bytes": 1600,
+      "sha256": "744788a137aa808ccc97d9d3c185c649b2e9c2b99c3262887c3ac9bb3b7e1c4c"
+    },
+    "mel.bin": {
+      "bytes": 82240,
+      "sha256": "2676995a34afe980bc0392219c797ddd56c78e1809f84c387577c9e151664cec"
+    },
+    "frontend.json": {
+      "bytes": 719,
+      "sha256": "622f6b6aa156522f6b1a0ba878075e7c660d9bf0b31b1cfacadfef832368a676"
+    }
+  }
+}

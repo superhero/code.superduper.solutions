@@ -33,7 +33,7 @@ export function artifactsFor(profile: BrowserProfile): Artifact[] {
   return [
     { id: profile.file, url: weightURL(profile.model, profile.revision, profile.file), bytes: profile.weight_bytes, sha256: profile.weight_sha256, kind: 'weights' },
     ...(profile.projector ? [{ id: profile.projector.file, url: weightURL(profile.projector.model, profile.projector.revision, profile.projector.file), bytes: profile.projector.bytes, sha256: profile.projector.sha256, kind: 'weights' as const }] : []),
-    ...(profile.engine === 'webml' ? [{ id: 'webml-js', url: `https://huggingface.co/spaces/${source.repository}/resolve/${source.revision}/${source.file}`, bytes: 2208435, sha256: String(source.sha256), kind: 'runtime' as const }] : wllama),
+    ...(profile.engine === 'webml' ? [{ id: 'webml-js', url: `https://huggingface.co/spaces/${source.repository}/resolve/${source.revision}/${source.file}`, bytes: 2208435, sha256: String(source.sha256), kind: 'runtime' as const }] : profile.runtime_id ? (runtimes as Record<string,Artifact[]>)[profile.runtime_id] ?? [] : wllama),
     ...notices.filter(notice => notice.family === (profile.engine === 'webml' ? 'bonsai' : 'ornith')).map(notice => ({ id: notice.file, url: `browser-models/notices/${notice.file}`, bytes: notice.bytes, sha256: notice.sha256, kind: 'notice' as const })),
   ];
 }
