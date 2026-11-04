@@ -405,7 +405,7 @@ Then('browser model availability follows installation changes without hiding the
 Then('AI settings offer Gemma MiniCPM LFM vision and the catalog decision profiles separately',async function(){
   const page=this.page;await controls(page);
   await expect(page.getByRole('region',{name:'LLM',exact:true}).locator('[data-model-id]')).toHaveCount(9);
-  await expect(page.getByRole('region',{name:'Vision',exact:true}).locator('[data-model-id]')).toHaveCount(5);
+  await expect(page.getByRole('region',{name:'Vision',exact:true}).locator('[data-model-id]')).toHaveCount(6);
   await expect(page.getByRole('region',{name:'Decision models',exact:true}).locator('[data-model-id]')).toHaveCount(10);
   await expect(page.getByRole('button',{name:'Use LiteRT-LM',exact:true})).toBeVisible();
   const fp32=page.locator('[data-model-id="mu-browser-decision-strands-fp32-gpu"]');await expect(fp32.locator('.model-name')).toHaveText('Strands · WebGPU FP32');
@@ -425,6 +425,13 @@ Then('AI settings offer Gemma MiniCPM LFM vision and the catalog decision profil
   await expect(mini.getByLabel('GPU layer budget',{exact:true})).toHaveCount(0);
   await expect(mini.getByLabel('Browser execution',{exact:true})).toHaveCount(0);
   await expect(mini.getByText('Vision on GPU in hybrid mode',{exact:true})).toHaveCount(0);
+  const compatible=page.locator('[data-model-id="ox-browser-lfm25-vision-compatible"]');
+  await expect(compatible.locator('.model-quantization')).toHaveText('Q4/FP32');
+  await compatible.getByRole('button',{name:'Model settings',exact:true}).click();
+  await expect(compatible.getByText(/1,024 context tokens · 128 output tokens/)).toBeVisible();
+  await compatible.getByRole('button',{name:'Detailed info',exact:true}).click();
+  await expect(compatible.getByLabel('Model limitations',{exact:true})).toContainText('at least 9 storage buffers');
+  await expect(compatible.getByLabel('Model limitations',{exact:true})).toContainText('feature packing');
   const continuous=page.locator('[data-speech-mode="gpu-nq"]');
   await expect(continuous.locator('.model-name')).toHaveText('Parakeet · continuous');
   await continuous.getByRole('button',{name:'Model settings',exact:true}).click();
@@ -477,6 +484,21 @@ Then('speech removal retains continuous artifacts installed with a GPU detector'
   return{before,after:await speechTest.installedSpeech('fsmn'),shared,legacy:await speechTest.installedSpeech()};
  });
  assert.ok(result.shared>0);assert.ok(result.before.includes('gpu-nq'));assert.ok(result.after.includes('gpu-nq'));assert.ok(!result.legacy.includes('gpu-fp32'));
+});
+Then('unsaved audio exports one recording and discards only that recording',async function(){
+ const page=this.page;await controls(page);
+ await page.evaluate(async()=>{
+  const {speech}=await import('/lib/assistant/speech/controller.ts');
+  let records=[{sessionId:'alpha-0',recordingId:'alpha-one',index:0,audioStartSample:0,coreStartSample:0,endSample:4,status:'error',pcm:new Float32Array([-1,0,.5,1])},{sessionId:'beta-0',recordingId:'beta-two',index:0,audioStartSample:0,coreStartSample:0,endSample:2,status:'error',pcm:new Float32Array([.25,-.25])}];
+  speech.recoverySources.add({getRecoveryAudio:()=>structuredClone(records),discardRecoveryAudio:id=>{records=records.filter(record=>record.recordingId!==id);}});
+ });
+ await page.getByRole('button',{name:'Refresh local recordings',exact:true}).click();
+ const alpha=page.getByRole('button',{name:'Export unsaved recording alpha-on',exact:true}),beta=page.getByRole('button',{name:'Export unsaved recording beta-two',exact:true});
+ await expect(alpha).toBeVisible();await expect(beta).toBeVisible();
+ const downloading=page.waitForEvent('download');await alpha.click();const download=await downloading,bytes=await readFile(await download.path());
+ assert.equal(bytes.readUInt32LE(40),8);assert.deepEqual(Array.from({length:4},(_,i)=>bytes.readInt16LE(44+i*2)),[-32768,0,16384,32767]);
+ await page.getByRole('button',{name:'Discard unsaved recording alpha-on',exact:true}).click();await expect(alpha).toHaveCount(0);await expect(beta).toBeVisible();
+ assert.deepEqual(await page.evaluate(async()=>{const{speech}=await import('/lib/assistant/speech/controller.ts');return speech.recoveryAudio().map(record=>record.recordingId);}),['beta-two']);
 });
 Then('split browser {string} assets verify and stream from installed blocks offline',async function(kind){
   await fixture(this.page);

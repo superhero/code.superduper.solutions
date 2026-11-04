@@ -47,6 +47,9 @@ Feature: Explicit browser model installation and local inference controls
     Then AI settings offer Gemma MiniCPM LFM vision and the catalog decision profiles separately
   Scenario: Local recording export keeps unique cores and deletion preserves other recordings
     Then local speech recordings export exact WAV cores and remove only the selected recording
+  @development
+  Scenario: Unsaved recordings retain independent export and discard controls
+    Then unsaved audio exports one recording and discards only that recording
   Scenario: Removing an incomplete legacy speech variant preserves a GPU detector installation
     Then speech removal retains continuous artifacts installed with a GPU detector
   Scenario Outline: Split optional SDK downloads retain complete verified bytes across block boundaries

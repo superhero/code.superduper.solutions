@@ -27,6 +27,7 @@ export const browser = {
 export const ollamaLive = { ...profile("ollama-live", ["tests/browser/live/ollama.feature"], ["tests/browser/support.mjs", "tests/browser/*.steps.mjs"]), parallel: 0 };
 export const modelsLive = { ...profile('models-live', ['tests/browser/live/browser-models.feature'], ['tests/browser/live/browser-models.steps.mjs']), parallel: 0, failFast: true, tags: [!process.env.MODEL_LIVE_SPEECH_FIXTURE && 'not @browser-speech-live', process.env.MODEL_LIVE_BRAVE !== '1' && 'not @browser-brave-decisions-live'].filter(Boolean).join(' and ') };
 export const gpuResumeLive = {...profile('gpu-resume-live',['tests/browser/live/gpu-resume.feature'],['tests/browser/live/gpu-resume.steps.mjs']),parallel:0,failFast:true};
+export const visionCompatibleLive = {...profile('vision-compatible-live',['tests/browser/live/vision-compatible.feature'],['tests/browser/live/vision-compatible.steps.mjs']),parallel:0,failFast:true};
 export const npmTypesLive = { ...profile("npm-types-live", ["tests/browser/live/npm-types.feature"], ["tests/browser/support.mjs", "tests/browser/*.steps.mjs"]), parallel: 0 };
 
 export const harnessLive = profile("ai-harness-live", ["src/lib/assistant/harness.live.feature"], ["src/lib/assistant/harness.live.test.mjs"]);

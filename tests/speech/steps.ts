@@ -4,6 +4,7 @@
 import './segment-session.steps.mjs';
 import './transcript-merger.steps.mjs';
 import './continuous.steps.mjs';
+import './capture-lifecycle.steps.mjs';
 import { Given, When, Then, After } from 'quickpickle';
 import { expect, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';

@@ -18,6 +18,6 @@ export interface LongSpeech {
  startRecord(options?:{recordingId?:string}):Promise<unknown>;stopRecord():Promise<unknown>;
  startInjected(options?:{recordingId?:string}):Promise<unknown>;pushPcm(pcm:Float32Array):Promise<unknown>;finishInjected():Promise<unknown>;
  cancel():Promise<unknown>;unload():Promise<unknown>;snapshot():ContinuousState;
- listSegments():Promise<SpeechSegment[]>;getSegment(id:string):Promise<SpeechAudio|null>;getRecoveryAudio():SpeechAudio[];
+ listSegments():Promise<SpeechSegment[]>;getSegment(id:string):Promise<SpeechAudio|null>;getRecoveryAudio():SpeechAudio[];discardRecoveryAudio(recordingId:string):number;
  getTranscript():string;stats():Promise<unknown>;
 }

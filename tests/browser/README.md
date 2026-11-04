@@ -663,6 +663,9 @@ capability reporting, saved controls, worker cancellation, bounded synthetic
 weight ranges, SHA-256 rejection, local offline reads, shared-file removal leases
 and resized images passing through the existing Pi adapters. These fixtures
 do not constitute new hardware/model/OCR performance evidence.
+The local-recordings scenarios export exact WAV cores, preserve other archived
+recordings during deletion, and keep each unsaved recording's export/discard
+independent. Recovery fixtures exercise the real controls without model inference.
 
 The opt-in `modelsLive` profile uses `live/browser-models.feature` for actual
 language/tool exchanges, LFM image handoffs, native decision probabilities and
@@ -719,3 +722,20 @@ Blob model loading. Each GPU VAD runs a complete dictation with runtime counters
 and release assertions. Fixed file audio is not physical microphone qualification.
 Record browser versions and exact launch flags alongside model results. Normal
 UI runs do not download or execute these models.
+
+## Compatible image-tool acceptance
+
+The opt-in `visionCompatibleLive` profile tests the actual official Q4/FP32
+image option on Brave without shader-f16. Use the same owned serial model-test
+lease and immutable `MODEL_LIVE_FIXED_ASSETS` fixture transport as the GPU
+integration profile; the application still verifies every installed byte.
+
+Its four named scenarios cover shape/fresh OCR answers with positive drained
+GPU dispatches, a genuine progressive-skill/file/image-tool round trip,
+insufficient storage-buffer preflight before text suspension, and cancellation
+after first model text followed by cached Blob model reload with publisher
+requests blocked. The round trip requires the file result to survive image
+inspection and an exact complete response; merely mentioning both expected
+values somewhere in prose is insufficient. Cancellation must not restart a
+turn. These synthetic images do not qualify phone behavior, large-document OCR
+or general model accuracy. Reference and editor results stay distinct.

@@ -245,6 +245,16 @@ export class SpeechController {
     // so a queued language model cannot unload ASR before that barrier settles.
   }
   recoveryAudio(){return [...this.recoverySources].flatMap(source=>source.getRecoveryAudio());}
+  discardRecoveryAudio(recordingId:string):void {
+    if(!recordingId)throw new Error('Choose an unsaved recording to discard.');
+    let found=false;
+    for(const source of new Set([...this.recoverySources,...(this.continuous?[this.continuous]:[])])){
+      if(!source.getRecoveryAudio().some(record=>record.recordingId===recordingId))continue;
+      source.discardRecoveryAudio(recordingId);found=true;
+      if(!source.getRecoveryAudio().length)this.recoverySources.delete(source);
+    }
+    if(!found)throw new Error('No unsaved audio for this recording.');
+  }
   clearRecoveryAudio():void{this.recoverySources.clear();}
   private releaseCapture(): void {
     clearTimeout(this.recordingTimer); this.capture?.close(); this.capture = undefined;
@@ -261,7 +271,7 @@ export class SpeechController {
     const resources=this.resources;this.resources=undefined;const continuous=this.continuous;this.continuous=undefined;
     if(continuous)this.recoverySources.add(continuous);
     const previous=this.disposal;
-    this.disposal=Promise.allSettled([previous,continuous?continuous.unload().finally(()=>resources?.close()):Promise.resolve(resources?.close())]).then(()=>undefined);
+    this.disposal=Promise.allSettled([previous,continuous?continuous.unload().finally(()=>{resources?.close();if(!continuous.getRecoveryAudio().length)this.recoverySources.delete(continuous);}):Promise.resolve(resources?.close())]).then(()=>undefined);
     return this.disposal;
   }
   unload(): Promise<unknown> { const disposed=this.dispose(); this.set({ phase: 'idle', stage: '', error: '', progress: undefined, transcript: '', runtime:undefined });return disposed; }

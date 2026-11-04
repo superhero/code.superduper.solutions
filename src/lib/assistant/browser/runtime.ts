@@ -14,6 +14,7 @@ import {validateDecisionRequest} from './decision-contract.js';
 import type { ChatImage, ChatMessage } from '../ollama.ts';
 import { modelProgress } from './progress.ts';
 import { BrowserWorkQueue } from './queue.ts';
+import {ModelCleanupBoundary,hasCleanupFailure} from './cleanup.js';
 import { browserLease } from './ownership.ts';
 
 export const DEFAULT_EXECUTION: BrowserOptions = { mode: 'auto', gpuLayers: 24, visionGpu: true };
@@ -31,6 +32,7 @@ let loading = false, generating = false, yieldRequested = false, ownsRuntime = f
 const listeners = new Set<() => void>();
 const publish = () => { for (const listener of listeners) listener(); };
 const work = new BrowserWorkQueue(publish);
+const cleanup = new ModelCleanupBoundary();
 let ownership: BroadcastChannel | undefined;
 function requestOwnership() {
   if (typeof BroadcastChannel === 'undefined') return;
@@ -45,6 +47,7 @@ function requestOwnership() {
 }
 function schedule<T>(run: () => Promise<T>, signal?: AbortSignal, onQueued?: () => void): Promise<T> {
   return work.run(async () => {
+    cleanup.assertUsable();
     try { return await run(); }
     finally { if (yieldRequested) { yieldRequested = false; await unloadModelNow(); } }
   }, signal, onQueued);
@@ -70,8 +73,8 @@ export function unloadBrowserModel(): Promise<void> { return schedule(unloadMode
 async function unloadModelNow(): Promise<void> {
   const previous = loaded; loaded = undefined;
   if (!previous) return;
-  try { await previous.engine.dispose(); }
-  finally { for (const url of previous.urls) URL.revokeObjectURL(url); await previous.release(); publish(); }
+  try { await cleanup.release(previous); }
+  finally { publish(); }
 }
 export function loadBrowserModel(id: string, progress: (event: Progress) => void, signal: AbortSignal, context?: number): Promise<void> {
   return schedule(() => loadModelNow(id, progress, signal, context), signal, () => progress({ message: 'Queued after the current model operation…' }));
@@ -80,6 +83,7 @@ async function loadModelNow(id: string, progress: (event: Progress) => void, sig
   loading = true; publish();
   const urls: string[] = []; let release: (() => Promise<void>) | undefined, engine: LocalEngine | undefined;
   try {
+    await cleanup.ready();
     const pinned = profileById(id), saved = await readModelSettings(id);
     const settings = defaultSettings(pinned, saved.generation as Record<string, unknown> | undefined);
     if (context !== undefined) settings.context_tokens = context;
@@ -138,9 +142,12 @@ async function loadModelNow(id: string, progress: (event: Progress) => void, sig
     signal.throwIfAborted();
     if (!engine) throw new Error('The browser runtime did not create a model.');
     loaded = { id, key, engine, profile, execution, urls, release }; engine = undefined; release = undefined;
+  } catch (error) {
+    if (hasCleanupFailure(error)) {const failure=cleanup.quarantine(error,{engine,urls,release});engine=undefined;release=undefined;throw failure;}
+    throw error;
   } finally {
-    if (release) { await engine?.dispose().catch(() => {}); for (const url of urls) URL.revokeObjectURL(url); await release(); }
-    loading = false; publish();
+    try {if (release) await cleanup.release({engine,urls,release});}
+    finally {loading = false; publish();}
   }
 }
 export function browserPlugin(id: string, onUsage: (usage: ContextUsage) => void, imageReference?: (image: ChatImage) => string): BrowserConnectionPlugin {

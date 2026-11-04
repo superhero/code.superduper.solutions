@@ -5,6 +5,8 @@ import {Then} from 'quickpickle';
 import {expect} from 'vitest';
 import './gpu-chat.steps.mjs';
 import './brave-decisions.steps.mjs';
+import './vision-compatible.steps.mjs';
+import './inference-lifecycle.steps.mjs';
 import {loadSession} from '../../src/lib/assistant/browser/reference/expanded/lfm3/ort-common.mjs';
 import {readout} from '../../src/lib/assistant/browser/reference/expanded/lfm3/protocol.mjs';
 import pins from '../../src/lib/assistant/browser/expanded-catalog.json';

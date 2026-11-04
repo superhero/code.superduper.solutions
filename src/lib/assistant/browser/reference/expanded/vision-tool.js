@@ -43,11 +43,13 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
   const legacy = profile?.model === MODEL && profile.revision === REVISION && profile.engine === 'transformers' && profile.kind === 'vision' && profile.settings?.preprocessing === 'letterbox-white-square-v1' && profile.settings?.text_only !== true;
   const nativeOrnith = profile?.category === 'vision' && profile.engine === 'wllama' && profile.model === 'ornith-ai/Ornith-1.5-9B-GGUF' && profile.revision === 'abdd624b12ebf020b767fff532ff44fe552b28c3' && ['Ornith-1.5-9B-Q4_K_M.gguf','Ornith-1.5-9B-Q8_0.gguf'].includes(profile.file) && profile.projector?.sha256 === '626f9f90627402a6bf4a999111d0fbd69b5fcca7aa8ba089d69e5f10e8858e1d' && !profile.settings.gpu_graph_only;
   if (!legacy && !lfm3 && !nativeOrnith) throw new Error('inspect_image requires a pinned LFM image profile or the original Ornith native vision runtime/projector.');
-  for (const [name, callback] of Object.entries({getImage, suspendText, resumeText, loadVision})) if (typeof callback !== 'function') throw new Error(`${name} must be a function.`);
+  for (const [name, callback] of Object.entries({getImage, suspendText, resumeText, loadVision,checkCapabilities})) if (typeof callback !== 'function') throw new Error(`${name} must be a function.`);
+  const outputBudget=Math.min(VISION_TOOL_LIMITS.outputTokens,profile.settings.max_new_tokens??VISION_TOOL_LIMITS.outputTokens);
+  if(!Number.isInteger(outputBudget)||outputBudget<1)throw Error('Image output budget must be a positive integer.');
   const limits = {validate: 5000, suspend: 30000, load: Math.min(profile.settings.load_timeout_ms || 1200000, 1200000),
     generate: Math.min(profile.settings.response_timeout_ms || 180000, 180000), release: 10000, resume: 1200000, ...timeouts};
   for (const value of Object.values(limits)) if (!Number.isInteger(value) || value < 1) throw new Error('Vision tool deadlines must be positive integer milliseconds.');
-  let active = null, heldVision = null, unsafe = false, disposed = false;
+  let active = null, heldVision = null, unsafe = false, disposed = false, releasing;
   let state = {phase: 'idle', busy: false, model: profile.model, profile_id: profile.id || null,
     image_id: null, question: null, error: null, cleanup_failed: false, text_ready: true};
   const publish = change => {
@@ -68,7 +70,8 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
     if (!heldVision) return;
     const engine = heldVision;
     publish({phase: 'releasing', status: 'Releasing the vision model…'});
-    await deadline(Promise.resolve().then(() => engine.dispose()), limits.release, 'Vision cleanup');
+    if(releasing?.engine!==engine)releasing={engine,promise:deadline(Promise.resolve().then(()=>engine.dispose()),limits.release,'Vision cleanup')};
+    await releasing.promise;
     if (heldVision === engine) heldVision = null;
   }
   function resultFor(raw, args, image) {
@@ -79,7 +82,8 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
       image_id: args.image_id, question: args.question, source: 'local-vision-model-output', observations,
       image: {width: image.width, height: image.height, mime_type: image.image.mimeType, bytes: image.bytes,
         ...(raw.image ? {image_tokens: raw.image.image_tokens, tensor_shapes: raw.image.tensor_shapes, preprocessing: raw.image.preprocessing} : {})},
-      usage: raw.usage || {}, timings: raw.timings || {}, finish_reason: raw.finish_reason || null};
+      usage: raw.usage || {}, timings: raw.timings || {}, finish_reason: raw.finish_reason || null,
+      ...(raw.gpu_execution ? {gpu_execution:raw.gpu_execution} : {})};
     return {content: [{type: 'text', text: `Local vision-model observations (model output; may contain errors).\nModel: ${profile.model}\nRevision: ${profile.revision}\nImage ID: ${args.image_id}\nQuestion: ${args.question}\n\n${observations}`}], details};
   }
   async function run(operation, args) {
@@ -100,7 +104,7 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
       publish({phase: 'loading', status: 'Loading the local vision model…'});
       loadPending = true;
       loading = Promise.resolve().then(() => loadVision(profile, {signal,
-        contextTokens: VISION_TOOL_LIMITS.contextTokens, outputTokens: VISION_TOOL_LIMITS.outputTokens,
+        contextTokens: VISION_TOOL_LIMITS.contextTokens, outputTokens: outputBudget,
         onProgress: progress => { if (active === operation) publish({status: progress?.message || progress?.status || 'Loading the local vision model…'}); },
       })).then(async engine => {
         loadPending = false; heldVision = engine;
@@ -118,7 +122,7 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
       if (!engine || typeof engine.generate !== 'function' || typeof engine.dispose !== 'function') throw new Error('The vision loader returned an invalid engine.');
       publish({phase: 'inspecting', status: 'Inspecting local image pixels…'});
       const raw = await deadline(Promise.resolve().then(() => engine.generate([{role: 'user', content: args.question}], {
-        image: image.image, maxTokens: VISION_TOOL_LIMITS.outputTokens, tools: [], signal, enableThinking: false, temperature: 0,
+        image: image.image, maxTokens: outputBudget, tools: [], signal, enableThinking: false, temperature: 0,
       })), limits.generate, 'Image inspection', operation);
       throwIfAborted(signal);
       output = resultFor(raw, args, image);
@@ -149,6 +153,7 @@ export function createVisionTool({profile, getImage, suspendText, resumeText, ch
           publish({text_ready: !signal.aborted && resumed !== false});
         } catch (error) { failure = new Error(`${failure ? failure.message + ' ' : ''}Text model restoration failed: ${asError(error).message}`); }
       }
+      if(signal.aborted && !failure)failure=signal.reason instanceof Error ? signal.reason : abortError();
       operation.externalSignal?.removeEventListener('abort', operation.abort);
       operation.finished = true;
       if (active === operation) active = null;

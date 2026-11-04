@@ -57,7 +57,7 @@ Feature: Pinned installable browser inference with the existing Pi agent
       | iy-browser-shared-wllama-ornith-q8 |
 
   Scenario: Verified language vision and native decision profiles remain separate and fully pinned
-    Then the expanded catalog exposes nine LLMs five vision profiles and ten GPU decision profiles
+    Then the expanded catalog exposes nine LLMs six vision profiles and ten GPU decision profiles
   Scenario: New language engines preserve their qualified settings and text-only loading
     Then Gemma rejects unsupported controls and MiniCPM loads without a vision projector
   Scenario: Offline vision tokenizers probe the installed model commit

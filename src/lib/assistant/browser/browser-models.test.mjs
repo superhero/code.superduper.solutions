@@ -279,9 +279,9 @@ Then('the {string} browser profile loads and streams through its native API cont
   await engine.dispose();assert.equal(seen.disposed,true);
 });
 
-Then('the expanded catalog exposes nine LLMs five vision profiles and ten GPU decision profiles', function () {
-  assert.equal(ALL_BROWSER_PROFILES.length,9); assert.equal(VISION_PROFILES.length,5); assert.equal(DECISION_PROFILES.length,10);
-  assert.equal(ALL_MODEL_PROFILES.length,26); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,26);
+Then('the expanded catalog exposes nine LLMs six vision profiles and ten GPU decision profiles', function () {
+  assert.equal(ALL_BROWSER_PROFILES.length,9); assert.equal(VISION_PROFILES.length,6); assert.equal(DECISION_PROFILES.length,10);
+  assert.equal(ALL_MODEL_PROFILES.length,27); assert.equal(new Set(ALL_MODEL_PROFILES.map(p=>p.id)).size,27);
   for (const profile of ALL_MODEL_PROFILES) for (const file of artifactsFor(profile)) {
     assert.ok(file.bytes>0); assert.match(file.sha256,/^[a-f0-9]{64}$/);
     if(file.kind==='weights') assert.match(file.url,/\/resolve\/[a-f0-9]{40}\/|^browser-models\/strands-fp32\/[a-f0-9]{64}\//);

@@ -29,7 +29,7 @@ export class BrowserGGUF {
   }
   async load() {
     const signal = this.options.signal;
-    const stop = () => { this.abort.abort(); void this.raw.exit().catch(() => {}); };
+    const stop = () => { void this.dispose().catch(() => {}); };
     signal?.throwIfAborted(); signal?.addEventListener('abort', stop, {once:true});
     const timeout = setTimeout(stop, this.manifest.settings.load_timeout_ms);
     try {
@@ -43,5 +43,5 @@ export class BrowserGGUF {
       return {context: Object.fromEntries(['n_layer','n_ctx','n_vocab','has_image_input'].map(key => [key,info[key]])), ...(placement ? {placement} : {})};
     } finally { clearTimeout(timeout); signal?.removeEventListener('abort',stop); }
   }
-  async dispose() { this.abort.abort(); await this.raw.exit(); }
+  dispose() {this.abort.abort();return this.disposal ??= Promise.resolve().then(()=>this.raw.exit());}
 }

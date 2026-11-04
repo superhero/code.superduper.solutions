@@ -128,3 +128,23 @@ creating the complete delivery manifest. Its source cache uses SHA directories
 and original filenames; the script verifies every byte before staging. The
 converted models stay outside Git and core HTML. Include every staged file and
 full notices; production URLs must never point to the reference LAN service.
+
+## Compatible official LFM image option
+
+`vision-compatible/reference-evidence.json` records the five original publisher
+file pins and bounded native node-assignment evidence. No conversion is used.
+`reference/expanded/vision-pins.js` resolves the existing FP16 choice separately
+from `official-q4-fp32-compatible-v1`; only the latter uses FP32 embedded token
+weights and original Q4 image/decoder graphs. Transformers.js 4.3.1 and its
+matching ORT 1.31 dev pair remain pinned by the existing package/runtime catalog.
+
+Keep the installed-asset fetch shim, Blob factory/Wasm URLs and tokenizer
+revision override when adapting the shared worker. Bind the owned GPUDevice in
+each session's execution-provider options; the global env setter alone does not
+bind native ORT. Request actual adapter compute/buffer limits, including at
+least nine storage buffers per shader stage. Enable the known CPU shape/mask/
+index/packing operators, and distinguish their placement from weighted neural
+computation. Device instrumentation counts submitted and drained commands; it
+does not replace the reference per-node audit or establish universal placement.
+Release sessions before draining/destroying the device. Model files remain
+opt-in publisher downloads, outside Git and core HTML.

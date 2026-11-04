@@ -60,6 +60,14 @@ Run npm run test:models for the focused ONNX device/readout/catalog checks.
 The regular test:speech profile also includes them alongside microphone lifecycle
 checks, so their outcomes enter the existing Cucumber-compatible report.
 
+`tests/models/inference-lifecycle.feature` covers native parser errors through
+Pi's real pre-tool validation, coalesced disposal and retained ownership on
+cleanup failure, aborted worker loading and vision completion/cancellation.
+`tests/speech/capture-lifecycle.feature` covers overlapping microphone cleanup,
+replacement-worker isolation and unarchived PCM retained across recordings
+until scoped discard. These injected faults complement real-model scenarios;
+they do not qualify actual browser storage exhaustion or driver failures.
+
 Real LFM3/Phonon editor scenarios are in tests/browser/live/browser-models.feature.
 Run models serially on sds-01 under its shared attempt-isolation lock.
 MODEL_LIVE_PINNED_CACHE=1 is a test-only delivery override for already prepared,

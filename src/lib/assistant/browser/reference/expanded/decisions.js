@@ -11,6 +11,7 @@ import {setAssetFetch} from './load-progress.mjs';
 import {nativeGpuPlacement} from './decision-placement.js';
 import {LocalBlob} from '../wllama.js';
 import {abortableGeneration} from '../execution.js';
+import {cleanupFailure} from '../../cleanup.js';
 const digest = async text => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].map(b => b.toString(16).padStart(2,'0')).join('');
 export async function createDecisionEngine(profile, {Wllama, wasmUrl, files, readArtifact, localFetch, signal, onProgress}) {
   setAssetFetch(localFetch);
@@ -20,8 +21,8 @@ export async function createDecisionEngine(profile, {Wllama, wasmUrl, files, rea
   const raw = new Wllama({default: wasmUrl}, {logger: Object.fromEntries(['debug','log','warn','error'].map(level => [level, (...args) => {
     const line = args.join(' '); gpu.observe(line); log.push(line.slice(0,2000)); if (log.length>100) log.shift();
   }]))});
-  let invalidated = false, disposed = false, prepared;
-  const dispose = async () => {if (disposed) return; disposed = true; invalidated = true; await raw.exit();};
+  let invalidated = false, disposed = false, prepared, disposal;
+  const dispose = () => {if(disposal)return disposal;disposed=true;invalidated=true;disposal=Promise.resolve().then(()=>raw.exit()).catch(error=>{throw cleanupFailure(error);});return disposal;};
   const abort = () => {void dispose().catch(() => {});};
   signal.throwIfAborted(); signal.addEventListener('abort', abort, {once: true});
   const timer = setTimeout(abort, profile.settings.load_timeout_ms);
@@ -75,7 +76,7 @@ export async function createDecisionEngine(profile, {Wllama, wasmUrl, files, rea
         }, scoringSignal, dispose);} finally {clearTimeout(timer);}
       }};
   } catch (error) {
-    await dispose().catch(() => {});
+    try {await dispose();} catch (cleanup) {throw cleanupFailure(cleanup,error);}
     if (signal.aborted || !log.length) throw error;
     // Native Wasm aborts otherwise hide the allocator/driver explanation that
     // lets the user recover from a failed load. Retain the bounded native tail.

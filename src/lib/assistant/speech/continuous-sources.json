@@ -56,8 +56,8 @@
   },
   "src/lib/assistant/speech/runtime/continuous/capture.js": {
     "reference": "inference/evaluations/parakeet-long-stream/runtime/capture.js",
-    "source_sha256": "2dd5dc2ee454ac484300356faced6e2a3f54086dd64e92e780af7d6fac00304c",
-    "adapted_sha256": "b61070e02738ce3c2244dac0a3c4fbcac2a67791a039fb189478eafa96fc0970"
+    "source_sha256": "77355ece9266d23ecca4478a10bf585db4df6f04fd2e3bf5e7279b554366c2c3",
+    "adapted_sha256": "133854c1bdf25c623d04c3c78ad123d8770d0447b08fda152a43d99648cb9bf0"
   },
   "src/lib/assistant/speech/runtime/continuous/worker.js": {
     "reference": "inference/evaluations/parakeet-long-stream/runtime/worker.js",

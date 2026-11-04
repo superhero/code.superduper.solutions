@@ -11,13 +11,13 @@
   },
   "src/lib/assistant/browser/reference/expanded/vision-worker.js": {
     "source": "inference/evaluations/mobile-candidates/runtime/vision-worker.js",
-    "sha256": "5072a1246ac8c90a01680ec517d76d4b24b2eb810647d222a14097f7038092e5",
-    "adapted_sha256": "2e5cd1eea286943e7a6a30a13fd66a6977d81d35668232a5f9e5728b3b1a803d"
+    "sha256": "18664df2da9d649cb2ca78336c24853920d070b7a8f814bd9702e93c19551a72",
+    "adapted_sha256": "be6ee0b344ed7219575f1b630c176a38215cc559978cb3141a81d4b472858678"
   },
   "src/lib/assistant/browser/reference/expanded/vision-tool.js": {
     "source": "examples/browser-assistant/src/vision-tool.js",
-    "sha256": "221e6cbada13973af9456b8b627b3402814cf9c3d4a546e37de7b00d6d269329",
-    "adapted_sha256": "afa13b14a61147f1db3f7f240f4fbd004f0f050f6f3904071f4caba00ce94ac9"
+    "sha256": "8a398b4ae1ddd6dbdc1b9cedfad0d2328dec93091521d3948050f89c641292c0",
+    "adapted_sha256": "dce016e520f84edb5c0500e98f3f5eaa8882c6ecfccdfd31caca0f41b81f873e"
   },
   "src/lib/assistant/browser/reference/expanded/knowline-browser.mjs": {
     "source": "inference/evaluations/browser-decisions/runtime/knowline-browser.mjs",
@@ -186,8 +186,8 @@
   },
   "src/lib/assistant/browser/reference/expanded/decisions.js": {
     "source": "inference/evaluations/brave-decisions/runtime/engine.mjs",
-    "sha256": "76b229607fecdd17d823c83529b6bfc69ecb69fe87e004cc9b6edb2d26b2d63e",
-    "adapted_sha256": "18812192b05967c2442f155f80d8d83d2e7a376cd6a902cbb0cda866dd0bfe96"
+    "sha256": "90f1d7234c6f05ce045756b2bf9552cbc7e77f91909a44216835529693f1d4e9",
+    "adapted_sha256": "60ccf5a004c69f3b82bab3b72fd578373fcdc98208a0744a8937e027d4419ae3"
   },
   "build/browser-models/strands-fp32/manifest.json": {
     "source": "inference/attempts/mu-browser-decision-strands-fp32-gpu/conversion-manifest.json",
@@ -202,5 +202,25 @@
   "build/browser-models/native/shared-fp32/pins.json": {
     "source": "inference/evaluations/brave-decisions/runtime/native-recipes/shared-fp32/pins.json",
     "sha256": "019dce96aca00a7e02a0e6e278a429fcbd49d0e40a0d7827f87d9016457d6f8c"
+  },
+  "src/lib/assistant/browser/reference/expanded/vision-pins.js": {
+    "source": "inference/evaluations/brave-vision-gpu/runtime/pins.js",
+    "sha256": "266b8f2904a468c4c4848db7c3bab4aca03292c4e79a14af74953b186fbd65a5",
+    "adapted_sha256": "204a7bef1caf65907a1103012c174490a82d531746a986781dbae6fb1cc9bb23"
+  },
+  "src/lib/assistant/browser/reference/adapters.js": {
+    "source": "inference/evaluations/pi-browser/runtime/src/adapters.js",
+    "sha256": "47a7c41801dc2117a1862e77b4b5643431b730d0aa9786b7686a3a63ecf974b5",
+    "adapted_sha256": "3ae3aae7e9200e07d31b10a2f400cc45e180084e2548c63832ef612b9cd34bed"
+  },
+  "src/lib/assistant/browser/reference/execution.js": {
+    "source": "inference/evaluations/pi-browser/runtime/src/execution.js",
+    "sha256": "3aadca11c611ef4e9bb560c7710f7f8112ae440b2d0b574c542eafee0c98eeaf",
+    "adapted_sha256": "0e5af5a490419a264f30352feb6dc509c25acc00638e4430e3c88c7d217faa6e"
+  },
+  "src/lib/assistant/browser/reference/wllama.js": {
+    "source": "inference/evaluations/pi-browser/runtime/ornith-engine.mjs",
+    "sha256": "12dc24faa2effcb9f7b0919f1a487a810f2663c1b479cd2d6b2263c2fc942a48",
+    "adapted_sha256": "cb951aafbd9b3fe8fd4509f9fc56aa7b1fb76a6fdc04ab9b74373f87198efe4e"
   }
 }

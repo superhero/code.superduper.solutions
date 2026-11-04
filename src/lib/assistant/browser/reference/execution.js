@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // See LICENSE and LICENSE-ADDITIONAL-TERMS.
 // Adapted from llm-sds-01/inference/evaluations/pi-browser/runtime/src/execution.js.
+import {cleanupFailure} from '../cleanup.js';
 export const layerLimit = profile => (profile.gguf_block_count || profile.model_layers) + 1;
 // @wllama/wllama3.8.1 generated glue: getHeapMax=4294967296,
 // maximum:65536n pages. GPU buffers are outside this CPU heap.
@@ -43,7 +44,7 @@ export async function loadWithFallback(plans, create, onProgress = () => {}, tim
       return {instance, info: {...info, execution: {...plan, attempts: [...history, {mode: plan.mode, status: 'loaded'}]}}};
     } catch (error) {
       error.nativeLogs = instance.logs?.slice() ?? [];
-      await instance.dispose().catch(() => {});
+      try {await instance.dispose();} catch (cleanup) {throw cleanupFailure(cleanup,error);}
       history.push({mode: plan.mode, status: 'failed', error: error.message});
       error.loadAttempts = history.slice();
       if (i === plans.length - 1 || !isAllocationError(error)) throw error;
@@ -57,7 +58,7 @@ export async function abortableGeneration(start, signal, terminate) {
   const interrupted = new Promise((_, reject) => {
     listener = () => {
       const error = Error(signal.reason?.name === 'TimeoutError' ? 'Generation timed out; model unloaded. Reload to continue.' : 'Generation cancelled; model unloaded. Reload to continue.');
-      Promise.resolve().then(terminate).then(() => reject(error), () => reject(error));
+      Promise.resolve().then(terminate).then(() => reject(error), cleanup => reject(cleanupFailure(cleanup,error)));
     };
     signal.addEventListener('abort', listener, {once: true});
   });

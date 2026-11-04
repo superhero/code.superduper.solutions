@@ -317,6 +317,150 @@
     ]
   },
   {
+    "id": "ox-browser-lfm25-vision-compatible",
+    "title": "LFM2.5-VL \u00b7 1.6B \u00b7 Q4/FP32",
+    "kind": "vision",
+    "engine": "transformers",
+    "model": "LiquidAI/LFM2.5-VL-1.6B-ONNX",
+    "revision": "d0e00ca26cc42892d9f3c4380faa631927218209",
+    "weight_bytes": 2024081183,
+    "runtime_source": {
+      "package": "@huggingface/transformers",
+      "version": "4.3.1",
+      "release": "https://github.com/huggingface/transformers.js/releases/tag/4.3.1",
+      "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+      "wasmThreads": 1,
+      "qualification": "OX official Q4 vision/decoder plus FP32 embeddings; explicit owned device without shader-f16; reference desktop Brave evidence. Editor acceptance recorded separately."
+    },
+    "settings": {
+      "context_tokens": 1024,
+      "max_new_tokens": 128,
+      "load_timeout_ms": 1200000,
+      "response_timeout_ms": 180000,
+      "thinking": false,
+      "temperature": 0,
+      "wasm_threads": 1,
+      "nvidia_f16_override": true,
+      "device": "webgpu",
+      "image_fixture_size": [
+        384,
+        240
+      ],
+      "preprocessing": "letterbox-white-square-v1",
+      "precision_variant": "official-q4-fp32-compatible-v1"
+    },
+    "projector": null,
+    "input": [
+      "text",
+      "image"
+    ],
+    "category": "vision",
+    "evidence": {
+      "attempt": "ox-browser-lfm25-vision-compatible",
+      "run_id": "brave-vision-gpu-1793654795270965601",
+      "scope": "Seven reference desktop Brave image checks; weighted neural operators GPU, CPU shapes/masks/indexing/Compress. No native projector or mobile qualification."
+    },
+    "limitations": "Separate on-demand image interpreter. Official Q4 image/decoder graphs and FP32 embeddings; requires WebGPU and at least 9 storage buffers per shader stage, without shader-f16. Reference weighted neural operators execute on GPU; shapes, masks, indexing, feature packing, preprocessing and sampling use CPU. 1,024 context tokens, 128 greedy output tokens, 512 px white letterbox. Image observations can be wrong. Mobile and large-document OCR are unqualified.",
+    "parameters": "1.6B",
+    "quantization": "Q4/FP32",
+    "runtime_id": "vision",
+    "file": "onnx/decoder_q4.onnx",
+    "weight_sha256": "44bbb840012f64393e74c6c3fa48d22c2d03317a71e3de882b1115daab028480",
+    "artifacts": [
+      {
+        "id": "onnx/decoder_q4.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/onnx/decoder_q4.onnx",
+        "bytes": 169018,
+        "sha256": "44bbb840012f64393e74c6c3fa48d22c2d03317a71e3de882b1115daab028480",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/decoder_q4.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/onnx/decoder_q4.onnx_data",
+        "bytes": 1217650688,
+        "sha256": "144e30048e0de1af8b9524fc4bdca99286090ff92c0f12792ccedd31804f2d73",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/embed_images_q4.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/onnx/embed_images_q4.onnx",
+        "bytes": 293054,
+        "sha256": "d947bc20232590cad6807164b8857f83feacbfce92e7c78114cd9ec62c9053a6",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/embed_images_q4.onnx_data",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/onnx/embed_images_q4.onnx_data",
+        "bytes": 269097152,
+        "sha256": "78ad0694364f0b9c0d3b3a5b0d2f57c402dc676e75aacdf79f67e02b1d458b25",
+        "kind": "weights"
+      },
+      {
+        "id": "onnx/embed_tokens.onnx",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/onnx/embed_tokens.onnx",
+        "bytes": 536871271,
+        "sha256": "489b999a0862f14342d20e38f3ed33df91a4fda7476b44dd4d65531a57fc1b9a",
+        "kind": "weights"
+      },
+      {
+        "id": "LICENSE",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/LICENSE",
+        "bytes": 10556,
+        "sha256": "55a61add48383d18363d9c80355acc747a1b0fb2bdb527964ce0583bb54b689d",
+        "kind": "notice"
+      },
+      {
+        "id": "README.md",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/README.md",
+        "bytes": 11517,
+        "sha256": "06231f941873e0fe4e5902e32be8d4642f9f017a503a67f856e8c340acc8dc9a",
+        "kind": "notice"
+      },
+      {
+        "id": "chat_template.jinja",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/chat_template.jinja",
+        "bytes": 434,
+        "sha256": "cf0af741b36248dfe460af825b0b3acb3c651cf7dd40a74c29447f60b75d2b9b",
+        "kind": "data"
+      },
+      {
+        "id": "config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/config.json",
+        "bytes": 2376,
+        "sha256": "fbda22b139d38119d8548135b115ec5ec980202392d237267b9cd210da24a51e",
+        "kind": "data"
+      },
+      {
+        "id": "generation_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/generation_config.json",
+        "bytes": 131,
+        "sha256": "0b428903afb9a1cc2d4993f806c6e4689360fa557d31343ffce31f341619528f",
+        "kind": "data"
+      },
+      {
+        "id": "processor_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/processor_config.json",
+        "bytes": 1110,
+        "sha256": "6e5aeb6c21672704caea51fcf932e1a513311a80f0d5134abc3b4305fe3db8a3",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer.json",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/tokenizer.json",
+        "bytes": 4733383,
+        "sha256": "2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da",
+        "kind": "data"
+      },
+      {
+        "id": "tokenizer_config.json",
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-1.6B-ONNX/resolve/d0e00ca26cc42892d9f3c4380faa631927218209/tokenizer_config.json",
+        "bytes": 605,
+        "sha256": "83108b3b57db5030463d876e7bb316c579846da398875f407d77f6c79966c166",
+        "kind": "data"
+      }
+    ]
+  },
+  {
     "id": "kt-browser-decision-d3-lite-gguf-bf16",
     "title": "D3 lite \u00b7 0.8B",
     "kind": "decision",

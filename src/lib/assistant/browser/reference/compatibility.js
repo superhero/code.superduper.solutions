@@ -66,7 +66,7 @@ export async function probeBrowser(env = globalThis) {
         result.gpu.adapter = true;
         const info = adapter.info || {};
         result.gpu.info = Object.fromEntries(['vendor', 'architecture', 'device', 'description'].map(k => [k, info[k] || '']));
-        result.gpu.limits = {max_buffer_bytes: adapter.limits.maxBufferSize, max_storage_binding_bytes: adapter.limits.maxStorageBufferBindingSize};
+        result.gpu.limits = {max_buffer_bytes: adapter.limits.maxBufferSize, max_storage_binding_bytes: adapter.limits.maxStorageBufferBindingSize, max_storage_buffers_per_shader_stage:adapter.limits.maxStorageBuffersPerShaderStage};
         result.gpu.f16 = adapter.features.has('shader-f16');
         try { result.gpu.compute = await timed(computeProbe(adapter, false)); } catch (e) { result.gpu.error = e.message; }
         if (result.gpu.f16) {

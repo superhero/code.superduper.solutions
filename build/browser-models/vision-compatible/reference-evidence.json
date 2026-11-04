@@ -1,0 +1,130 @@
+{
+  "model": "LiquidAI/LFM2.5-VL-1.6B-ONNX",
+  "revision": "d0e00ca26cc42892d9f3c4380faa631927218209",
+  "precision_variant": "official-q4-fp32-compatible-v1",
+  "publisher_files": [
+    {
+      "file": "onnx/decoder_q4.onnx",
+      "bytes": 169018,
+      "sha256": "44bbb840012f64393e74c6c3fa48d22c2d03317a71e3de882b1115daab028480"
+    },
+    {
+      "file": "onnx/decoder_q4.onnx_data",
+      "bytes": 1217650688,
+      "sha256": "144e30048e0de1af8b9524fc4bdca99286090ff92c0f12792ccedd31804f2d73"
+    },
+    {
+      "file": "onnx/embed_images_q4.onnx",
+      "bytes": 293054,
+      "sha256": "d947bc20232590cad6807164b8857f83feacbfce92e7c78114cd9ec62c9053a6"
+    },
+    {
+      "file": "onnx/embed_images_q4.onnx_data",
+      "bytes": 269097152,
+      "sha256": "78ad0694364f0b9c0d3b3a5b0d2f57c402dc676e75aacdf79f67e02b1d458b25"
+    },
+    {
+      "file": "onnx/embed_tokens.onnx",
+      "bytes": 536871271,
+      "sha256": "489b999a0862f14342d20e38f3ed33df91a4fda7476b44dd4d65531a57fc1b9a"
+    }
+  ],
+  "placement_source": "inference/attempts/ow-browser-lfm25-vision-placement-audit/bound-node-placement.json",
+  "placement_source_sha256": "38c7e0204e00091ba02d4013aba7e6dec862551613cf29b6fc1cb3c38a373784",
+  "placement_groups": [
+    {
+      "provider": "WebGpuExecutionProvider",
+      "count": 1,
+      "ops": {}
+    },
+    {
+      "provider": "WebGpuExecutionProvider",
+      "count": 503,
+      "ops": {
+        "Sub": 1,
+        "Mul": 1,
+        "Unsqueeze": 2,
+        "Expand": 2,
+        "MatMulNBits": 165,
+        "Add": 190,
+        "Shape": 2,
+        "Resize": 1,
+        "Transpose": 3,
+        "Reshape": 8,
+        "Slice": 1,
+        "Pad": 1,
+        "Where": 1,
+        "Tile": 1,
+        "LayerNormalization": 54,
+        "MultiHeadAttention": 27,
+        "ScatterND": 1,
+        "And": 1,
+        "FastGelu": 27,
+        "BiasGelu": 1,
+        "SkipLayerNormalization": 1,
+        "MemcpyFromHost": 8,
+        "MemcpyToHost": 4
+      }
+    },
+    {
+      "provider": "CPUExecutionProvider",
+      "count": 75,
+      "ops": {
+        "Cast": 2,
+        "Shape": 1,
+        "Gather": 6,
+        "Unsqueeze": 21,
+        "Concat": 9,
+        "ReduceMax": 3,
+        "Mul": 4,
+        "Range": 5,
+        "Less": 3,
+        "Sub": 1,
+        "Split": 2,
+        "Add": 3,
+        "Div": 7,
+        "Mod": 1,
+        "Reshape": 1,
+        "Compress": 3,
+        "ConstantOfShape": 1,
+        "Squeeze": 2
+      }
+    },
+    {
+      "provider": "WebGpuExecutionProvider",
+      "count": 215,
+      "ops": {
+        "SimplifiedLayerNormalization": 10,
+        "MatMulNBits": 42,
+        "Split": 10,
+        "Mul": 20,
+        "Concat": 10,
+        "Shape": 10,
+        "Slice": 20,
+        "Add": 32,
+        "SkipSimplifiedLayerNormalization": 1,
+        "MatMul": 1,
+        "Transpose": 20,
+        "Conv": 10,
+        "GroupQueryAttention": 6,
+        "MatMulNBitsMlp": 16,
+        "MatMulNBitsQkv": 6,
+        "MemcpyFromHost": 1
+      }
+    },
+    {
+      "provider": "CPUExecutionProvider",
+      "count": 36,
+      "ops": {
+        "ReduceSum": 1,
+        "Sub": 1,
+        "Cast": 2,
+        "Shape": 1,
+        "Gather": 11,
+        "Mul": 10,
+        "Unsqueeze": 10
+      }
+    }
+  ],
+  "scope": "Reference desktop Brave node assignment for the exact official files. Weighted matrix, convolution, attention and normalization operators execute on GPU; CPU shapes/masks/indexing/Compress packing remain. Not an all-operator GPU pipeline or general model-quality qualification. Editor acceptance is documented separately."
+}

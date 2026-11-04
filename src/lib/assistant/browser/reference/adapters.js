@@ -52,6 +52,7 @@ export function mergeToolDeltas(calls, deltas = []) {
     if (delta.id) c.id = delta.id;
     c.function.name += delta.function?.name ?? '';
     c.function.arguments += delta.function?.arguments ?? '';
+    if (delta.errors?.length) c.errors = [...(c.errors ?? []), ...delta.errors];
   }
 }
 

@@ -8,7 +8,7 @@ import {useInstalledAssets} from './worker-assets.js';
  * loads and the older 1.6B export. ONNX graphs and external data never change.
  * Source: https://github.com/huggingface/transformers.js/tree/4.3.1/packages/transformers/src
  */
-export async function loadVisionRuntime(library, pin, {onProgress = () => {}, textOnly = false, fetchText = async url => {
+export async function loadVisionRuntime(library, pin, {onProgress = () => {}, textOnly = false, sessionOptions = pin.sessionOptions, fetchText = async url => {
   const response = await fetch(url);
   if (!response.ok) throw Error(`Model template request failed (${response.status}): ${url}`);
   return response.text();
@@ -17,10 +17,10 @@ export async function loadVisionRuntime(library, pin, {onProgress = () => {}, te
   if (!response.ok) throw Error(`Model metadata request failed (${response.status}): ${url}`);
   return response.json();
 }} = {}) {
-  // Transformers 4.3.1's tokenizer existence probe omits the revision option.
-  // Keep every SDK lookup on this worker's installed, immutable model commit.
+  // Keep the tokenizer existence probe on the installed immutable revision.
   library.env.remotePathTemplate = `{model}/resolve/${pin.revision}/`;
-  const options = {revision: pin.revision, device: 'webgpu', progress_callback: onProgress};
+  const options = {revision: pin.revision, device: 'webgpu', progress_callback: onProgress,
+    ...(sessionOptions ? {session_options: sessionOptions} : {})};
   let model, processor, tokenizer, chatTemplate;
   const sessions = {};
   try {
@@ -48,7 +48,7 @@ export async function loadVisionRuntime(library, pin, {onProgress = () => {}, te
         if (textOnly && name === 'vision_encoder') continue;
         const component = await library.PreTrainedModel.from_pretrained(pin.repo, {
           ...options, config: {model_type: 'custom'}, model_file_name: filename,
-          dtype: pin.dtype[name], use_external_data_format: true,
+          dtype: pin.dtype[name], use_external_data_format: pin.externalData?.[name] ?? true,
         });
         sessions[name] = component.sessions.model;
       }
@@ -64,6 +64,131 @@ export async function loadVisionRuntime(library, pin, {onProgress = () => {}, te
     if (model) await model.dispose().catch(() => {});
     else await Promise.allSettled(Object.values(sessions).map(session => session.release?.()));
     throw error;
+  }
+}
+
+export function bindVisionSessionOptions(pin, ownedDevice) {
+  // Native ORT WebGPU requires this per-session binding; its env.device setter
+  // alone does not bind the device used by the native execution provider.
+  return ownedDevice ? {...pin.sessionOptions, executionProviders: [{name: 'webgpu', device: ownedDevice}]} : pin.sessionOptions;
+}
+
+export function summarizeVisionSessionOptions(options) {
+  if (!options) return null;
+  return {...options, ...(options.executionProviders ? {executionProviders: options.executionProviders.map(provider =>
+    typeof provider === 'string' ? provider : {...provider, ...(provider.device ? {device: 'owned-gpu-device'} : {})})} : {})};
+}
+
+export async function configureVisionDevice(library, pin, {
+  gpu = globalThis.navigator?.gpu, isSecureContext = globalThis.isSecureContext,
+} = {}) {
+  // Only this qualified publisher export may bypass the existing FP16 gate.
+  const verboseAudit = pin.precisionVariant === 'official-q4-fp32-placement-audit-v1';
+  const audit = verboseAudit || pin.precisionVariant === 'official-q4-fp32-compatible-v1';
+  const noF16 = audit || pin.precisionVariant === 'official-q4-fp32-no-f16-v1';
+  if (pin.precisionVariant != null && (!noF16 || pin.repo !== 'LiquidAI/LFM2.5-VL-1.6B-ONNX' ||
+      pin.revision !== 'd0e00ca26cc42892d9f3c4380faa631927218209' ||
+      pin.dtype.embed_tokens !== 'fp32' || pin.dtype.vision_encoder !== 'q4' || pin.dtype.decoder_model_merged !== 'q4')) {
+    throw Error(`Unqualified vision precision variant: ${pin.precisionVariant}`);
+  }
+  if (!isSecureContext || !gpu) throw Error('Vision requires HTTPS and a browser with WebGPU.');
+  const adapter = await gpu.requestAdapter({powerPreference: 'high-performance'});
+  if (!adapter) throw Error('The browser returned no WebGPU adapter. No CPU substitution was made.');
+  if (!noF16 && !adapter.features.has('shader-f16')) throw Error('This official mixed FP16/Q4 export requires shader-f16. No precision substitution was made.');
+  library.env.backends.onnx.webgpu.adapter = adapter;
+  if (!noF16) return {adapter, device: null, requestedFeatures: null};
+  // Match ORT's requested compute/buffer limits while omitting every optional
+  // feature, including shader-f16 even when the adapter supports it.
+  const limitNames = ['maxComputeWorkgroupStorageSize', 'maxComputeWorkgroupsPerDimension',
+    'maxStorageBufferBindingSize', 'maxStorageBuffersPerShaderStage', 'maxBufferSize', 'maxComputeInvocationsPerWorkgroup',
+    'maxComputeWorkgroupSizeX', 'maxComputeWorkgroupSizeY', 'maxComputeWorkgroupSizeZ'];
+  const requiredLimits = Object.fromEntries(limitNames.filter(name => adapter.limits?.[name] != null).map(name => [name, adapter.limits[name]]));
+  if ((adapter.limits?.maxStorageBuffersPerShaderStage ?? 0) < 9) throw Error('This vision profile needs at least 9 storage buffers per shader stage. Choose a supported GPU/browser.');
+  const device = await adapter.requestDevice({requiredFeatures: [], requiredLimits});
+  if (device.features.has('shader-f16')) {
+    device.destroy();
+    throw Error('The explicit no-f16 WebGPU device unexpectedly enabled shader-f16.');
+  }
+  library.env.backends.onnx.webgpu.device = device;
+  library.env.backends.onnx.logLevel = verboseAudit ? 'verbose' : 'error';
+  try {
+    return {adapter, device, requestedFeatures: [], ...(audit ? {placementAudit: instrumentVisionDevice(device)} : {})};
+  } catch (error) { device.destroy(); throw error; }
+}
+
+export function instrumentVisionDevice(device) {
+  // ORT's timestamp profiling is inactive with features[]. Count real WebGPU
+  // calls instead; no shader sources or unbounded per-dispatch records are kept.
+  const counts = {command_encoders: 0, compute_passes: 0, compute_pipelines: 0,
+    direct_dispatches: 0, indirect_dispatches: 0, submitted_dispatches: 0,
+    queue_submissions: 0, submitted_command_buffers: 0, queue_drained_dispatches: 0};
+  const commandBuffers = new WeakMap(), pipelineLabels = new Set();
+  let labelsTruncated = false;
+  const wrap = (target, name, callback) => {
+    const original = target[name].bind(target);
+    Object.defineProperty(target, name, {configurable: true, writable: true, value: (...args) => callback(original, args)});
+  };
+  const recordPipeline = descriptor => {
+    counts.compute_pipelines++;
+    const label = String(descriptor?.label || '(unlabelled)').slice(0, 160);
+    if (pipelineLabels.size < 16) pipelineLabels.add(label);
+    else if (!pipelineLabels.has(label)) labelsTruncated = true;
+  };
+  wrap(device, 'createComputePipeline', (original, args) => {
+    const pipeline = original(...args); recordPipeline(args[0]); return pipeline;
+  });
+  if (device.createComputePipelineAsync) wrap(device, 'createComputePipelineAsync', async (original, args) => {
+    const pipeline = await original(...args); recordPipeline(args[0]); return pipeline;
+  });
+  wrap(device, 'createCommandEncoder', (original, args) => {
+    const encoder = original(...args);
+    counts.command_encoders++;
+    let dispatches = 0;
+    wrap(encoder, 'beginComputePass', (begin, passArgs) => {
+      const pass = begin(...passArgs);
+      counts.compute_passes++;
+      for (const [method, counter] of [['dispatchWorkgroups', 'direct_dispatches'], ['dispatchWorkgroupsIndirect', 'indirect_dispatches']]) {
+        wrap(pass, method, (dispatch, dispatchArgs) => {
+          const result = dispatch(...dispatchArgs);
+          counts[counter]++; dispatches++;
+          return result;
+        });
+      }
+      return pass;
+    });
+    wrap(encoder, 'finish', (finish, finishArgs) => {
+      const buffer = finish(...finishArgs); commandBuffers.set(buffer, dispatches); return buffer;
+    });
+    return encoder;
+  });
+  wrap(device.queue, 'submit', (submit, args) => {
+    const buffers = Array.from(args[0]);
+    const result = submit(buffers);
+    counts.queue_submissions++; counts.submitted_command_buffers += buffers.length;
+    counts.submitted_dispatches += buffers.reduce((sum, buffer) => sum + (commandBuffers.get(buffer) ?? 0), 0);
+    return result;
+  });
+  const snapshot = () => ({source: 'instrumented-webgpu-command-submission-v1', ...counts,
+    encoded_dispatches: counts.direct_dispatches + counts.indirect_dispatches,
+    pipeline_labels: [...pipelineLabels].sort(), pipeline_labels_truncated: labelsTruncated,
+    interpretation: 'Counts WebGPU compute commands encoded and submitted on the owned device. Queue drain completion is not a per-node placement profile or proof that CPU operators were absent.'});
+  return {snapshot, async drain() {
+    const submitted = counts.submitted_dispatches;
+    try {
+      await device.queue.onSubmittedWorkDone();
+      counts.queue_drained_dispatches = Math.max(counts.queue_drained_dispatches, submitted);
+      return {...snapshot(), queue_drain: 'complete'};
+    } catch (error) { return {...snapshot(), queue_drain: 'failed', queue_drain_error: error.message || String(error)}; }
+  }};
+}
+
+export async function releaseVisionRuntime(runtime, ownedDevice) {
+  try { await runtime?.model.dispose(); }
+  finally {
+    if (ownedDevice) {
+      try { await ownedDevice.queue.onSubmittedWorkDone(); } catch { /* Device loss can reject the drain. */ }
+      ownedDevice.destroy();
+    }
   }
 }
 
@@ -176,7 +301,7 @@ async function generateFromInputs(library, runtime, inputs, {
 }
 
 if (typeof self !== 'undefined' && typeof document === 'undefined') {
-  let library, runtime, contextTokens, outputTokens, preprocessing, active, queue = Promise.resolve();
+  let library, runtime, ownedDevice, placementAudit, contextTokens, outputTokens, preprocessing, active, queue = Promise.resolve();
   const send = (id, type, data = {}) => self.postMessage({id, type, ...data});
   self.onmessage = ({data}) => {
     if (data.type === 'cancel') { if (active?.id === data.id) active.stopping.interrupt(); return; }
@@ -189,22 +314,36 @@ if (typeof self !== 'undefined' && typeof document === 'undefined') {
           library = await import('@huggingface/transformers');
           library.env.fetch = globalThis.fetch;
           if (library.env.version !== '4.3.1') throw Error(`Unqualified Transformers.js version: ${library.env.version}`);
-          if (!self.isSecureContext || !navigator.gpu) throw Error('Vision requires HTTPS and a browser with WebGPU.');
-          const adapter = await navigator.gpu.requestAdapter({powerPreference: 'high-performance'});
-          if (!adapter) throw Error('The browser returned no WebGPU adapter. No CPU substitution was made.');
-          if (!adapter.features.has('shader-f16')) throw Error('This official mixed FP16/Q4 export requires shader-f16. No precision substitution was made.');
+          const selection = await configureVisionDevice(library, data.pin);
+          const {adapter} = selection;
+          ownedDevice = selection.device;
+          placementAudit = selection.placementAudit;
           library.env.allowLocalModels = false;
           library.env.useFSCache = false;
           library.env.useBrowserCache = false;
           library.env.backends.onnx.wasm.numThreads = 1;
           library.env.backends.onnx.wasm.wasmPaths = {mjs: globalThis.__codeRuntimeURL('ort-mjs'), wasm: globalThis.__codeRuntimeURL('ort-wasm')};
-          library.env.backends.onnx.webgpu.adapter = adapter;
-          runtime = await loadVisionRuntime(library, data.pin, {textOnly: data.textOnly === true, onProgress: progress => send(data.id, 'progress', {progress})});
+          const sessionOptions = bindVisionSessionOptions(data.pin, ownedDevice);
+          runtime = await loadVisionRuntime(library, data.pin, {sessionOptions, textOnly: data.textOnly === true,
+            onProgress: progress => send(data.id, 'progress', {progress})});
+          const device = selection.device ?? await library.env.backends.onnx.webgpu.device;
+          const noCpuFallback = data.pin.sessionOptions?.extra?.session?.disable_cpu_ep_fallback === '1';
+          const gpuExecution = placementAudit ? await placementAudit.drain() : null;
           contextTokens = data.contextTokens; outputTokens = data.outputTokens;
           preprocessing = data.preprocessing ?? 'native';
           send(data.id, 'result', {result: {runtime: 'transformers.js', version: library.env.version, device: 'webgpu',
             requested_execution_provider: 'webgpu',
-            placement_note: 'WebGPU EP requested; ORT may assign individual graph nodes to CPU, and sampling runs in JavaScript. Node placement was not measured.',
+            placement_note: noCpuFallback ? 'WebGPU EP requested with CPU EP fallback disabled in session options; node placement was not independently measured. Sampling runs in JavaScript.' :
+              'WebGPU EP requested; ORT may assign individual graph nodes to CPU, and sampling runs in JavaScript. Node placement was not measured.',
+            disable_cpu_ep_fallback_requested: noCpuFallback, session_options: summarizeVisionSessionOptions(sessionOptions),
+            execution_provider_device: ownedDevice ? 'explicit-owned-gpu-device' : 'ort-managed',
+            cpu_ep_fallback_allowed: data.pin.sessionOptions?.extra?.session?.disable_cpu_ep_fallback === '0' ? true : noCpuFallback ? false : null,
+            gpu_execution: gpuExecution,
+            precision_variant: data.pin.precisionVariant ?? null,
+            requested_device_features: selection.requestedFeatures,
+            device_features: device?.features ? [...device.features].sort() : null,
+            device_shader_f16: device?.features?.has('shader-f16') ?? null,
+            device_limits: {maxStorageBuffersPerShaderStage: device?.limits?.maxStorageBuffersPerShaderStage ?? null},
             wasm_threads: 1, dtype: Object.fromEntries(Object.entries(data.pin.dtype).filter(([name]) => !runtime.textOnly || name !== 'vision_encoder')),
             repo: data.pin.repo, revision: data.pin.revision,
             loader: runtime.textOnly ? 'published-language-session-names' : data.pin.loader, load_ms: performance.now() - started,
@@ -212,20 +351,38 @@ if (typeof self !== 'undefined' && typeof document === 'undefined') {
             loaded_sessions: Object.keys(runtime.model.sessions), tool_calls: 'unsupported-by-adapter',
             preprocessing,
             context_tokens: contextTokens, output_tokens: outputTokens,
-            adapter: {description: adapter.info?.description || '', vendor: adapter.info?.vendor || '', architecture: adapter.info?.architecture || '', shader_f16: true}}});
+            adapter: {description: adapter.info?.description || '', vendor: adapter.info?.vendor || '', architecture: adapter.info?.architecture || '',
+              shader_f16: adapter.features.has('shader-f16'), features: [...adapter.features].sort(),
+              limits: {maxStorageBuffersPerShaderStage: adapter.limits?.maxStorageBuffersPerShaderStage ?? null}}}});
         } else if (data.type === 'generate') {
           if (!runtime) throw Error('Load the vision model first.');
+          const before = placementAudit?.snapshot();
           active = {id: data.id, stopping: new library.InterruptableStoppingCriteria()};
           const result = await generateLfmChat(library, runtime, {...data, contextTokens, outputTokens, preprocessing, stopping: active.stopping,
             onText: text => send(data.id, 'text', {text})});
           active = null;
+          if (placementAudit) {
+            const cumulative = await placementAudit.drain();
+            result.gpu_execution = {...cumulative, delta: Object.fromEntries(Object.entries(cumulative)
+              .filter(([, value]) => typeof value === 'number').map(([key, value]) => [key, value - before[key]]))};
+          }
           send(data.id, 'result', {result});
         } else if (data.type === 'dispose') {
-          await runtime?.model.dispose(); runtime = null;
-          send(data.id, 'result', {result: null});
+          const current = runtime, device = ownedDevice;
+          runtime = null; ownedDevice = null;
+          await releaseVisionRuntime(current, device);
+          placementAudit = null;
+          send(data.id, 'result', {result: {sessions_released: true, owned_device_destroyed: !!device}});
         }
       } catch (error) {
         active = null;
+        if (placementAudit) send(data.id, 'log', {message: `Vision placement audit on error: ${JSON.stringify(placementAudit.snapshot())}`});
+        if (data.type === 'load') {
+          const current = runtime, device = ownedDevice;
+          runtime = null; ownedDevice = null;
+          await releaseVisionRuntime(current, device).catch(() => {});
+          placementAudit = null;
+        }
         send(data.id, 'error', {message: error.message || String(error), name: error.name || 'Error'});
       }
     });

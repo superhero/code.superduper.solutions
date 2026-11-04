@@ -42,6 +42,11 @@ worker, releases capture/features and offers a clean manual Retry. Retry creates
 a fresh worker and retains verified cached artifacts. Stop flushes the worklet
 before ending recognition and has a separate completion deadline.
 
+Continuous capture coalesces cancellation, failure and unload for the original
+worker. A replacement load waits for microphone, feature and segment cleanup;
+stale worker messages, archive continuations and microphone-permission failures
+cannot tear down the replacement. Repeated callers await the same cleanup.
+
 For legacy recognizers, `capture.ts` owns microphone tracks, a 16 kHz AudioContext and the worklet's
 flush acknowledgement. Late permission grants are closed after cancellation.
 Recording stops after 55 seconds; the pipeline bounds audio at 60 seconds.
@@ -88,6 +93,11 @@ survives reload; completed audio remains until explicitly removed under
 overlap and reads one stored segment at a time. Quota/backpressure errors stop
 capture explicitly and expose any unsaved recovery audio for export. Nothing is
 uploaded. Other recognizers retain their in-memory-only recording behavior.
+Unsaved PCM remains available across subsequent recordings in the same tab.
+Local recordings groups its export and explicit discard controls by recording,
+so separate recordings cannot be interleaved into one recovery WAV. Discard is
+blocked during recording and cleanup. Unsaved audio is not durable across page
+closure; exporting keeps the recovery copy and warning until explicit discard.
 Confirmed text is appended to the originating AI draft. `diagnostics.ts` removes the obsolete
 `code-speech-diagnostics` database on application startup, including any earlier
 recordings. Downloaded model files remain cached separately. Nothing is uploaded
@@ -269,3 +279,29 @@ quota exhaustion during a real recording, mobile and simultaneous model
 residency remain unqualified. Exact decoder reproduction is documented under
 `build/speech/conversion/README.md`; publisher licenses and local conversion
 notices travel with each selected optional payload.
+
+## Capture lifecycle review evidence (2026-11-04)
+
+The current `llm-sds-01/inference/evaluations/parakeet-long-stream/runtime/capture.js`
+informed teardown/replacement isolation and recovery retention. Its exact source
+and editor-adaptation hashes are recorded in `continuous-sources.json`.
+Three named QuickPickle scenarios passed overlapping cancellation, segment
+failure during microphone close and archive failure followed by a new recording.
+Browser UI scenarios verified recording-specific WAV export and scoped discard.
+
+The changed editor passed the real continuous-speech scenario again on sds-01:
+Brave 1.96.61 / Chromium 154.0.8037.98, RTX 3060 12 GB. AudioWorklet capture
+retained 75.176 seconds and produced 110 expected words with 25 stable draft
+updates. A 600-second accelerated backlog produced 880 words in 32.441 seconds
+of wall time. Cancellation during inference, restart, silence, offline Blob
+reload and all 36 archived PCM hashes passed. Unload destroyed all 1,419 tracked
+GPU buffers, with no GPU, page, network or upload errors.
+
+The single owned test ran under the shared lease with 4 CPU, 16 GiB RAM, zero
+swap and 512 PID limits. Cgroup peak RAM was 11,505,037,312 bytes (10.72 GiB),
+peak PIDs 206 and OOM events zero. The service was removed and lease released;
+foreign workloads were left untouched. Raw results, launch flags, source
+digests and resource receipts are under
+`tmp/layout/browser-reference-review-20261104/`. This fixture run retains the
+physical-microphone, real quota-exhaustion, mobile and long wall-clock limits
+described above; injected lifecycle faults are separate from the neural run.

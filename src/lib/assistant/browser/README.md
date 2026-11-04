@@ -59,6 +59,23 @@ Up to three images remain in transient conversation memory; PNG/JPEG/WebP,
 10 MiB and 16 megapixel limits apply. Cancelling settles the worker and leaves
 text unloaded when restoration cannot safely finish. LFM450M is excluded.
 
+The additional **LFM2.5-VL · 1.6B · Q4/FP32** image option uses five
+unmodified files at that same official revision (2.024 GB of model files): Q4
+image/decoder matrices and FP32 token embeddings, activations and state. It
+works without shader-f16 and requires at least nine storage buffers per shader
+stage. Choose it under the text model's **Model settings → Image inspection
+model**. Existing FP16 and native image choices keep their own settings.
+
+Each ONNX session receives one explicitly owned GPUDevice. Positive completed
+dispatches are required before returning observations; a request or an adapter
+label alone is insufficient. Reference node assignment puts weighted neural
+operators on GPU. CPU shapes, masks, indexing, Compress feature packing, image
+preprocessing and sampling remain enabled. This is not an all-operator GPU
+pipeline. The profile uses a 1,024-token context, 128-token greedy output and
+512 px white letterbox. It is a separate image interpreter, not a fixed native
+Ornith projector. Observations can be wrong; phone and large-document OCR
+acceptance remain open.
+
 Settings → AI → Decision models offers these separate native profiles:
 
 | Profile | Format | Native readout |
@@ -170,6 +187,13 @@ turn running; the queued request retains its selected model, unloads the previou
 instance and loads its model automatically before generating. Same-chat requests
 include replies completed while they waited. Cancelling a waiter never stops the
 active turn. Closing a conversation or the pane cancels its waiting requests too.
+
+Cleanup is a shared promise: repeated disposal waits for the same native exit or
+worker shutdown. URLs and the cross-tab lease are released only after confirmed
+cleanup. A failed native exit blocks further allocations in this page and asks
+for a reload, retaining the ownership and original failure for diagnosis. An
+allocation fallback cannot continue after uncertain cleanup. Native tool-parser
+errors survive fragmented deltas and reach Pi's validation before tool execution.
 
 Runtime lock release is awaited before reacquisition. Another tab requests a
 handoff over BroadcastChannel and waits on Web Locks: an idle owner unloads
@@ -419,3 +443,51 @@ Continuous speech has its own integrated evidence in the speech guide. Neither
 these tests nor reference results qualify mobile, personal browser profiles,
 large decision inputs or simultaneous ASR/LLM residency. GPU speech releases
 chat allocations through the existing serial turn queue before loading.
+
+## Compatible vision editor evidence (2026-11-02)
+
+Actual Brave 1.96.61 / Chromium 154.0.8037.98 on sds-01 (RTX 3060 12 GB)
+installed the official Q4/FP32 profile through the editor and read a red square
+and a fresh image code. Each response confirmed positive completed work on the
+explicitly owned device without shader-f16. Native model bytes, metadata,
+Transformers.js and ORT still pass the normal installer/runtime checks.
+
+A genuine MiniCPM5 Pi turn loaded a progressive skill, read a fresh repository
+confirmation code, inspected the image, and returned exactly the two actual
+codes after restoring strict text. Logical conversation and saved settings
+stayed intact. An earlier looser request retained the actual tool values but
+also invented an extra note code; that raw result remains evidence of model
+fallibility. The accepted ordered one-line protocol is a narrower claim than
+arbitrary combined-flow accuracy.
+
+An eight-buffer adapter was rejected before text suspension. Cancellation after
+first model text terminated the owned worker and left text unloaded. A fresh
+worker then recognized the image from cached Blob assets with publisher
+requests blocked. Settings layout and 128-token budget disclosure passed the
+ordinary browser check. Phones, large documents, broad model quality and
+native Ornith projectors remain unqualified by these checks.
+
+## Reference lifecycle review (2026-11-04)
+
+Reviewed the current `llm-sds-01` working tree against checkpoint `4b7aaf3`,
+including `inference/evaluations/inference-review/REPORT.md`. Adaptations preserve
+the editor's existing GPU profiles, binaries and weights: coalesced cleanup,
+blocked allocation after native disposal failure, parser-error propagation,
+vision cancellation during cleanup, and each vision profile's output ceiling.
+Source digests are retained in `expanded-provenance.json`; speech capture and
+recovery changes are documented in the [speech guide](../speech/README.md).
+
+The reference's same-image feature cache is not enabled here: each image-tool
+call unloads vision to restore text, which would clear that cache before reuse.
+Its measured warm-call speedup does not describe this editor's model handoff.
+Server-side MiMo lease changes do not apply to the browser-only architecture.
+
+Nine focused lifecycle scenarios exercise Pi's actual pre-tool hook, cleanup
+ownership, worker disposal/cancellation and image output/cancellation boundaries.
+Together with affected chat, decision, vision and speech scenarios, 89
+Vitest/QuickPickle cases passed, as did 37 source checks, three browser UI
+scenarios, type checking and the build. Injected cleanup/I/O failures establish
+error handling, not recovery from an actual GPU-driver disposal fault. The
+changed continuous-speech editor also passed its real 75-second and accelerated
+ten-minute regression; see the speech guide for resource and recording evidence.
+The earlier compatible-vision model evidence above remains separately scoped.
